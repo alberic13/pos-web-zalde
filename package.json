@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "server": "tsx api/index.ts",
-    "build": "prisma generate && tsc && vite build",
+    "build": "prisma db push && prisma generate && tsc && vite build",
     "postinstall": "prisma generate",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
