@@ -117,6 +117,7 @@ export default async function handler(req: any, res: any) {
       const salesChart = Object.entries(salesMap).map(([date, total]) => ({
         date: new Date(date).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' }),
         total,
+        revenue: total,
       }));
 
       const topItems = await prisma.orderItem.groupBy({
@@ -128,10 +129,15 @@ export default async function handler(req: any, res: any) {
 
       const topProductsDetailed = await Promise.all(
         topItems.map(async (item) => {
-          const prod = await prisma.product.findUnique({ where: { id: item.productId } });
+          const prod = await prisma.product.findUnique({
+            where: { id: item.productId },
+            include: { category: true },
+          });
           return {
             id: item.productId,
-            name: prod?.name || 'Unknown Product',
+            name: prod?.name || 'Produk',
+            category: prod?.category?.name || 'Elektronik',
+            imageUrl: prod?.imageUrl || null,
             soldCount: item._sum.quantity || 0,
             revenue: (prod?.price || 0) * (item._sum.quantity || 0),
           };
@@ -147,6 +153,7 @@ export default async function handler(req: any, res: any) {
           monthOrdersCount: monthOrders.length,
           totalProducts,
           totalProductsCount: totalProducts,
+          lowStockCount: lowStockProducts.length,
           salesChart,
           topProducts: topProductsDetailed,
           lowStockProducts,
