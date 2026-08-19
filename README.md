@@ -1,6 +1,6 @@
 # 🛒 POS Web Zalde
 
-A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Serverless API**, **Prisma ORM**, and **PostgreSQL (Local & Neon Cloud)**.
+A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse Inventory Management, & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Native Serverless API**, **Prisma ORM**, and **PostgreSQL (Local & Neon Cloud)**.
 
 ---
 
@@ -12,7 +12,7 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics 
 - **Tailwind CSS**: Modern custom color palette (Slate & Emerald retail theme).
 - **Recharts**: Interactive sales analytics graphs & financial charts.
 - **Lucide React**: Clean & modern iconography.
-- **React Router DOM**: SPA client-side routing (`/`, `/pos`, `/products`, `/categories`, `/orders`).
+- **React Router DOM**: SPA client-side routing (`/`, `/pos`, `/products`, `/categories`, `/inventory`, `/supplier-orders`, `/suppliers`, `/orders`).
 - **Browser WebP Auto-Compressor**: Built-in client-side image processing utility (`src/lib/imageCompressor.ts`) converting uploaded product images to WebP format (~15 KB – 25 KB) with 95%+ DB payload savings.
 
 ### **Backend & Database Architecture**
@@ -21,10 +21,12 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics 
 - **PostgreSQL Database Engine**:
   - **Local Development**: Local PostgreSQL Server (`pos_zalde_dev` on `localhost:5432`) for fast, robust local development.
   - **Production Deployment**: PostgreSQL (Neon Cloud Serverless) for Vercel production hosting.
+  - **Full DB Models**: `Category`, `Product` (Dual Stock: Etalase + Gudang), `Order`, `OrderItem`, and `Supplier`.
 
 ### **Testing & Deployment**
-- **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 6 test suites in ~300ms against local MySQL.
+- **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 6 test suites against PostgreSQL.
 - **Vercel Deployment**: Serverless Functions hosting (`/api/*`) + SPA Client static hosting.
+- **Auto DB Push Build Pipeline**: Automated `prisma db push && prisma generate && tsc && vite build` on Vercel deployment.
 
 ---
 
@@ -33,36 +35,37 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics 
 ```text
 pos-web-zalde/
 ├── api/
-│   └── index.ts               # Vercel Serverless Function & Local API Server handler
+│   └── index.ts               # Vercel Serverless Function & Local API Server handler (Products, Categories, Orders, Suppliers, Dashboard)
 ├── docs/
 │   └── PRD_POS_Dashboard.md   # Product Requirement Document (Fitur, UI/UX, & Skema DB)
 ├── prisma/
-│   ├── schema.prisma          # Skema Database PostgreSQL (Vercel / Neon Production)
-│   ├── schema.local.prisma    # Skema Database MySQL (XAMPP Development Lokal)
-│   ├── syncFromNeonToMySQL.ts # Skrip penarik & migrasi data live Neon Cloud ➔ XAMPP MySQL
-│   └── seed.ts                # Script seeding data sampel (Kategori, Produk, & Transaksi)
+│   ├── schema.prisma          # Skema Database PostgreSQL (Category, Product, Order, OrderItem, Supplier)
+│   ├── syncToCloud.ts         # Skrip penarik & migrasi data lokal PostgreSQL ➔ Neon Cloud PostgreSQL
+│   ├── syncFromCloud.ts       # Skrip penarik & migrasi data live Neon Cloud ➔ Local PostgreSQL
+│   └── seed.ts                # Script seeding data sampel (Kategori, Produk, Supplier, & Transaksi)
 ├── src/
 │   ├── components/
 │   │   ├── common/            # Modal, Toast notifications, & Skeleton loaders
-│   │   └── layout/            # Layout, Header, & Sidebar navigasi
+│   │   └── layout/            # Header & Sidebar navigasi 8 menu
 │   ├── lib/
-│   │   ├── api.ts             # Client API fetch wrapper dengan error handling
-│   │   ├── db.ts              # Singleton Proxy PrismaClient dengan lazy initialization
+│   │   ├── api.ts             # Client API fetch wrapper dengan error handling (CRUD lengkap)
 │   │   └── imageCompressor.ts # Browser WebP auto-compressor module (Resize + WebP 75%)
 │   ├── pages/
-│   │   ├── DashboardPage.tsx  # Dashboard analytics, KPI cards, & grafik 7 hari
-│   │   ├── PosPage.tsx        # Terminal Kasir POS (Shortcut: F2, F4, Esc)
-│   │   ├── ProductsPage.tsx   # CRUD Katalog Produk & File Upload WebP
-│   │   ├── CategoriesPage.tsx # CRUD Kategori Produk
+│   │   ├── DashboardPage.tsx     # Dashboard analytics, KPI cards, & grafik omset 7 hari
+│   │   ├── PosPage.tsx           # Terminal Kasir POS (Shortcut: F2, F4, Esc)
+│   │   ├── ProductsPage.tsx      # Katalog Produk Etalase & File Upload WebP
+│   │   ├── CategoriesPage.tsx    # CRUD Kategori Produk
+│   │   ├── InventoryPage.tsx     # Stok Gudang & Restock Etalase Kasir (Pill Badges UX)
+│   │   ├── SupplierOrdersPage.tsx# Order Pasokan Supplier (Qty Stepper, Cost Price Modal, 1-Click WA PO)
+│   │   ├── SuppliersPage.tsx     # Direktori Kontak Supplier & Kategori Pasokan Dinamis (Database API)
 │   │   └── OrdersHistoryPage.tsx # Riwayat Transaksi Penjualan & Struk Pembayaran
-│   ├── server/routes/         # Rute logika backend Elysia.js (categories, products, orders, dashboard)
-│   ├── types/                 # Interface TypeScript (Product, Category, Order, CartItem)
+│   ├── types/                 # Interface TypeScript (Product, Category, Order, Supplier, CartItem)
 │   ├── App.tsx                # Client Routing (React Router DOM)
 │   └── main.tsx               # Entrypoint React Vite
 ├── tests/
-│   └── integration.test.ts    # Integration Test Suite (API ↔ Prisma ORM ↔ MySQL / Postgres)
-├── .env                       # Variabel lingkungan lokal (XAMPP MySQL / Neon Cloud)
-├── package.json               # Dependensi & NPM Scripts (dev, server, test, db:push:local, db:sync:from-cloud)
+│   └── integration.test.ts    # Integration Test Suite (API ↔ Prisma ORM ↔ PostgreSQL)
+├── .env                       # Variabel lingkungan lokal (Local Postgres / Neon Cloud)
+├── package.json               # Dependensi & NPM Scripts (dev, server, test, db:push, db:sync:to-cloud, db:sync:from-cloud)
 ├── tailwind.config.js         # Konfigurasi Tailwind CSS theme
 ├── vercel.json                # Konfigurasi Vercel deployment & includeFiles Prisma
 └── vite.config.ts             # Vite server proxy & rollup manual chunks
@@ -70,21 +73,31 @@ pos-web-zalde/
 
 ---
 
-## 📸 Fitur Unggulan Terbaru: Auto-Kompresi & Upload Gambar WebP
+## 🌟 Fitur Utama & Pembaruan Terkini (Recent Updates)
 
-Halaman **Katalog Produk** ([src/pages/ProductsPage.tsx](file:///c:/xampp/htdocs/pos-web-zalde/src/pages/ProductsPage.tsx)) kini dilengkapi fitur pengunggahan foto produk pintar:
+### 1. **Order Pasokan Supplier (`/supplier-orders`)**
+- **Tabel Restock Interaktif**: Menampilkan foto/nama produk, supplier tujuan, stok cadangan gudang, harga modal, harga jual etalase, pengatur kuantitas (Qty Stepper `+` / `-`), dan kalkulasi otomatis total bayar ke supplier.
+- **Interactive Edit Harga Modal**: Pengguna dapat memperbarui **Harga Modal (Beli)** produk secara langsung dari tabel aksi, tersimpan permanen di database PostgreSQL dengan kalkulator margin keuntungan real-time.
+- **1-Click WhatsApp Purchase Order (PO)**: Generasi otomatis pesan PO terstruktur dengan detail produk, SKU, kuantitas, harga modal, harga jual, dan total tagihan yang langsung membuka WhatsApp Web/Desktop.
+- **Filter Status Gudang**: Filter instant `Semua Produk`, `⚠️ Gudang Menipis (≤ 5 unit)`, dan `🚫 Gudang Kosong`.
 
-1. **Upload File dari Laptop / HP**: Cukup klik atau *drag & drop* file foto produk (JPG, PNG, WebP) langsung dari Galeri/Folder.
-2. **Auto-Kompresi WebP Instant**: File gambar di-resize secara proporsional dan dikonversi ke format `.webp` berkualitas tinggi di browser.
-   - Ukuran foto besar (misal **2.5 MB**) otomatis menyusut menjadi **hanya 15 KB – 25 KB** (Menghemat penggunaan database hingga **95%+**).
-3. **Live Preview & Badge Metrics**: Menampilkan tampilan preview instan beserta status ukuran terkompresi sebelum disimpan.
-4. **Dual Mode Input**: Pengguna bebas memilih antara **Upload File (Auto WebP)** atau **URL Teks Manual** (Link internet / path lokal `/products/`).
+### 2. **Direktori Kontak Supplier Database Synced (`/suppliers`)**
+- **Full Database Sync**: Data distributor/supplier kini tersimpan di database PostgreSQL Serverless Cloud (bukan `localStorage`), sehingga data selalu **100% identik** baik di lokal maupun di Vercel Deploy.
+- **Dynamic Category Supply**: Kategori pasokan supplier terhubung secara dinamis dengan master data Kategori di database.
+
+### 3. **Stok Gudang & Badges Design UX (`/inventory`)**
+- **Restock Etalase Kasir**: Fitur pemindahan stok dari cadangan gudang ke etalase kasir secara langsung.
+- **Ultra-Clean Pill Badges**: Visualisasi status stok etalase dan gudang dengan badge horizontal 1-baris yang elegan dan beranimasi (Emerald untuk aman, Amber pulse untuk refill, Indigo untuk gudang, Rose untuk kosong).
+- **Pembersihan Kolom Harga Modal**: Menghilangkan kolom harga modal berlebih pada tabel stok gudang untuk memfokuskan antarmuka pada ketersediaan stok fisik dan harga jual etalase.
+
+### 4. **Auto-Kompresi & Upload Gambar WebP (`src/lib/imageCompressor.ts`)**
+- Upload file foto produk dari perangkat lokal (JPG, PNG, WebP) dengan kompresi WebP otomatis di browser (resize & kompresi hingga **15 KB – 25 KB**), menghemat storage database hingga **95%+**.
 
 ---
 
 ## 🧪 Hasil Integration Testing (Pengujian Integrasi)
 
-Pengujian integrasi dilakukan untuk menguji alur komunikasi secara langsung antara **API Serverless Handler, Prisma ORM, dan Database Engine**.
+Pengujian integrasi dilakukan untuk menguji alur komunikasi secara langsung antara **API Serverless Handler, Prisma ORM, dan Database Engine PostgreSQL**.
 
 ### **Perintah Menjalankan Test**
 ```bash
@@ -98,17 +111,17 @@ bun test
 bun test v1.3.14 (0d9b296a)
 
 tests\integration.test.ts:
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [7.51ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [41.26ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [15.65ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [26.61ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [28.85ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 6. Database & Validation Error Handling [2.10ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [4.13ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [163.47ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [17.20ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [42.17ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [174.50ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 6. Database & Validation Error Handling [3.63ms]
 
  6 pass
  0 fail
- 50 expect() calls
-Ran 6 tests across 1 file. [314.00ms]
+ 54 expect() calls
+Ran 6 tests across 1 file. [364.00ms]
 ```
 
 ---
@@ -117,7 +130,7 @@ Ran 6 tests across 1 file. [314.00ms]
 
 ### **Prasyarat**
 - Node.js (v18+) atau Bun (v1.0+)
-- XAMPP MySQL (Lokal) atau PostgreSQL (Neon Serverless Postgres)
+- PostgreSQL Server (Lokal) atau Neon Serverless Cloud PostgreSQL
 
 ### **Langkah Instalasi**
 
@@ -135,41 +148,31 @@ Ran 6 tests across 1 file. [314.00ms]
 3. **Konfigurasi Environment Variable (`.env`)**:
    Buat file `.env` di root proyek:
    ```env
-   # Untuk Development Lokal (XAMPP MySQL):
-   DATABASE_URL="mysql://root:@localhost:3306/pos_zalde_dev"
+   # Untuk Development Lokal (PostgreSQL Server):
+   DATABASE_URL="postgresql://postgres:1234@localhost:5432/pos_zalde_dev?schema=public"
    PORT=3000
 
-   # Untuk Production (PostgreSQL Neon Cloud):
-   # DATABASE_URL="postgresql://username:password@ep-xxxx.neon.tech/neondb?sslmode=require"
+   # Untuk Cloud / Production (Neon Serverless PostgreSQL):
+   NEON_DATABASE_URL="postgresql://username:password@ep-xxxx.neon.tech/neondb?sslmode=require"
    ```
 
 4. **Sinkronkan skema database & data**:
    ```bash
-   # Sinkronkan skema ke XAMPP MySQL lokal:
-   npm run db:push:local
+   # Push skema Prisma ke PostgreSQL lokal:
+   npx prisma db push
 
-   # Pilihan A: Tarik & Migrate seluruh data live dari Neon Cloud ke MySQL lokal:
+   # Sinkronkan data lokal ➔ Neon Cloud PostgreSQL:
+   npm run db:sync:to-cloud
+
+   # Atau sinkronkan data live Neon Cloud ➔ PostgreSQL lokal:
    npm run db:sync:from-cloud
-
-   # Pilihan B: Atau generate data dummy sampel baru:
-   # npm run db:seed
    ```
 
 5. **Jalankan server pengembangan (Development Server)**:
-   * **Terminal 1** (API Server): `bun run server`
-   * **Terminal 2** (Vite Frontend): `bun run dev`
+   * **Terminal 1** (API Server): `npx tsx api/index.ts`
+   * **Terminal 2** (Vite Frontend): `npm run dev`
 
    Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
-
----
-
-## 🚀 Fitur Utama POS Web Zalde
-
-- **Terminal Kasir POS**: Pencarian produk instan, filter kategori, hitung PPN 11%, diskon, kalkulasi kembalian otomatis, & modal cetak struk.
-- **Transaksi Atomik (ACID)**: Pengurangan stok produk otomatis di database saat checkout berhasil via `prisma.$transaction`.
-- **Dashboard Analytics**: Visualisasi grafik pendapatan 7 hari, KPI omset, 5 produk terlaris, & alert stok menipis ($\le 5$ unit).
-- **Manajemen Inventaris**: CRUD Produk (SKU, Harga Beli, Harga Jual, Stok, Kategori, Auto WebP File Upload) & Kategori Produk.
-- **Sinkronisasi Cloud-to-Local**: 1-click penarik data live Neon PostgreSQL ke MySQL XAMPP (`npm run db:sync:from-cloud`).
 
 ---
 
