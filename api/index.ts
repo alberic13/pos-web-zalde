@@ -1,6 +1,16 @@
-import { prisma } from '../src/lib/db';
+import { PrismaClient } from '@prisma/client';
+
+let globalPrisma: PrismaClient | undefined;
+
+function getPrismaClient(): PrismaClient {
+  if (!globalPrisma) {
+    globalPrisma = new PrismaClient();
+  }
+  return globalPrisma;
+}
 
 export default async function handler(req: any, res: any) {
+  const prisma = getPrismaClient();
   // CORS Headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
