@@ -1,6 +1,6 @@
 # 🛒 POS Web Zalde
 
-A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Serverless API**, **Prisma ORM**, **Local XAMPP MySQL**, and **PostgreSQL (Neon Cloud)**.
+A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Serverless API**, **Prisma ORM**, and **PostgreSQL (Local & Neon Cloud)**.
 
 ---
 
@@ -17,11 +17,10 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics 
 
 ### **Backend & Database Architecture**
 - **Node.js Native Serverless API**: Lightweight, zero-dependency REST API handler located at `api/index.ts` fully compatible with Vercel Serverless Functions & local Node.js.
-- **Prisma ORM**: Type-safe ORM for schema management (`prisma/schema.prisma` & `prisma/schema.local.prisma`).
-- **Dual-Database Support**:
-  - **Local Development**: Local XAMPP MySQL Database (`pos_zalde_dev` on `localhost:3306`) for zero-cost, ultra-fast local testing.
+- **Prisma ORM**: Type-safe ORM for schema management (`prisma/schema.prisma`).
+- **PostgreSQL Database Engine**:
+  - **Local Development**: Local PostgreSQL Server (`pos_zalde_dev` on `localhost:5432`) for fast, robust local development.
   - **Production Deployment**: PostgreSQL (Neon Cloud Serverless) for Vercel production hosting.
-- **Automated Cloud-to-Local Sync**: Dedicated data migration utility (`prisma/syncFromNeonToMySQL.ts`) pulling live cloud data into local MySQL.
 
 ### **Testing & Deployment**
 - **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 6 test suites in ~300ms against local MySQL.
