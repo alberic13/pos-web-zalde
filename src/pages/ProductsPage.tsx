@@ -4,6 +4,7 @@ import { Product, Category } from '../types';
 import { TableSkeleton } from '../components/common/Skeleton';
 import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
+import { compressImageToWebP } from '../lib/imageCompressor';
 import {
   Plus,
   Search,
@@ -12,6 +13,11 @@ import {
   Package,
   AlertCircle,
   Image as ImageIcon,
+  Upload,
+  X,
+  Loader2,
+  Link as LinkIcon,
+  CheckCircle2,
 } from 'lucide-react';
 
 const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
@@ -20,6 +26,11 @@ const ProductImage: React.FC<{ src?: string | null; alt: string; className?: str
   className = 'w-full h-full object-cover',
 }) => {
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setError(false);
+  }, [src]);
+
   if (!src || error) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-500">
@@ -42,6 +53,11 @@ export const ProductsPage: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+
+  // Image Upload States
+  const [imageInputMode, setImageInputMode] = useState<'upload' | 'url'>('upload');
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -87,6 +103,8 @@ export const ProductsPage: React.FC = () => {
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
+    setCompressionInfo(null);
+    setImageInputMode('upload');
     setFormData({
       sku: '',
       name: '',
@@ -101,6 +119,9 @@ export const ProductsPage: React.FC = () => {
 
   const handleOpenEdit = (product: Product) => {
     setEditingProduct(product);
+    setCompressionInfo(null);
+    // If imageUrl is data URL or standard URL/path, default mode
+    setImageInputMode(product.imageUrl?.startsWith('data:') ? 'upload' : 'upload');
     setFormData({
       sku: product.sku,
       name: product.name,
@@ -111,6 +132,33 @@ export const ProductsPage: React.FC = () => {
       imageUrl: product.imageUrl || '',
     });
     setIsFormModalOpen(true);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      addToast('error', 'Format File Salah', 'Mohon pilih file gambar (JPG, PNG, WEBP, dsb).');
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const result = await compressImageToWebP(file, 500, 0.75);
+      setFormData((prev) => ({ ...prev, imageUrl: result.dataUrl }));
+      setCompressionInfo(`Terkompresi dari ${result.originalSizeKb} KB ➔ ${result.compressedSizeKb} KB (WebP)`);
+      addToast('success', 'Gambar Berhasil Diolah', `File terkompresi otomatis ke WebP (${result.compressedSizeKb} KB).`);
+    } catch (err: any) {
+      addToast('error', 'Gagal Memproses Gambar', err.message || 'Terjadi kesalahan saat membaca file');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, imageUrl: '' }));
+    setCompressionInfo(null);
   };
 
   const handleSubmitForm = async (e: React.FormEvent) => {
@@ -372,25 +420,110 @@ export const ProductsPage: React.FC = () => {
                 className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
               />
             </div>
+
+            {/* GAMBAR PRODUK WITH FILE UPLOAD & AUTO-WEBP COMPRESSION */}
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Gambar Produk</label>
-              <input
-                type="text"
-                placeholder="cth: /products/kabel.jpg atau URL"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
-              />
-              <span className="text-[10px] text-slate-400 block mt-1">
-                Gunakan `/products/nama-file.jpg` jika simpan di folder `public/products/`
-              </span>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-slate-300">Gambar Produk</label>
+                <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[10px]">
+                  <button
+                    type="button"
+                    onClick={() => setImageInputMode('upload')}
+                    className={`px-2 py-0.5 rounded-md flex items-center gap-1 font-medium transition-colors ${
+                      imageInputMode === 'upload'
+                        ? 'bg-emerald-500 text-slate-950 font-bold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <Upload className="w-3 h-3" /> Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageInputMode('url')}
+                    className={`px-2 py-0.5 rounded-md flex items-center gap-1 font-medium transition-colors ${
+                      imageInputMode === 'url'
+                        ? 'bg-emerald-500 text-slate-950 font-bold'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <LinkIcon className="w-3 h-3" /> URL Teks
+                  </button>
+                </div>
+              </div>
+
+              {imageInputMode === 'upload' ? (
+                <div className="space-y-2">
+                  {formData.imageUrl ? (
+                    <div className="relative group rounded-xl bg-slate-900 border border-slate-700 p-2 flex items-center gap-3 overflow-hidden">
+                      <div className="w-12 h-12 rounded-lg bg-slate-800 overflow-hidden shrink-0 border border-slate-700">
+                        <img src={formData.imageUrl} alt="Preview" className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 text-[11px] font-semibold text-emerald-400">
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Gambar Ready (WebP)
+                        </div>
+                        <p className="text-[10px] text-slate-400 truncate">
+                          {compressionInfo || 'Gambar terkompresi otomatis'}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="p-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white rounded-lg transition-colors shrink-0"
+                        title="Hapus Gambar"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="border-2 border-dashed border-slate-700 hover:border-emerald-500/60 bg-slate-900/60 hover:bg-slate-900 rounded-xl p-3 flex flex-col items-center justify-center cursor-pointer transition-all group text-center">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        disabled={uploadingImage}
+                        className="hidden"
+                      />
+                      {uploadingImage ? (
+                        <div className="flex items-center gap-2 text-emerald-400 py-1">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="text-xs font-semibold">Mengompresi ke WebP...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="w-5 h-5 text-slate-400 group-hover:text-emerald-400 transition-colors mb-1" />
+                          <span className="text-xs font-semibold text-slate-300 group-hover:text-emerald-400 transition-colors">
+                            Pilih Gambar dari Laptop / HP
+                          </span>
+                          <span className="text-[10px] text-slate-400">Auto-kompresi WebP (Max ~25 KB)</span>
+                        </>
+                      )}
+                    </label>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="text"
+                    placeholder="cth: /products/kabel.jpg atau URL https://..."
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+                  />
+                  <span className="text-[10px] text-slate-400 block mt-1">
+                    Format: `/products/namafile.jpg` atau `https://...`
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 mt-2"
+            disabled={uploadingImage}
+            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 mt-2 flex items-center justify-center gap-2"
           >
+            {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             Simpan Produk
           </button>
         </form>
