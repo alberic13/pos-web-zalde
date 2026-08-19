@@ -14,7 +14,8 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
-    "db:sync:from-cloud": "tsx prisma/syncFromCloud.ts"
+    "db:sync:from-cloud": "tsx prisma/syncFromCloud.ts",
+    "db:sync:to-cloud": "tsx prisma/syncToCloud.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
