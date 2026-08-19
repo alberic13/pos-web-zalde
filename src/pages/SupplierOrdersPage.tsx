@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { Product } from '../types';
 import { TableSkeleton } from '../components/common/Skeleton';
+import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
 import {
   Truck,
@@ -13,7 +14,10 @@ import {
   PackageX,
   Building2,
   Banknote,
-  Send,
+  Minus,
+  Plus,
+  Edit3,
+  Save,
 } from 'lucide-react';
 import { Supplier } from './SuppliersPage';
 
@@ -84,8 +88,15 @@ export const SupplierOrdersPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [filterMode, setFilterMode] = useState<'all' | 'low' | 'empty'>('all');
 
-  // Suppliers from localStorage or initial
+  // Modal State for Editing Cost Price (Harga Modal)
+  const [isEditCostModalOpen, setIsEditCostModalOpen] = useState(false);
+  const [costProduct, setCostProduct] = useState<Product | null>(null);
+  const [newCostPrice, setNewCostPrice] = useState<number | ''>('');
+  const [submittingCost, setSubmittingCost] = useState(false);
+
+  // Suppliers from localStorage
   const [suppliers] = useState<Supplier[]>(() => {
     const saved = localStorage.getItem('pos_suppliers_data');
     if (saved) {
@@ -98,9 +109,7 @@ export const SupplierOrdersPage: React.FC = () => {
     return INITIAL_SUPPLIERS;
   });
 
-  // Selected supplier ID per product
   const [selectedSupplierMap, setSelectedSupplierMap] = useState<Record<string, string>>({});
-  // Order Qty per product (default: 10)
   const [orderQtyMap, setOrderQtyMap] = useState<Record<string, number>>({});
 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -155,13 +164,62 @@ export const SupplierOrdersPage: React.FC = () => {
     return prod.costPrice && prod.costPrice > 0 ? prod.costPrice : Math.round(prod.price * 0.8);
   };
 
-  const handleQtyChange = (productId: string, val: string) => {
+  const updateQty = (productId: string, delta: number) => {
+    setOrderQtyMap((prev) => {
+      const current = prev[productId] || 10;
+      const nextVal = Math.max(1, current + delta);
+      return { ...prev, [productId]: nextVal };
+    });
+  };
+
+  const setQtyDirect = (productId: string, val: string) => {
     const qty = Math.max(1, parseInt(val) || 1);
     setOrderQtyMap((prev) => ({ ...prev, [productId]: qty }));
   };
 
   const handleSupplierChange = (productId: string, supplierId: string) => {
     setSelectedSupplierMap((prev) => ({ ...prev, [productId]: supplierId }));
+  };
+
+  // Open Edit Cost Price Modal
+  const openEditCostModal = (prod: Product) => {
+    setCostProduct(prod);
+    setNewCostPrice(getCostPrice(prod));
+    setIsEditCostModalOpen(true);
+  };
+
+  // Save Cost Price to Database
+  const handleSaveCostPrice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!costProduct || newCostPrice === '') return;
+
+    const val = Number(newCostPrice);
+    if (isNaN(val) || val < 0) {
+      addToast('error', 'Harga Modal Tidak Valid', 'Masukkan angka harga modal yang valid.');
+      return;
+    }
+
+    try {
+      setSubmittingCost(true);
+      await api.updateProduct(costProduct.id, {
+        sku: costProduct.sku,
+        name: costProduct.name,
+        price: costProduct.price,
+        costPrice: val,
+        stock: costProduct.stock,
+        warehouseStock: costProduct.warehouseStock,
+        categoryId: costProduct.categoryId,
+        imageUrl: costProduct.imageUrl || undefined,
+      });
+
+      addToast('success', 'Harga Modal Diperbarui!', `Harga modal untuk "${costProduct.name}" berhasil diset ke ${formatCurrency(val)}.`);
+      setIsEditCostModalOpen(false);
+      loadProducts();
+    } catch (err: any) {
+      addToast('error', 'Gagal Memperbarui Harga Modal', err.message);
+    } finally {
+      setSubmittingCost(false);
+    }
   };
 
   const directWhatsAppOrder = (prod: Product) => {
@@ -190,6 +248,7 @@ export const SupplierOrdersPage: React.FC = () => {
       `🔹 *SKU:* ${prod.sku}\n` +
       `🔹 *Jumlah Pesanan:* ${qty} Unit\n` +
       `🔹 *Harga Modal:* ${formatCurrency(costPrice)} / unit\n` +
+      `🔹 *Harga Jual Etalase:* ${formatCurrency(prod.price)} / unit\n` +
       `💰 *Total Pembayaran:* ${formatCurrency(totalAmount)}\n\n` +
       `-----------------------------------------\n` +
       `Mohon konfirmasi ketersediaan stok & nomor rekening pembayaran.\n` +
@@ -203,6 +262,12 @@ export const SupplierOrdersPage: React.FC = () => {
       `Pesan order ${qty} unit "${prod.name}" disiapkan untuk ${supplier.companyName}.`
     );
   };
+
+  const filteredProducts = products.filter((p) => {
+    if (filterMode === 'low') return p.warehouseStock <= 5;
+    if (filterMode === 'empty') return p.warehouseStock <= 0;
+    return true;
+  });
 
   const totalWarehouseStock = products.reduce((sum, p) => sum + p.warehouseStock, 0);
   const lowWarehouseCount = products.filter((p) => p.warehouseStock <= 5).length;
@@ -220,7 +285,7 @@ export const SupplierOrdersPage: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="glass-card p-4.5 rounded-2xl border-slate-800 flex items-center gap-4 hover:border-emerald-500/30 transition-all">
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
-            <Truck className="w-6 h-6" />
+            <Building2 className="w-6 h-6" />
           </div>
           <div>
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -260,29 +325,55 @@ export const SupplierOrdersPage: React.FC = () => {
           </div>
           <div>
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
-              Estimasi Nilai Rencana Restock
+              Estimasi Rencana Restock
             </span>
             <h3 className="text-xl font-extrabold text-cyan-400 mt-0.5">{formatCurrency(totalOrderValue)}</h3>
           </div>
         </div>
       </div>
 
-      {/* Main Section Title & Search */}
+      {/* Filter Bar & Search Header */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-extrabold text-white flex items-center gap-2">
-            <Truck className="w-5 h-5 text-emerald-400" /> Order Pasokan Stok Ke Supplier
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Pilih supplier tujuan, tentukan kapasitas stok yang ingin ditambah, dan hubungi supplier via WhatsApp 1-Klik.
-          </p>
+        {/* Filter Badges */}
+        <div className="flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto">
+          <button
+            onClick={() => setFilterMode('all')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              filterMode === 'all'
+                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            Semua Produk ({products.length})
+          </button>
+          <button
+            onClick={() => setFilterMode('low')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              filterMode === 'low'
+                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            ⚠️ Gudang Menipis ({lowWarehouseCount})
+          </button>
+          <button
+            onClick={() => setFilterMode('empty')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              filterMode === 'empty'
+                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            🚫 Gudang Kosong
+          </button>
         </div>
 
+        {/* Search */}
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
-            placeholder="Cari barang stok / SKU..."
+            placeholder="Cari barang / SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
@@ -296,22 +387,23 @@ export const SupplierOrdersPage: React.FC = () => {
           <div className="p-6">
             <TableSkeleton rows={6} />
           </div>
-        ) : products.length > 0 ? (
+        ) : filteredProducts.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900/90 text-slate-400 uppercase tracking-wider border-b border-slate-800 text-[11px] font-bold">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-slate-900/90 text-slate-400 uppercase tracking-wider border-b border-slate-800 text-[11px] font-extrabold">
                 <tr>
-                  <th className="p-4">Foto & Nama Produk</th>
-                  <th className="p-4">Supplier Tujuan</th>
-                  <th className="p-4">Stok Gudang</th>
-                  <th className="p-4">Harga Modal</th>
-                  <th className="p-4 w-40 text-center">Tambah Stok (Qty)</th>
-                  <th className="p-4">Total Bayar Supplier</th>
-                  <th className="p-4 text-right">Aksi Order WA</th>
+                  <th className="px-4 py-3.5">Foto & Nama Produk</th>
+                  <th className="px-4 py-3.5">Supplier Tujuan</th>
+                  <th className="px-4 py-3.5">Stok Gudang</th>
+                  <th className="px-4 py-3.5">Harga Modal</th>
+                  <th className="px-4 py-3.5">Harga Jual</th>
+                  <th className="px-4 py-3.5 text-center min-w-[140px]">Tambah Qty</th>
+                  <th className="px-4 py-3.5">Total Bayar</th>
+                  <th className="px-4 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {products.map((prod) => {
+                {filteredProducts.map((prod) => {
                   const isWarehouseOut = prod.warehouseStock <= 0;
                   const isWarehouseLow = prod.warehouseStock <= 5;
                   const costPrice = getCostPrice(prod);
@@ -322,24 +414,24 @@ export const SupplierOrdersPage: React.FC = () => {
                   return (
                     <tr key={prod.id} className="hover:bg-slate-800/40 transition-colors">
                       {/* FOTO & NAMA PRODUK */}
-                      <td className="p-4">
+                      <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-slate-800 overflow-hidden border border-slate-700/80 shrink-0">
                             <ProductImage src={prod.imageUrl} alt={prod.name} />
                           </div>
                           <div>
-                            <span className="font-bold text-slate-100 block text-xs">{prod.name}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">{prod.sku} • {prod.category?.name || 'Uncategorized'}</span>
+                            <span className="font-bold text-slate-100 block text-xs line-clamp-1">{prod.name}</span>
+                            <span className="text-[10px] text-slate-400 font-mono">{prod.sku} • {prod.category?.name || 'Kategori'}</span>
                           </div>
                         </div>
                       </td>
 
                       {/* SUPPLIER TUJUAN */}
-                      <td className="p-4 min-w-[200px]">
+                      <td className="px-4 py-3.5 min-w-[180px]">
                         <select
                           value={activeSupplierId}
                           onChange={(e) => handleSupplierChange(prod.id, e.target.value)}
-                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-medium"
+                          className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-medium cursor-pointer"
                         >
                           {suppliers.map((s) => (
                             <option key={s.id} value={s.id}>
@@ -350,9 +442,9 @@ export const SupplierOrdersPage: React.FC = () => {
                       </td>
 
                       {/* STOK GUDANG */}
-                      <td className="p-4 whitespace-nowrap">
+                      <td className="px-4 py-3.5 whitespace-nowrap">
                         <div
-                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-all shadow-sm ${
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
                             isWarehouseOut
                               ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
                               : isWarehouseLow
@@ -366,47 +458,76 @@ export const SupplierOrdersPage: React.FC = () => {
                             <Boxes className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
                           )}
                           <span>{prod.warehouseStock} Unit</span>
-                          {isWarehouseOut && (
-                            <span className="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-[10px] font-black uppercase tracking-wider text-rose-300">
-                              Kosong
-                            </span>
-                          )}
                         </div>
                       </td>
 
                       {/* HARGA MODAL */}
-                      <td className="p-4 font-mono text-slate-300 font-bold text-xs whitespace-nowrap">
+                      <td className="px-4 py-3.5 font-mono text-slate-300 font-bold text-xs whitespace-nowrap">
                         {formatCurrency(costPrice)}
                       </td>
 
-                      {/* INPUT QTY */}
-                      <td className="p-4 text-center">
-                        <div className="inline-flex items-center gap-1.5 bg-slate-900 border border-slate-700/80 rounded-xl px-2 py-1 focus-within:border-emerald-500">
+                      {/* HARGA JUAL */}
+                      <td className="px-4 py-3.5 font-mono text-emerald-400 font-extrabold text-xs whitespace-nowrap">
+                        {formatCurrency(prod.price)}
+                      </td>
+
+                      {/* INPUT QTY WITH STEPPER (+ / -) */}
+                      <td className="px-4 py-3.5 text-center">
+                        <div className="inline-flex items-center bg-slate-900 border border-slate-700/80 rounded-xl p-1 gap-1">
+                          <button
+                            type="button"
+                            onClick={() => updateQty(prod.id, -5)}
+                            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+                            title="-5 Unit"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+
                           <input
                             type="number"
                             min="1"
                             value={currentQty}
-                            onChange={(e) => handleQtyChange(prod.id, e.target.value)}
-                            className="w-16 bg-transparent text-center text-xs font-mono font-extrabold text-emerald-400 focus:outline-none"
+                            onChange={(e) => setQtyDirect(prod.id, e.target.value)}
+                            className="w-12 bg-transparent text-center text-xs font-mono font-extrabold text-emerald-400 focus:outline-none"
                           />
-                          <span className="text-[10px] font-semibold text-slate-400 pr-1">Unit</span>
+
+                          <button
+                            type="button"
+                            onClick={() => updateQty(prod.id, 5)}
+                            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+                            title="+5 Unit"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
                         </div>
                       </td>
 
                       {/* TOTAL BAYAR */}
-                      <td className="p-4 font-mono text-emerald-400 font-extrabold text-sm whitespace-nowrap">
+                      <td className="px-4 py-3.5 font-mono text-emerald-400 font-extrabold text-sm whitespace-nowrap">
                         {formatCurrency(totalToPay)}
                       </td>
 
-                      {/* AKSI ORDER WA */}
-                      <td className="p-4 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => directWhatsAppOrder(prod)}
-                          className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl inline-flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
-                          title="Hubungi Supplier & kirim pesan PO via WhatsApp"
-                        >
-                          <MessageCircle className="w-4 h-4 fill-slate-950" /> Hubungi Supplier
-                        </button>
+                      {/* AKSI BUTTONS GROUP */}
+                      <td className="px-4 py-3.5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          {/* EDIT HARGA MODAL */}
+                          <button
+                            onClick={() => openEditCostModal(prod)}
+                            className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-800 rounded-xl border border-slate-700/60 hover:border-amber-500/40 transition-all"
+                            title="Edit Harga Modal (Beli) Produk Ini"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+
+                          {/* ORDER WA */}
+                          <button
+                            onClick={() => directWhatsAppOrder(prod)}
+                            className="p-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl shadow-md shadow-emerald-500/20 transition-all"
+                            title="Hubungi Supplier & kirim PO via WhatsApp"
+                          >
+                            <MessageCircle className="w-4 h-4 fill-slate-950" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -417,10 +538,59 @@ export const SupplierOrdersPage: React.FC = () => {
         ) : (
           <div className="text-center py-16 text-slate-400 space-y-2">
             <Boxes className="w-12 h-12 mx-auto opacity-30" />
-            <p className="text-sm font-semibold">Tidak ada barang stok gudang ditemukan</p>
+            <p className="text-sm font-semibold">Tidak ada produk ditemukan</p>
           </div>
         )}
       </div>
+
+      {/* --- MODAL EDIT HARGA MODAL (BELI) --- */}
+      <Modal
+        isOpen={isEditCostModalOpen}
+        onClose={() => setIsEditCostModalOpen(false)}
+        title="Edit Harga Modal (Beli) Produk"
+        subtitle={`Produk: ${costProduct?.name}`}
+      >
+        {costProduct && (
+          <form onSubmit={handleSaveCostPrice} className="space-y-4 text-xs">
+            <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Harga Jual Etalase</span>
+              <span className="text-sm font-extrabold text-emerald-400 font-mono">{formatCurrency(costProduct.price)}</span>
+            </div>
+
+            <div>
+              <label className="text-slate-300 font-semibold block mb-1">
+                Harga Modal Baru (Rp) *
+              </label>
+              <input
+                type="number"
+                required
+                min="0"
+                placeholder="Masukkan harga modal beli..."
+                value={newCostPrice}
+                onChange={(e) => setNewCostPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-amber-300 font-extrabold focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            {newCostPrice !== '' && (
+              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                <span className="text-slate-400">Estimasi Margin Keuntungan / Unit:</span>
+                <span className="font-mono font-extrabold text-emerald-400 text-sm">
+                  {formatCurrency(costProduct.price - Number(newCostPrice))}
+                </span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={submittingCost}
+              className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <Save className="w-4 h-4" /> {submittingCost ? 'Menyimpan...' : 'Simpan Harga Modal Baru'}
+            </button>
+          </form>
+        )}
+      </Modal>
     </div>
   );
 };

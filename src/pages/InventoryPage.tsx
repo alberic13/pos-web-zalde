@@ -296,7 +296,7 @@ export const InventoryPage: React.FC = () => {
   const totalWarehouseStock = products.reduce((sum, p) => sum + p.warehouseStock, 0);
   const lowDisplayCount = products.filter((p) => p.stock <= 5).length;
   const totalAssetValue = products.reduce(
-    (sum, p) => sum + (p.costPrice || p.price) * (p.stock + p.warehouseStock),
+    (sum, p) => sum + p.price * (p.stock + p.warehouseStock),
     0
   );
 
@@ -435,7 +435,6 @@ export const InventoryPage: React.FC = () => {
                   <th className="p-4">SKU</th>
                   <th className="p-4">Stok Etalase</th>
                   <th className="p-4">Stok Gudang</th>
-                  <th className="p-4">Harga Modal</th>
                   <th className="p-4">Harga Jual</th>
                   <th className="p-4 text-right">Aksi Management</th>
                 </tr>
@@ -513,10 +512,7 @@ export const InventoryPage: React.FC = () => {
                         </div>
                       </td>
 
-                      {/* PRICES */}
-                      <td className="p-4 text-slate-400 font-mono text-xs">
-                        {prod.costPrice ? formatCurrency(prod.costPrice) : '-'}
-                      </td>
+                      {/* PRICE */}
                       <td className="p-4 font-extrabold text-emerald-400 font-mono text-xs">
                         {formatCurrency(prod.price)}
                       </td>
@@ -778,31 +774,17 @@ export const InventoryPage: React.FC = () => {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Harga Modal (Beli)</label>
-              <input
-                type="number"
-                min="0"
-                placeholder="Rp 0"
-                value={formData.costPrice}
-                onChange={(e) => setFormData({ ...formData, costPrice: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Harga Jual *</label>
-              <input
-                type="number"
-                required
-                min="0"
-                placeholder="Rp 0"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-1">Harga Jual Produk *</label>
+            <input
+              type="number"
+              required
+              min="0"
+              placeholder="Rp 0"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+            />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -921,25 +903,17 @@ export const InventoryPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-400 block uppercase">Harga Modal (Beli)</span>
-                <span className="text-sm font-bold text-slate-200 font-mono">
-                  {viewingProduct.costPrice ? formatCurrency(viewingProduct.costPrice) : '-'}
-                </span>
-              </div>
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-400 block uppercase">Harga Jual</span>
-                <span className="text-sm font-bold text-emerald-400 font-mono">
-                  {formatCurrency(viewingProduct.price)}
-                </span>
-              </div>
+            <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
+              <span className="text-[10px] text-slate-400 block uppercase">Harga Jual Produk (Etalase)</span>
+              <span className="text-base font-extrabold text-emerald-400 font-mono">
+                {formatCurrency(viewingProduct.price)}
+              </span>
             </div>
 
             <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
-              <span className="text-[10px] text-slate-400 block uppercase">Total Nilai Aset Produk Ini (Toko + Gudang)</span>
-              <span className="text-sm font-bold text-cyan-400 font-mono">
-                {formatCurrency((viewingProduct.costPrice || viewingProduct.price) * (viewingProduct.stock + viewingProduct.warehouseStock))}
+              <span className="text-[10px] text-slate-400 block uppercase">Total Nilai Produk Ini (Toko + Gudang)</span>
+              <span className="text-base font-extrabold text-cyan-400 font-mono">
+                {formatCurrency(viewingProduct.price * (viewingProduct.stock + viewingProduct.warehouseStock))}
               </span>
             </div>
 
