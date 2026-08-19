@@ -98,16 +98,17 @@ bun test
 bun test v1.3.14 (0d9b296a)
 
 tests\integration.test.ts:
-(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [2.36ms]
-(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [29.20ms]
-(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [14.76ms]
-(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [23.12ms]
-(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [19.98ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [7.51ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [41.26ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [15.65ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [26.61ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [28.85ms]
+(pass) Integration Tests: API ↔ Prisma ORM ↔ Database > 6. Database & Validation Error Handling [2.10ms]
 
- 5 pass
+ 6 pass
  0 fail
- 42 expect() calls
-Ran 5 tests across 1 file. [267.00ms]
+ 50 expect() calls
+Ran 6 tests across 1 file. [314.00ms]
 ```
 
 ---
