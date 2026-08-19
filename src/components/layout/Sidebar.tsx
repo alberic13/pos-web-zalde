@@ -6,6 +6,8 @@ import {
   Package,
   FolderTree,
   Warehouse,
+  Truck,
+  Building2,
   History,
   Store,
   X,
@@ -23,6 +25,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
     { label: 'Produk Etalase', path: '/products', icon: Package },
     { label: 'Kategori', path: '/categories', icon: FolderTree },
     { label: 'Stok Gudang', path: '/inventory', icon: Warehouse },
+    { label: 'Order Pasokan Supplier', path: '/supplier-orders', icon: Truck },
+    { label: 'Kontak Supplier', path: '/suppliers', icon: Building2 },
     { label: 'Riwayat Transaksi', path: '/orders', icon: History },
   ];
 

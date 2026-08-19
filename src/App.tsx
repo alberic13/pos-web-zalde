@@ -6,6 +6,8 @@ import { PosPage } from './pages/PosPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
 import { InventoryPage } from './pages/InventoryPage';
+import { SupplierOrdersPage } from './pages/SupplierOrdersPage';
+import { SuppliersPage } from './pages/SuppliersPage';
 import { OrdersHistoryPage } from './pages/OrdersHistoryPage';
 
 export const App: React.FC = () => {
@@ -49,6 +51,22 @@ export const App: React.FC = () => {
           element={
             <Layout title="Manajemen Stok Gudang">
               <InventoryPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/supplier-orders"
+          element={
+            <Layout title="Order Pasokan Stok Ke Supplier">
+              <SupplierOrdersPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/suppliers"
+          element={
+            <Layout title="Kontak & Distributor Supplier">
+              <SuppliersPage />
             </Layout>
           }
         />
