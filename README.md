@@ -157,8 +157,8 @@ Ran 6 tests across 1 file. [314.00ms]
    ```
 
 5. **Jalankan server pengembangan (Development Server)**:
-   * **Terminal 1** (API Server): `npm run server`
-   * **Terminal 2** (Vite Frontend): `npm run dev`
+   * **Terminal 1** (API Server): `bun run server`
+   * **Terminal 2** (Vite Frontend): `bun run dev`
 
    Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
 
