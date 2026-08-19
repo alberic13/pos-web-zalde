@@ -96,19 +96,8 @@ export const SupplierOrdersPage: React.FC = () => {
   const [newCostPrice, setNewCostPrice] = useState<number | ''>('');
   const [submittingCost, setSubmittingCost] = useState(false);
 
-  // Suppliers from localStorage
-  const [suppliers] = useState<Supplier[]>(() => {
-    const saved = localStorage.getItem('pos_suppliers_data');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return INITIAL_SUPPLIERS;
-      }
-    }
-    return INITIAL_SUPPLIERS;
-  });
-
+  // Suppliers from Database API
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplierMap, setSelectedSupplierMap] = useState<Record<string, string>>({});
   const [orderQtyMap, setOrderQtyMap] = useState<Record<string, number>>({});
 
@@ -123,11 +112,12 @@ export const SupplierOrdersPage: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const loadProducts = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const prods = await api.getProducts(search);
+      const [prods, sups] = await Promise.all([api.getProducts(search), api.getSuppliers()]);
       setProducts(prods);
+      setSuppliers(sups);
 
       const initSupplierMap: Record<string, string> = { ...selectedSupplierMap };
       const initQtyMap: Record<string, number> = { ...orderQtyMap };
@@ -136,11 +126,11 @@ export const SupplierOrdersPage: React.FC = () => {
         if (!initQtyMap[p.id]) initQtyMap[p.id] = 10;
         if (!initSupplierMap[p.id]) {
           const catName = p.category?.name || '';
-          const match = suppliers.find((s) =>
+          const match = sups.find((s: Supplier) =>
             s.categorySupply.toLowerCase().includes(catName.toLowerCase()) ||
             catName.toLowerCase().includes(s.categorySupply.toLowerCase())
           );
-          initSupplierMap[p.id] = match ? match.id : suppliers[0]?.id || '';
+          initSupplierMap[p.id] = match ? match.id : sups[0]?.id || '';
         }
       });
 
@@ -154,7 +144,7 @@ export const SupplierOrdersPage: React.FC = () => {
   };
 
   useEffect(() => {
-    loadProducts();
+    loadData();
   }, [search]);
 
   const formatCurrency = (val: number) =>
@@ -214,7 +204,7 @@ export const SupplierOrdersPage: React.FC = () => {
 
       addToast('success', 'Harga Modal Diperbarui!', `Harga modal untuk "${costProduct.name}" berhasil diset ke ${formatCurrency(val)}.`);
       setIsEditCostModalOpen(false);
-      loadProducts();
+      loadData();
     } catch (err: any) {
       addToast('error', 'Gagal Memperbarui Harga Modal', err.message);
     } finally {

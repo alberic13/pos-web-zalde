@@ -46,10 +46,12 @@ async function syncLocalToCloud() {
     const categories = await localPrisma.category.findMany();
     const products = await localPrisma.product.findMany();
     const orders = await localPrisma.order.findMany({ include: { items: true } });
+    const suppliers = await localPrisma.supplier.findMany();
 
     console.log(`📦 Data Lokal ditemukan:`);
     console.log(`   - Kategori: ${categories.length}`);
     console.log(`   - Produk: ${products.length}`);
+    console.log(`   - Supplier: ${suppliers.length}`);
     console.log(`   - Transaksi (Order): ${orders.length}`);
 
     // 2. Clean old data in Cloud Neon Database
@@ -58,8 +60,29 @@ async function syncLocalToCloud() {
     await cloudPrisma.order.deleteMany();
     await cloudPrisma.product.deleteMany();
     await cloudPrisma.category.deleteMany();
+    await cloudPrisma.supplier.deleteMany();
 
-    // 3. Migrate Categories to Cloud
+    // 3. Migrate Suppliers to Cloud
+    console.log('🚀 Memindahkan Supplier ke Neon Cloud PostgreSQL...');
+    for (const sup of suppliers) {
+      await cloudPrisma.supplier.create({
+        data: {
+          id: sup.id,
+          companyName: sup.companyName,
+          contactPerson: sup.contactPerson,
+          phone: sup.phone,
+          whatsapp: sup.whatsapp,
+          email: sup.email,
+          address: sup.address,
+          categorySupply: sup.categorySupply,
+          notes: sup.notes,
+          createdAt: sup.createdAt,
+          updatedAt: sup.updatedAt,
+        },
+      });
+    }
+
+    // 4. Migrate Categories to Cloud
     console.log('🚀 Memindahkan Kategori ke Neon Cloud PostgreSQL...');
     for (const cat of categories) {
       await cloudPrisma.category.create({

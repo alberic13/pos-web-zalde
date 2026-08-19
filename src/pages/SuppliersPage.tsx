@@ -79,18 +79,8 @@ const INITIAL_SUPPLIERS: Supplier[] = [
 ];
 
 export const SuppliersPage: React.FC = () => {
-  const [suppliers, setSuppliers] = useState<Supplier[]>(() => {
-    const saved = localStorage.getItem('pos_suppliers_data');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        return INITIAL_SUPPLIERS;
-      }
-    }
-    return INITIAL_SUPPLIERS;
-  });
-
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -123,23 +113,23 @@ export const SuppliersPage: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Fetch categories from backend database (Kategori Sidebar)
-  const loadCategories = async () => {
+  // Fetch suppliers & categories from Database API
+  const loadData = async () => {
     try {
-      const cats = await api.getCategories();
+      setLoadingSuppliers(true);
+      const [sups, cats] = await Promise.all([api.getSuppliers(), api.getCategories()]);
+      setSuppliers(sups);
       setCategories(cats);
     } catch (err: any) {
-      addToast('error', 'Gagal memuat kategori', err.message);
+      addToast('error', 'Gagal memuat data supplier', err.message);
+    } finally {
+      setLoadingSuppliers(false);
     }
   };
 
   useEffect(() => {
-    loadCategories();
+    loadData();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem('pos_suppliers_data', JSON.stringify(suppliers));
-  }, [suppliers]);
 
   const openCreateSupplierModal = () => {
     setEditingSupplier(null);
@@ -171,7 +161,7 @@ export const SuppliersPage: React.FC = () => {
     setIsSupplierModalOpen(true);
   };
 
-  const handleSaveSupplier = (e: React.FormEvent) => {
+  const handleSaveSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supplierForm.companyName.trim() || !supplierForm.contactPerson.trim() || !supplierForm.phone.trim()) {
       addToast('error', 'Form Tidak Lengkap', 'Harap isi Nama Perusahaan, Contact Person, dan No Telepon.');
@@ -182,8 +172,7 @@ export const SuppliersPage: React.FC = () => {
     if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
     else if (!waNum.startsWith('62') && waNum.length > 0) waNum = '62' + waNum;
 
-    const payload: Supplier = {
-      id: editingSupplier ? editingSupplier.id : `sup-${Date.now()}`,
+    const payload = {
       companyName: supplierForm.companyName.trim(),
       contactPerson: supplierForm.contactPerson.trim(),
       phone: supplierForm.phone.trim(),
@@ -194,22 +183,32 @@ export const SuppliersPage: React.FC = () => {
       notes: supplierForm.notes.trim() || undefined,
     };
 
-    if (editingSupplier) {
-      setSuppliers((prev) => prev.map((s) => (s.id === editingSupplier.id ? payload : s)));
-      addToast('success', 'Supplier Diperbarui', `Data "${payload.companyName}" berhasil diupdate.`);
-    } else {
-      setSuppliers((prev) => [payload, ...prev]);
-      addToast('success', 'Supplier Ditambahkan', `Supplier baru "${payload.companyName}" berhasil disimpan.`);
+    try {
+      if (editingSupplier) {
+        await api.updateSupplier(editingSupplier.id, payload);
+        addToast('success', 'Supplier Diperbarui', `Data "${payload.companyName}" berhasil diupdate.`);
+      } else {
+        await api.createSupplier(payload);
+        addToast('success', 'Supplier Ditambahkan', `Supplier baru "${payload.companyName}" berhasil disimpan.`);
+      }
+      setIsSupplierModalOpen(false);
+      loadData();
+    } catch (err: any) {
+      addToast('error', 'Gagal Menyimpan Supplier', err.message);
     }
-    setIsSupplierModalOpen(false);
   };
 
-  const handleDeleteSupplier = () => {
+  const handleDeleteSupplier = async () => {
     if (!deletingSupplier) return;
-    setSuppliers((prev) => prev.filter((s) => s.id !== deletingSupplier.id));
-    addToast('success', 'Supplier Dihapus', `Supplier "${deletingSupplier.companyName}" telah dihapus.`);
-    setIsDeleteModalOpen(false);
-    setDeletingSupplier(null);
+    try {
+      await api.deleteSupplier(deletingSupplier.id);
+      addToast('success', 'Supplier Dihapus', `Supplier "${deletingSupplier.companyName}" telah dihapus.`);
+      setIsDeleteModalOpen(false);
+      setDeletingSupplier(null);
+      loadData();
+    } catch (err: any) {
+      addToast('error', 'Gagal Menghapus Supplier', err.message);
+    }
   };
 
   const openWhatsAppChat = (sup: Supplier) => {

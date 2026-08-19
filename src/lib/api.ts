@@ -62,4 +62,13 @@ export const api = {
     return fetchApi<any>(`/orders${query}`);
   },
   getOrderById: (id: string) => fetchApi<any>(`/orders/${id}`),
+
+  // Suppliers
+  getSuppliers: () => fetchApi<any>('/suppliers'),
+  createSupplier: (data: any) =>
+    fetchApi<any>('/suppliers', { method: 'POST', body: JSON.stringify(data) }),
+  updateSupplier: (id: string, data: any) =>
+    fetchApi<any>(`/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteSupplier: (id: string) =>
+    fetchApi<any>(`/suppliers/${id}`, { method: 'DELETE' }),
 };
