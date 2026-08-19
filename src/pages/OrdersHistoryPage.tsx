@@ -1,15 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { Order } from '../types';
 import { TableSkeleton } from '../components/common/Skeleton';
 import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
-import { Search, Eye, History, Printer, Calendar } from 'lucide-react';
+import {
+  Search,
+  Eye,
+  History,
+  Printer,
+  Calendar,
+  Sun,
+  CalendarDays,
+  CalendarRange,
+  Layers,
+  Banknote,
+  ShoppingBag,
+  TrendingUp,
+  FileSpreadsheet,
+  Download,
+} from 'lucide-react';
 
 export const OrdersHistoryPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filterParam = (searchParams.get('filter') as 'all' | 'today' | 'week' | 'month') || 'all';
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -40,6 +59,45 @@ export const OrdersHistoryPage: React.FC = () => {
     loadOrders();
   }, [search]);
 
+  const handleFilterChange = (filter: 'all' | 'today' | 'week' | 'month') => {
+    if (filter === 'all') {
+      searchParams.delete('filter');
+      setSearchParams(searchParams);
+    } else {
+      setSearchParams({ filter });
+    }
+  };
+
+  // Filter orders by date range
+  const filteredOrders = orders.filter((order) => {
+    const orderDate = new Date(order.createdAt);
+    const now = new Date();
+
+    if (filterParam === 'today') {
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      return orderDate >= startOfDay;
+    }
+
+    if (filterParam === 'week') {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+      return orderDate >= sevenDaysAgo;
+    }
+
+    if (filterParam === 'month') {
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      return orderDate >= startOfMonth;
+    }
+
+    return true; // 'all'
+  });
+
+  // Calculate Metrics for Current Filter
+  const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+  const totalCount = filteredOrders.length;
+  const avgOrderValue = totalCount > 0 ? Math.round(totalRevenue / totalCount) : 0;
+
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
@@ -53,22 +111,169 @@ export const OrdersHistoryPage: React.FC = () => {
     });
   };
 
+  const filterTabs = [
+    { key: 'all', label: 'Semua Transaksi', icon: Layers },
+    { key: 'today', label: 'Harian (Hari Ini)', icon: Sun },
+    { key: 'week', label: 'Mingguan (7 Hari)', icon: CalendarDays },
+    { key: 'month', label: 'Bulanan (Bulan Ini)', icon: CalendarRange },
+  ];
+
+  const getFilterLabel = () => {
+    switch (filterParam) {
+      case 'today':
+        return 'Laporan Transaksi Harian (Hari Ini)';
+      case 'week':
+        return 'Laporan Transaksi Mingguan (7 Hari Terakhir)';
+      case 'month':
+        return 'Laporan Transaksi Bulanan (Bulan Ini)';
+      default:
+        return 'Laporan Keseluruhan Transaksi';
+    }
+  };
+
+  // Export to Excel (.csv format with UTF-8 BOM for Excel compatibility)
+  const handleExportExcel = () => {
+    if (filteredOrders.length === 0) {
+      addToast('info', 'Tidak Ada Data', 'Tidak ada data transaksi untuk diexport pada filter ini.');
+      return;
+    }
+
+    const filterName =
+      filterParam === 'today'
+        ? 'Harian'
+        : filterParam === 'week'
+        ? 'Mingguan'
+        : filterParam === 'month'
+        ? 'Bulanan'
+        : 'Semua';
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+    // UTF-8 BOM byte order mark to ensure Excel handles characters & numbers correctly
+    let csvContent = '\uFEFF';
+
+    // Header Metadata
+    csvContent += `LAPORAN TRANSAKSI PENJUALAN - POS ZALDE STORE\n`;
+    csvContent += `Periode Filter,${getFilterLabel()}\n`;
+    csvContent += `Tanggal Export,${now.toLocaleString('id-ID')}\n\n`;
+
+    // Summary Revenue Section
+    csvContent += `=== RINGKASAN PEMASUKAN ===\n`;
+    csvContent += `TOTAL PEMASUKAN / OMSET,${totalRevenue}\n`;
+    csvContent += `TOTAL TRANSAKSI,${totalCount}\n`;
+    csvContent += `RATA-RATA HARGA PER ORDER,${avgOrderValue}\n\n`;
+
+    // Transactions Table Header
+    csvContent += `=== DAFTAR TRANSAKSI ===\n`;
+    csvContent += `No,No. Order,Waktu Transaksi,Metode Pembayaran,Jumlah Item,Total Transaksi (Rp)\n`;
+
+    // Table Data Rows
+    filteredOrders.forEach((ord, idx) => {
+      const itemCount = ord.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
+      const formattedDate = new Date(ord.createdAt).toLocaleString('id-ID').replace(/,/g, '');
+      csvContent += `${idx + 1},"${ord.orderNumber}","${formattedDate}","${ord.paymentMethod}",${itemCount},${ord.totalAmount}\n`;
+    });
+
+    // Total Summary Row at the bottom
+    const totalItems = filteredOrders.reduce(
+      (sum, ord) => sum + (ord.items?.reduce((s, i) => s + i.quantity, 0) || 0),
+      0
+    );
+    csvContent += `\nTOTAL REKAPITULASI,,,${filteredOrders.length} Transaksi,${totalItems} Item,${totalRevenue}\n`;
+
+    // Create & Trigger Download Link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Laporan_Penjualan_${filterName}_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    addToast(
+      'success',
+      'Export Excel Berhasil!',
+      `Laporan ${filterName} (${totalCount} transaksi - Total Omset: ${formatCurrency(totalRevenue)}) telah diunduh.`
+    );
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="relative flex-1 w-full sm:max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            placeholder="Cari nomor order transaksi (ORD-...)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
-          />
+      {/* Metrics Summary Header */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="glass-card p-4 rounded-2xl border-slate-800 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+            <Banknote className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              Total Omset ({filterParam === 'all' ? 'Semua' : filterParam === 'today' ? 'Hari Ini' : filterParam === 'week' ? 'Mingguan' : 'Bulan Ini'})
+            </span>
+            <h3 className="text-lg font-extrabold text-white mt-0.5">{formatCurrency(totalRevenue)}</h3>
+          </div>
         </div>
+
+        <div className="glass-card p-4 rounded-2xl border-slate-800 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+            <ShoppingBag className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              Jumlah Transaksi
+            </span>
+            <h3 className="text-lg font-extrabold text-white mt-0.5">{totalCount} Transaksi</h3>
+          </div>
+        </div>
+
+        <div className="glass-card p-4 rounded-2xl border-slate-800 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
+            <TrendingUp className="w-6 h-6" />
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
+              Rata-rata Order
+            </span>
+            <h3 className="text-lg font-extrabold text-white mt-0.5">{formatCurrency(avgOrderValue)}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Header Actions & Filter Tabs */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Date Filter Tabs */}
+        <div className="flex items-center gap-1.5 bg-slate-900/60 p-1 rounded-xl border border-slate-800 overflow-x-auto w-full sm:w-auto">
+          {filterTabs.map((tab) => {
+            const TabIcon = tab.icon;
+            const isActive = filterParam === tab.key;
+            return (
+              <button
+                key={tab.key}
+                onClick={() => handleFilterChange(tab.key as any)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all ${
+                  isActive
+                    ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <TabIcon className="w-3.5 h-3.5" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Export Excel Button */}
+        <button
+          onClick={handleExportExcel}
+          className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all shrink-0 w-full sm:w-auto justify-center"
+          title="Export Laporan Penjualan ke Excel (.csv)"
+        >
+          <FileSpreadsheet className="w-4 h-4" /> Export Excel
+        </button>
       </div>
 
       {/* Orders Table */}
@@ -77,7 +282,7 @@ export const OrdersHistoryPage: React.FC = () => {
           <div className="p-6">
             <TableSkeleton rows={6} />
           </div>
-        ) : orders.length > 0 ? (
+        ) : filteredOrders.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-900/80 text-slate-400 uppercase tracking-wider border-b border-slate-800">
@@ -91,7 +296,7 @@ export const OrdersHistoryPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
-                {orders.map((order) => (
+                {filteredOrders.map((order) => (
                   <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="p-4 font-mono font-bold text-emerald-400">{order.orderNumber}</td>
                     <td className="p-4 text-slate-300">
@@ -134,7 +339,8 @@ export const OrdersHistoryPage: React.FC = () => {
         ) : (
           <div className="text-center py-16 text-slate-400 space-y-2">
             <History className="w-12 h-12 mx-auto opacity-30" />
-            <p className="text-sm font-semibold">Belum ada riwayat transaksi</p>
+            <p className="text-sm font-semibold">Tidak ada transaksi ditemukan</p>
+            <p className="text-xs text-slate-500">Coba pilih rentang waktu filter lain atau ubah nomor order.</p>
           </div>
         )}
       </div>

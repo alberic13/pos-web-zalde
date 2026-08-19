@@ -39,3 +39,27 @@
   border-color: rgba(16, 185, 129, 0.3);
   transform: translateY(-2px);
 }
+
+/* Print Styles for PDF Export */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print,
+  aside,
+  header,
+  nav,
+  .toast-container {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+  }
+}
