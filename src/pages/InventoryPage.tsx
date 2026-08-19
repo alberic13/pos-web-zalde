@@ -464,41 +464,53 @@ export const InventoryPage: React.FC = () => {
                       <td className="p-4 font-mono text-slate-400 text-xs">{prod.sku}</td>
 
                       {/* STOK ETALASE KASIR */}
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
-                            isDisplayLow
-                              ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-                              : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                      <td className="p-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-all shadow-sm ${
+                            prod.stock <= 0
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              : isDisplayLow
+                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                           }`}
                         >
-                          <Store className="w-3.5 h-3.5 shrink-0" />
+                          {prod.stock <= 0 ? (
+                            <PackageX className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+                          ) : isDisplayLow ? (
+                            <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-amber-400 animate-pulse" />
+                          ) : (
+                            <Store className="w-3.5 h-3.5 shrink-0 text-emerald-400" />
+                          )}
                           <span>{prod.stock} Unit</span>
                           {isDisplayLow && (
-                            <span className="px-1.5 py-0.5 rounded bg-amber-500/25 text-[9px] uppercase tracking-wider font-extrabold text-amber-300 ml-1">
-                              Refill!
+                            <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-[10px] font-black uppercase tracking-wider text-amber-300">
+                              Refill
                             </span>
                           )}
-                        </span>
+                        </div>
                       </td>
 
                       {/* STOK CADANGAN GUDANG */}
-                      <td className="p-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold border transition-all ${
+                      <td className="p-4 whitespace-nowrap">
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold border transition-all shadow-sm ${
                             isWarehouseOut
-                              ? 'bg-rose-500/15 text-rose-400 border-rose-500/30'
-                              : 'bg-blue-500/15 text-blue-400 border-blue-500/30'
+                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
                           }`}
                         >
-                          <Boxes className="w-3.5 h-3.5 shrink-0" />
+                          {isWarehouseOut ? (
+                            <PackageX className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+                          ) : (
+                            <Boxes className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
+                          )}
                           <span>{prod.warehouseStock} Unit</span>
                           {isWarehouseOut && (
-                            <span className="px-1.5 py-0.5 rounded bg-rose-500/25 text-[9px] uppercase tracking-wider font-extrabold text-rose-300 ml-1">
+                            <span className="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-[10px] font-black uppercase tracking-wider text-rose-300">
                               Kosong
                             </span>
                           )}
-                        </span>
+                        </div>
                       </td>
 
                       {/* PRICES */}
