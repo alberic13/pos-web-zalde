@@ -1,0 +1,587 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { api } from '../lib/api';
+import { Product, Category, CartItem } from '../types';
+import { ToastContainer, ToastMessage } from '../components/common/Toast';
+import { Modal } from '../components/common/Modal';
+import {
+  Search,
+  ShoppingCart,
+  Trash2,
+  Plus,
+  Minus,
+  CheckCircle,
+  Printer,
+  CreditCard,
+  Banknote,
+  Sparkles,
+  PackageX,
+} from 'lucide-react';
+
+const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
+  src,
+  alt,
+  className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300',
+}) => {
+  const [error, setError] = useState(false);
+  if (!src || error) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-500">
+        <PackageX className="w-6 h-6 opacity-60" />
+      </div>
+    );
+  }
+  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
+};
+
+export const PosPage: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  // Modals & Toast State
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [completedOrder, setCompletedOrder] = useState<any>(null);
+  const [paymentAmount, setPaymentAmount] = useState<number | ''>('');
+  const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'QRIS'>('CASH');
+  const [submitting, setSubmitting] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const addToast = (type: 'success' | 'error' | 'info', title: string, message?: string) => {
+    const id = Date.now().toString();
+    setToasts((prev) => [...prev, { id, type, title, message }]);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [prodsData, catsData] = await Promise.all([
+        api.getProducts(search, selectedCategory),
+        api.getCategories(),
+      ]);
+      setProducts(prodsData);
+      setCategories(catsData);
+    } catch (err: any) {
+      addToast('error', 'Gagal memuat data POS', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [search, selectedCategory]);
+
+  // Keyboard Shortcuts (F2: Search, F4: Checkout, Esc: Clear)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F2') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      } else if (e.key === 'F4') {
+        e.preventDefault();
+        if (cart.length > 0) setIsCheckoutOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cart]);
+
+  // Cart Helpers
+  const addToCart = (product: Product) => {
+    if (product.stock <= 0) {
+      addToast('error', 'Stok Habis', `Produk "${product.name}" sedang habis.`);
+      return;
+    }
+
+    setCart((prev) => {
+      const existing = prev.find((item) => item.product.id === product.id);
+      if (existing) {
+        if (existing.quantity >= product.stock) {
+          addToast('info', 'Batas Stok Reached', `Mencapai sisa stok maksimal (${product.stock} unit).`);
+          return prev;
+        }
+        return prev.map((item) =>
+          item.product.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+        );
+      }
+      return [...prev, { product, quantity: 1 }];
+    });
+  };
+
+  const updateQuantity = (productId: string, delta: number) => {
+    setCart((prev) => {
+      return prev
+        .map((item) => {
+          if (item.product.id === productId) {
+            const newQty = item.quantity + delta;
+            if (newQty > item.product.stock) {
+              addToast('info', 'Batas Stok', `Mencapai stok maksimal (${item.product.stock} unit).`);
+              return item;
+            }
+            return newQty > 0 ? { ...item, quantity: newQty } : null;
+          }
+          return item;
+        })
+        .filter(Boolean) as CartItem[];
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+  };
+
+  // Financial Calculations
+  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const tax = Math.round(subtotal * 0.11); // PPN 11%
+  const total = subtotal + tax;
+
+  const numericPayment = typeof paymentAmount === 'number' ? paymentAmount : 0;
+  const change = numericPayment - total;
+
+  // Process Checkout
+  const handleProcessCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (cart.length === 0) return;
+
+    if (numericPayment < total) {
+      addToast('error', 'Pembayaran Kurang', `Nominal kurang Rp ${Math.abs(change).toLocaleString('id-ID')}`);
+      return;
+    }
+
+    try {
+      setSubmitting(true);
+      const res = await api.createOrder({
+        items: cart.map((i) => ({ productId: i.product.id, quantity: i.quantity })),
+        paymentAmount: numericPayment,
+        paymentMethod,
+      });
+
+      setCompletedOrder(res);
+      setIsCheckoutOpen(false);
+      setIsReceiptOpen(true);
+      clearCart();
+      setPaymentAmount('');
+      addToast('success', 'Transaksi Berhasil!', `Order ${res.orderNumber} telah dicatat.`);
+
+      // Refresh product stock
+      loadData();
+    } catch (err: any) {
+      addToast('error', 'Gagal Memproses Transaksi', err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const formatCurrency = (val: number) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-6 animate-fade-in min-h-[calc(100vh-7rem)]">
+      <ToastContainer toasts={toasts} onDismiss={removeToast} />
+
+      {/* LEFT AREA: Product Catalog (70%) */}
+      <div className="flex-1 flex flex-col space-y-4">
+        {/* Search & Category Filter Bar */}
+        <div className="glass-card p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
+          {/* Search Input */}
+          <div className="relative flex-1 w-full">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder="Cari produk atau SKU (Tekan F2)..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+            />
+          </div>
+
+          {/* Category Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                selectedCategory === 'all'
+                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+              }`}
+            >
+              Semua
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                  selectedCategory === cat.id
+                    ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Cards Grid */}
+        <div className="flex-1 overflow-y-auto max-h-[calc(100vh-14rem)] pr-1">
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-44 glass-card rounded-2xl animate-pulse p-4 space-y-3">
+                  <div className="h-20 bg-slate-800 rounded-xl" />
+                  <div className="h-4 w-3/4 bg-slate-800 rounded" />
+                  <div className="h-4 w-1/2 bg-slate-800 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : products.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
+              {products.map((product) => {
+                const cartQty = cart.find((i) => i.product.id === product.id)?.quantity || 0;
+                const isOutOfStock = product.stock <= 0;
+
+                return (
+                  <button
+                    key={product.id}
+                    onClick={() => addToCart(product)}
+                    disabled={isOutOfStock}
+                    className={`glass-card glass-card-hover rounded-2xl p-3 flex flex-col justify-between text-left relative overflow-hidden group border transition-all ${
+                      isOutOfStock
+                        ? 'opacity-50 cursor-not-allowed border-rose-500/20'
+                        : cartQty > 0
+                        ? 'border-emerald-500/50 bg-emerald-950/20'
+                        : 'border-slate-800'
+                    }`}
+                  >
+                    {/* Badge Quantity in Cart */}
+                    {cartQty > 0 && (
+                      <span className="absolute top-2 right-2 bg-emerald-500 text-slate-950 font-extrabold text-[11px] px-2 py-0.5 rounded-full shadow-lg z-10">
+                        {cartQty}x
+                      </span>
+                    )}
+
+                    {/* Image */}
+                    <div className="w-full h-24 rounded-xl bg-slate-800 overflow-hidden mb-2.5 relative">
+                      <ProductImage src={product.imageUrl} alt={product.name} />
+
+                      {isOutOfStock && (
+                        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center text-xs font-bold text-rose-400">
+                          Stok Habis
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div>
+                      <span className="text-[10px] font-semibold text-emerald-400/80 block uppercase">
+                        {product.category?.name || 'Umum'}
+                      </span>
+                      <h4 className="text-xs font-bold text-slate-100 line-clamp-1 group-hover:text-emerald-400 transition-colors">
+                        {product.name}
+                      </h4>
+                      <p className="text-[11px] font-mono text-slate-400 mt-0.5">{product.sku}</p>
+                    </div>
+
+                    {/* Footer Price & Stock */}
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-800/80">
+                      <span className="text-xs font-extrabold text-emerald-400">
+                        {formatCurrency(product.price)}
+                      </span>
+                      <span
+                        className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
+                          product.stock <= 5 ? 'text-amber-400 bg-amber-500/10' : 'text-slate-400'
+                        }`}
+                      >
+                        Stok: {product.stock}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-16 glass-card rounded-2xl">
+              <PackageX className="w-12 h-12 text-slate-500 mx-auto mb-3" />
+              <h3 className="text-sm font-semibold text-slate-300">Tidak ada produk ditemukan</h3>
+              <p className="text-xs text-slate-400 mt-1">Coba kata kunci lain atau pilih kategori lain.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* RIGHT AREA: Cart Checkout Panel (30%) */}
+      <div className="w-full lg:w-96 glass-card rounded-2xl p-5 flex flex-col justify-between border-slate-800 shadow-2xl">
+        {/* Cart Header */}
+        <div>
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5 text-emerald-400" />
+              <h3 className="text-base font-bold text-slate-100">Keranjang Kasir</h3>
+            </div>
+            {cart.length > 0 && (
+              <button
+                onClick={clearCart}
+                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 hover:bg-rose-500/10 px-2 py-1 rounded-lg transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Kosongkan
+              </button>
+            )}
+          </div>
+
+          {/* Cart Items List */}
+          <div className="divide-y divide-slate-800 max-h-72 overflow-y-auto py-2 pr-1 my-2">
+            {cart.length > 0 ? (
+              cart.map((item) => (
+                <div key={item.product.id} className="py-3 flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h5 className="text-xs font-bold text-slate-200 truncate">{item.product.name}</h5>
+                    <p className="text-[11px] text-emerald-400 font-semibold mt-0.5">
+                      {formatCurrency(item.product.price)}{' '}
+                      <span className="text-slate-400 font-normal">x {item.quantity}</span>
+                    </p>
+                  </div>
+
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-1 bg-slate-900 border border-slate-700/80 rounded-xl p-1">
+                    <button
+                      onClick={() => updateQuantity(item.product.id, -1)}
+                      className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs transition-colors"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="w-6 text-center text-xs font-bold text-slate-100">
+                      {item.quantity}
+                    </span>
+                    <button
+                      onClick={() => updateQuantity(item.product.id, 1)}
+                      className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs transition-colors"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => removeFromCart(item.product.id)}
+                    className="text-slate-500 hover:text-rose-400 p-1"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-10 text-slate-500 space-y-2">
+                <ShoppingCart className="w-8 h-8 mx-auto opacity-30" />
+                <p className="text-xs">Keranjang masih kosong.</p>
+                <p className="text-[11px] text-slate-400">Klik item di katalog untuk menambahkan.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Cart Calculation & Checkout Button */}
+        <div className="pt-4 border-t border-slate-800 space-y-3">
+          <div className="space-y-1.5 text-xs text-slate-400">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span className="text-slate-200 font-semibold">{formatCurrency(subtotal)}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>PPN (11%)</span>
+              <span className="text-slate-200 font-semibold">{formatCurrency(tax)}</span>
+            </div>
+            <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-slate-800/80">
+              <span>Total Akhir</span>
+              <span className="text-emerald-400">{formatCurrency(total)}</span>
+            </div>
+          </div>
+
+          <button
+            disabled={cart.length === 0}
+            onClick={() => setIsCheckoutOpen(true)}
+            className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+              cart.length > 0
+                ? 'bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-600/30'
+                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+            }`}
+          >
+            <Banknote className="w-4 h-4" />
+            Bayar (F4)
+          </button>
+        </div>
+      </div>
+
+      {/* CHECKOUT MODAL */}
+      <Modal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        title="Pembayaran Transaksi"
+        subtitle={`Total Tagihan: ${formatCurrency(total)}`}
+      >
+        <form onSubmit={handleProcessCheckout} className="space-y-4">
+          {/* Payment Method Selector */}
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-2">Metode Pembayaran</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('CASH')}
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                  paymentMethod === 'CASH'
+                    ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
+                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                }`}
+              >
+                <Banknote className="w-4 h-4" /> Cash / Tunai
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('QRIS')}
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                  paymentMethod === 'QRIS'
+                    ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
+                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                }`}
+              >
+                <CreditCard className="w-4 h-4" /> QRIS / Digital
+              </button>
+            </div>
+          </div>
+
+          {/* Payment Amount Input */}
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+              Nominal Yang Diterima (Rp)
+            </label>
+            <input
+              type="number"
+              required
+              min={total}
+              placeholder="Masukkan nominal bayar..."
+              value={paymentAmount}
+              onChange={(e) => setPaymentAmount(e.target.value === '' ? '' : Number(e.target.value))}
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+
+          {/* Quick Money Buttons */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setPaymentAmount(total)}
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 rounded-lg"
+            >
+              Uang Pas ({formatCurrency(total)})
+            </button>
+            {[20000, 50000, 100000, 200000].map((amt) => (
+              <button
+                key={amt}
+                type="button"
+                onClick={() => setPaymentAmount(amt)}
+                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 rounded-lg"
+              >
+                Rp {amt / 1000}k
+              </button>
+            ))}
+          </div>
+
+          {/* Kembalian Calculation */}
+          <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+            <span className="text-slate-400">Kembalian:</span>
+            <span className={`font-mono font-extrabold text-sm ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {change >= 0 ? formatCurrency(change) : 'Kurang ' + formatCurrency(Math.abs(change))}
+            </span>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={submitting || numericPayment < total}
+            className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+          >
+            {submitting ? 'Memproses...' : 'Konfirmasi & Selesaikan Transaksi'}
+          </button>
+        </form>
+      </Modal>
+
+      {/* RECEIPT SUCCESS MODAL */}
+      <Modal
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        title="Struk Transaksi POS"
+        subtitle="Transaksi Berhasil Disimpan"
+      >
+        {completedOrder && (
+          <div className="space-y-4 text-xs font-mono text-slate-300">
+            <div className="text-center pb-3 border-b border-dashed border-slate-700 space-y-1">
+              <h4 className="font-sans text-base font-extrabold text-white">POS ZALDE STORE</h4>
+              <p className="text-[11px] text-slate-400">Jl. Teknologi No. 88, Jakarta</p>
+              <p className="text-[10px] text-slate-500">No: {completedOrder.orderNumber}</p>
+            </div>
+
+            <div className="space-y-2 max-h-48 overflow-y-auto">
+              {completedOrder.items?.map((item: any) => (
+                <div key={item.id} className="flex justify-between">
+                  <div>
+                    <p className="font-sans font-semibold text-slate-200">{item.product?.name}</p>
+                    <p className="text-[10px] text-slate-400">
+                      {item.quantity} x {formatCurrency(item.price)}
+                    </p>
+                  </div>
+                  <span className="font-bold text-slate-200">{formatCurrency(item.quantity * item.price)}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-3 border-t border-dashed border-slate-700 space-y-1 text-slate-400">
+              <div className="flex justify-between">
+                <span>Total:</span>
+                <span className="font-bold text-emerald-400">{formatCurrency(completedOrder.totalAmount)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Dibayar ({completedOrder.paymentMethod}):</span>
+                <span>{formatCurrency(completedOrder.paymentAmount)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Kembali:</span>
+                <span className="font-bold text-slate-100">{formatCurrency(completedOrder.changeAmount)}</span>
+              </div>
+            </div>
+
+            <div className="pt-4 flex gap-2">
+              <button
+                onClick={() => window.print()}
+                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-sans text-xs font-semibold rounded-xl flex items-center justify-center gap-2"
+              >
+                <Printer className="w-4 h-4" /> Cetak Struk
+              </button>
+              <button
+                onClick={() => setIsReceiptOpen(false)}
+                className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sans text-xs font-bold rounded-xl"
+              >
+                Selesai
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  );
+};
