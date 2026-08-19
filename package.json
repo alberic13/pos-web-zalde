@@ -15,7 +15,8 @@
     "db:push:cloud": "prisma db push --schema=prisma/schema.prisma",
     "db:push": "prisma db push --schema=prisma/schema.local.prisma",
     "db:seed": "prisma db seed",
-    "db:sync:from-cloud": "tsx prisma/syncFromNeonToMySQL.ts"
+    "db:sync:from-cloud": "tsx prisma/syncFromNeonToMySQL.ts",
+    "db:sync:to-cloud": "tsx prisma/syncFromMySQLToNeon.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

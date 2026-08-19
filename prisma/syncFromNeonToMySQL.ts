@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import { PrismaClient as LocalPrismaClient } from '@prisma/client';
+import { PrismaClient as LocalPrismaClient } from '@prisma/client-local';
 
 const LIVE_VERCEL_API = 'https://pos-web-zalde.vercel.app/api';
 

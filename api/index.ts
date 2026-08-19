@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client-cloud';
 
 let globalPrisma: PrismaClient | undefined;
 
