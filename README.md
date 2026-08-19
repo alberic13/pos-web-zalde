@@ -1,6 +1,6 @@
 # 🛒 POS Web Zalde
 
-A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Elysia.js Framework**, **Prisma ORM**, **Local XAMPP MySQL**, and **PostgreSQL (Neon Cloud)**.
+A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Serverless API**, **Prisma ORM**, **Local XAMPP MySQL**, and **PostgreSQL (Neon Cloud)**.
 
 ---
 
@@ -16,8 +16,7 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal & Sales Analytics 
 - **Browser WebP Auto-Compressor**: Built-in client-side image processing utility (`src/lib/imageCompressor.ts`) converting uploaded product images to WebP format (~15 KB – 25 KB) with 95%+ DB payload savings.
 
 ### **Backend & Database Architecture**
-- **Elysia.js Framework**: Ergonomic, high-performance TypeScript framework (`src/server/index.ts` & `src/server/routes/`) utilizing Elysia plugins (`new Elysia({ prefix: '/api' })`), `@elysiajs/cors`, and strict schema validation (`t.Object()`).
-- **Web Standard Serverless Adapter**: Zero-dependency Vercel Serverless adapter (`api/index.ts`) bridging Web Standard `Request`/`Response` to Vercel Serverless Functions.
+- **Node.js Native Serverless API**: Lightweight, zero-dependency REST API handler located at `api/index.ts` fully compatible with Vercel Serverless Functions & local Node.js.
 - **Prisma ORM**: Type-safe ORM for schema management (`prisma/schema.prisma` & `prisma/schema.local.prisma`).
 - **Dual-Database Support**:
   - **Local Development**: Local XAMPP MySQL Database (`pos_zalde_dev` on `localhost:3306`) for zero-cost, ultra-fast local testing.
@@ -86,7 +85,7 @@ Halaman **Katalog Produk** ([src/pages/ProductsPage.tsx](file:///c:/xampp/htdocs
 
 ## 🧪 Hasil Integration Testing (Pengujian Integrasi)
 
-Pengujian integrasi dilakukan untuk menguji alur komunikasi secara langsung antara **API Handler, Elysia.js, Prisma ORM, dan Database Engine**.
+Pengujian integrasi dilakukan untuk menguji alur komunikasi secara langsung antara **API Serverless Handler, Prisma ORM, dan Database Engine**.
 
 ### **Perintah Menjalankan Test**
 ```bash
