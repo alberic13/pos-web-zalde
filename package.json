@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "prisma generate && tsc && vite build",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
     "db:generate": "prisma generate",

@@ -13,12 +13,4 @@ export const app = new Elysia({ prefix: '/api' })
   .use(categoryRoutes)
   .use(orderRoutes);
 
-const port = Number(process.env.PORT) || 3000;
-
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`🚀 Elysia Server listening on http://localhost:${port}`);
-  });
-}
-
 export default app;
