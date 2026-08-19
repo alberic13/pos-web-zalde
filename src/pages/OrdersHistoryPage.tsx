@@ -1,34 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { Order } from '../types';
 import { TableSkeleton } from '../components/common/Skeleton';
 import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
 import {
-  Search,
   Eye,
   History,
   Printer,
   Calendar,
   Sun,
-  CalendarDays,
-  CalendarRange,
-  Layers,
   Banknote,
   ShoppingBag,
   TrendingUp,
   FileSpreadsheet,
-  Download,
 } from 'lucide-react';
 
 export const OrdersHistoryPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  const filterParam = (searchParams.get('filter') as 'all' | 'today' | 'week' | 'month') || 'all';
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
@@ -46,7 +36,7 @@ export const OrdersHistoryPage: React.FC = () => {
   const loadOrders = async () => {
     try {
       setLoading(true);
-      const data = await api.getOrders(search);
+      const data = await api.getOrders();
       setOrders(data);
     } catch (err: any) {
       addToast('error', 'Gagal memuat riwayat transaksi', err.message);
@@ -57,43 +47,17 @@ export const OrdersHistoryPage: React.FC = () => {
 
   useEffect(() => {
     loadOrders();
-  }, [search]);
+  }, []);
 
-  const handleFilterChange = (filter: 'all' | 'today' | 'week' | 'month') => {
-    if (filter === 'all') {
-      searchParams.delete('filter');
-      setSearchParams(searchParams);
-    } else {
-      setSearchParams({ filter });
-    }
-  };
-
-  // Filter orders by date range
+  // Filter orders for Today (Harian) only
   const filteredOrders = orders.filter((order) => {
     const orderDate = new Date(order.createdAt);
     const now = new Date();
-
-    if (filterParam === 'today') {
-      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      return orderDate >= startOfDay;
-    }
-
-    if (filterParam === 'week') {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-      sevenDaysAgo.setHours(0, 0, 0, 0);
-      return orderDate >= sevenDaysAgo;
-    }
-
-    if (filterParam === 'month') {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      return orderDate >= startOfMonth;
-    }
-
-    return true; // 'all'
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return orderDate >= startOfDay;
   });
 
-  // Calculate Metrics for Current Filter
+  // Calculate Daily Metrics
   const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.totalAmount, 0);
   const totalCount = filteredOrders.length;
   const avgOrderValue = totalCount > 0 ? Math.round(totalRevenue / totalCount) : 0;
@@ -111,41 +75,12 @@ export const OrdersHistoryPage: React.FC = () => {
     });
   };
 
-  const filterTabs = [
-    { key: 'all', label: 'Semua Transaksi', icon: Layers },
-    { key: 'today', label: 'Harian (Hari Ini)', icon: Sun },
-    { key: 'week', label: 'Mingguan (7 Hari)', icon: CalendarDays },
-    { key: 'month', label: 'Bulanan (Bulan Ini)', icon: CalendarRange },
-  ];
-
-  const getFilterLabel = () => {
-    switch (filterParam) {
-      case 'today':
-        return 'Laporan Transaksi Harian (Hari Ini)';
-      case 'week':
-        return 'Laporan Transaksi Mingguan (7 Hari Terakhir)';
-      case 'month':
-        return 'Laporan Transaksi Bulanan (Bulan Ini)';
-      default:
-        return 'Laporan Keseluruhan Transaksi';
-    }
-  };
-
-  // Export to Excel (.csv format with UTF-8 BOM for Excel compatibility)
+  // Export Today's Transactions to Excel (.csv)
   const handleExportExcel = () => {
     if (filteredOrders.length === 0) {
-      addToast('info', 'Tidak Ada Data', 'Tidak ada data transaksi untuk diexport pada filter ini.');
+      addToast('info', 'Tidak Ada Data', 'Belum ada data transaksi harian (hari ini) untuk diexport.');
       return;
     }
-
-    const filterName =
-      filterParam === 'today'
-        ? 'Harian'
-        : filterParam === 'week'
-        ? 'Mingguan'
-        : filterParam === 'month'
-        ? 'Bulanan'
-        : 'Semua';
 
     const now = new Date();
     const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -154,18 +89,18 @@ export const OrdersHistoryPage: React.FC = () => {
     let csvContent = '\uFEFF';
 
     // Header Metadata
-    csvContent += `LAPORAN TRANSAKSI PENJUALAN - POS ZALDE STORE\n`;
-    csvContent += `Periode Filter,${getFilterLabel()}\n`;
+    csvContent += `LAPORAN TRANSAKSI PENJUALAN HARIAN - POS ZALDE STORE\n`;
+    csvContent += `Periode,Laporan Harian (Hari Ini - ${now.toLocaleDateString('id-ID')})\n`;
     csvContent += `Tanggal Export,${now.toLocaleString('id-ID')}\n\n`;
 
     // Summary Revenue Section
-    csvContent += `=== RINGKASAN PEMASUKAN ===\n`;
-    csvContent += `TOTAL PEMASUKAN / OMSET,${totalRevenue}\n`;
-    csvContent += `TOTAL TRANSAKSI,${totalCount}\n`;
+    csvContent += `=== RINGKASAN PEMASUKAN HARIAN ===\n`;
+    csvContent += `TOTAL PEMASUKAN / OMSET HARI INI,${totalRevenue}\n`;
+    csvContent += `TOTAL TRANSAKSI HARI INI,${totalCount}\n`;
     csvContent += `RATA-RATA HARGA PER ORDER,${avgOrderValue}\n\n`;
 
     // Transactions Table Header
-    csvContent += `=== DAFTAR TRANSAKSI ===\n`;
+    csvContent += `=== DAFTAR TRANSAKSI HARIAN ===\n`;
     csvContent += `No,No. Order,Waktu Transaksi,Metode Pembayaran,Jumlah Item,Total Transaksi (Rp)\n`;
 
     // Table Data Rows
@@ -180,14 +115,14 @@ export const OrdersHistoryPage: React.FC = () => {
       (sum, ord) => sum + (ord.items?.reduce((s, i) => s + i.quantity, 0) || 0),
       0
     );
-    csvContent += `\nTOTAL REKAPITULASI,,,${filteredOrders.length} Transaksi,${totalItems} Item,${totalRevenue}\n`;
+    csvContent += `\nTOTAL REKAPITULASI HARIAN,,,${filteredOrders.length} Transaksi,${totalItems} Item,${totalRevenue}\n`;
 
     // Create & Trigger Download Link
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Laporan_Penjualan_${filterName}_${dateStr}.csv`);
+    link.setAttribute('download', `Laporan_Transaksi_Harian_${dateStr}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -195,7 +130,7 @@ export const OrdersHistoryPage: React.FC = () => {
     addToast(
       'success',
       'Export Excel Berhasil!',
-      `Laporan ${filterName} (${totalCount} transaksi - Total Omset: ${formatCurrency(totalRevenue)}) telah diunduh.`
+      `Laporan Harian (${totalCount} transaksi - Total Omset: ${formatCurrency(totalRevenue)}) telah diunduh.`
     );
   };
 
@@ -203,7 +138,7 @@ export const OrdersHistoryPage: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
-      {/* Metrics Summary Header */}
+      {/* Metrics Summary Header (Daily) */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="glass-card p-4 rounded-2xl border-slate-800 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
@@ -211,7 +146,7 @@ export const OrdersHistoryPage: React.FC = () => {
           </div>
           <div>
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-              Total Omset ({filterParam === 'all' ? 'Semua' : filterParam === 'today' ? 'Hari Ini' : filterParam === 'week' ? 'Mingguan' : 'Bulan Ini'})
+              Total Omset Hari Ini
             </span>
             <h3 className="text-lg font-extrabold text-white mt-0.5">{formatCurrency(totalRevenue)}</h3>
           </div>
@@ -223,7 +158,7 @@ export const OrdersHistoryPage: React.FC = () => {
           </div>
           <div>
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-              Jumlah Transaksi
+              Jumlah Transaksi Hari Ini
             </span>
             <h3 className="text-lg font-extrabold text-white mt-0.5">{totalCount} Transaksi</h3>
           </div>
@@ -235,44 +170,30 @@ export const OrdersHistoryPage: React.FC = () => {
           </div>
           <div>
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">
-              Rata-rata Order
+              Rata-rata Order Hari Ini
             </span>
             <h3 className="text-lg font-extrabold text-white mt-0.5">{formatCurrency(avgOrderValue)}</h3>
           </div>
         </div>
       </div>
 
-      {/* Header Actions & Filter Tabs */}
+      {/* Header Actions: Harian Title & Export Excel Button */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        {/* Date Filter Tabs */}
-        <div className="flex items-center gap-1.5 bg-slate-900/60 p-1 rounded-xl border border-slate-800 overflow-x-auto w-full sm:w-auto">
-          {filterTabs.map((tab) => {
-            const TabIcon = tab.icon;
-            const isActive = filterParam === tab.key;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => handleFilterChange(tab.key as any)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all ${
-                  isActive
-                    ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20 font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <TabIcon className="w-3.5 h-3.5" />
-                {tab.label}
-              </button>
-            );
-          })}
+        {/* Harian Title Badge */}
+        <div className="flex items-center gap-2 bg-slate-900/80 px-4 py-2.5 rounded-xl border border-slate-800">
+          <Sun className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-bold text-slate-100">
+            Transaksi Harian (Hari Ini - {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })})
+          </span>
         </div>
 
         {/* Export Excel Button */}
         <button
           onClick={handleExportExcel}
           className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all shrink-0 w-full sm:w-auto justify-center"
-          title="Export Laporan Penjualan ke Excel (.csv)"
+          title="Export Laporan Penjualan Harian ke Excel (.csv)"
         >
-          <FileSpreadsheet className="w-4 h-4" /> Export Excel
+          <FileSpreadsheet className="w-4 h-4" /> Export Excel Harian
         </button>
       </div>
 
@@ -339,8 +260,8 @@ export const OrdersHistoryPage: React.FC = () => {
         ) : (
           <div className="text-center py-16 text-slate-400 space-y-2">
             <History className="w-12 h-12 mx-auto opacity-30" />
-            <p className="text-sm font-semibold">Tidak ada transaksi ditemukan</p>
-            <p className="text-xs text-slate-500">Coba pilih rentang waktu filter lain atau ubah nomor order.</p>
+            <p className="text-sm font-semibold">Belum ada transaksi hari ini</p>
+            <p className="text-xs text-slate-500">Transaksi kasir hari ini akan muncul di sini secara otomatis.</p>
           </div>
         )}
       </div>
