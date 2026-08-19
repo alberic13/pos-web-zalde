@@ -168,10 +168,6 @@ Ran 6 tests across 1 file. [314.00ms]
 ## 🚀 Fitur Utama POS Web Zalde
 
 - **Terminal Kasir POS**: Pencarian produk instan, filter kategori, hitung PPN 11%, diskon, kalkulasi kembalian otomatis, & modal cetak struk.
-- **Shortcut Keyboard Kasir**:
-  - `F2`: Fokus cepat ke kolom pencarian produk.
-  - `F4` / `Enter`: Buka modal pembayaran & konfirmasi checkout.
-  - `Esc`: Batalkan / bersihkan keranjang belanja.
 - **Transaksi Atomik (ACID)**: Pengurangan stok produk otomatis di database saat checkout berhasil via `prisma.$transaction`.
 - **Dashboard Analytics**: Visualisasi grafik pendapatan 7 hari, KPI omset, 5 produk terlaris, & alert stok menipis ($\le 5$ unit).
 - **Manajemen Inventaris**: CRUD Produk (SKU, Harga Beli, Harga Jual, Stok, Kategori, Auto WebP File Upload) & Kategori Produk.

@@ -81,21 +81,6 @@ export const PosPage: React.FC = () => {
     loadData();
   }, [search, selectedCategory]);
 
-  // Keyboard Shortcuts (F2: Search, F4: Checkout, Esc: Clear)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F2') {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      } else if (e.key === 'F4') {
-        e.preventDefault();
-        if (cart.length > 0) setIsCheckoutOpen(true);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [cart]);
-
   // Cart Helpers
   const addToCart = (product: Product) => {
     if (product.stock <= 0) {
@@ -204,7 +189,7 @@ export const PosPage: React.FC = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Cari produk atau SKU (Tekan F2)..."
+              placeholder="Cari produk atau SKU..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
@@ -423,7 +408,7 @@ export const PosPage: React.FC = () => {
             }`}
           >
             <Banknote className="w-4 h-4" />
-            Bayar (F4)
+            Bayar Pesanan
           </button>
         </div>
       </div>
