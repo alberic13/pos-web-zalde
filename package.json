@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "tsx api/index.ts",
     "build": "prisma generate && tsc && vite build",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
     "test": "bun test",
     "db:generate": "prisma generate",
-    "db:push": "prisma db push",
+    "db:push:local": "prisma db push --schema=prisma/schema.local.prisma",
+    "db:push:cloud": "prisma db push --schema=prisma/schema.prisma",
+    "db:push": "prisma db push --schema=prisma/schema.local.prisma",
     "db:seed": "prisma db seed"
   },
   "prisma": {

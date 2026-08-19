@@ -391,3 +391,16 @@ export default async function handler(req: any, res: any) {
     return jsonResponse({ success: false, error: error.message || 'Internal Server Error' }, 500);
   }
 }
+
+// Local Development Server Listener (Runs on http://localhost:3000 when executed locally)
+if (!process.env.VERCEL && process.env.NODE_ENV !== 'test') {
+  const http = require('http');
+  const PORT = process.env.PORT || 3000;
+  const server = http.createServer((req: any, res: any) => {
+    handler(req, res);
+  });
+  server.listen(PORT, () => {
+    console.log(`🚀 POS Local API Server running at http://localhost:${PORT}`);
+  });
+}
+
