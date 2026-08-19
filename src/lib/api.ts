@@ -9,7 +9,14 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
     ...options,
   });
 
-  const json = await res.json();
+  const text = await res.text();
+  let json: any;
+  try {
+    json = JSON.parse(text);
+  } catch (err) {
+    throw new Error(`Gagal memuat data dari server (Status ${res.status}): ${text.slice(0, 100) || res.statusText}`);
+  }
+
   if (!res.ok || json.success === false) {
     throw new Error(json.error || 'Terjadi kesalahan pada server');
   }

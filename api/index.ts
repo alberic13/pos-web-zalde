@@ -13,4 +13,59 @@ export const app = new Elysia({ prefix: '/api' })
   .use(categoryRoutes)
   .use(orderRoutes);
 
-export default app;
+// Vercel Serverless Function Node.js Handler
+export default async function handler(req: any, res: any) {
+  try {
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+    const fullUrl = `${protocol}://${host}${req.url}`;
+
+    const headers = new Headers();
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value !== undefined) {
+        if (Array.isArray(value)) {
+          for (const v of value) headers.append(key, v);
+        } else {
+          headers.set(key, value as string);
+        }
+      }
+    }
+
+    let body: any = undefined;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      if (req.body !== undefined && req.body !== null) {
+        body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+      } else {
+        const buffers: Buffer[] = [];
+        for await (const chunk of req) {
+          buffers.push(chunk);
+        }
+        if (buffers.length > 0) {
+          body = Buffer.concat(buffers);
+        }
+      }
+    }
+
+    const webRequest = new Request(fullUrl, {
+      method: req.method,
+      headers,
+      body,
+    });
+
+    const webResponse = await app.handle(webRequest);
+
+    res.statusCode = webResponse.status;
+    webResponse.headers.forEach((val, key) => {
+      res.setHeader(key, val);
+    });
+
+    const arrayBuffer = await webResponse.arrayBuffer();
+    res.end(Buffer.from(arrayBuffer));
+  } catch (error: any) {
+    console.error('Vercel API handler error:', error);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ success: false, error: error.message || 'Internal Server Error' }));
+  }
+}
+
