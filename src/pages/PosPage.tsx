@@ -15,6 +15,7 @@ import {
   Banknote,
   Sparkles,
   PackageX,
+  X,
 } from 'lucide-react';
 
 const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
@@ -61,25 +62,91 @@ export const PosPage: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const loadData = async () => {
+  // Debounced search for API calls
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  // Debounce search input by 250ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const loadCategories = async () => {
     try {
-      setLoading(true);
-      const [prodsData, catsData] = await Promise.all([
-        api.getProducts(search, selectedCategory),
-        api.getCategories(),
-      ]);
-      setProducts(prodsData);
+      const catsData = await api.getCategories();
       setCategories(catsData);
     } catch (err: any) {
-      addToast('error', 'Gagal memuat data POS', err.message);
+      addToast('error', 'Gagal memuat kategori', err.message);
+    }
+  };
+
+  const loadProducts = async (showSkeleton = false) => {
+    try {
+      if (showSkeleton) setLoading(true);
+      const prodsData = await api.getProducts(debouncedSearch, selectedCategory);
+      setProducts(prodsData);
+    } catch (err: any) {
+      addToast('error', 'Gagal memuat data produk', err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // Load categories once on mount
   useEffect(() => {
-    loadData();
-  }, [search, selectedCategory]);
+    loadCategories();
+  }, []);
+
+  // Load products when debouncedSearch or selectedCategory changes
+  useEffect(() => {
+    const isInitial = products.length === 0;
+    loadProducts(isInitial);
+  }, [debouncedSearch, selectedCategory]);
+
+  // Keyboard shortcut listener (Esc to clear, F2 or / to focus search)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearch('');
+        searchInputRef.current?.blur();
+      } else if (e.key === 'F2' || (e.key === '/' && document.activeElement !== searchInputRef.current)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Auto-reset category to 'all' when user types in search bar so it searches across all products
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
+    if (val.trim() !== '' && selectedCategory !== 'all') {
+      setSelectedCategory('all');
+    }
+  };
+
+  // Instant client-side filtered products (0ms latency search)
+  const filteredProducts = products.filter((p) => {
+    // 1. Category Tab Filter
+    if (selectedCategory !== 'all' && p.categoryId !== selectedCategory) {
+      return false;
+    }
+
+    // 2. Search Terms Filter (multi-word, case-insensitive)
+    const searchTerms = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (searchTerms.length === 0) return true;
+
+    // Every word typed must match name, sku, or category name
+    return searchTerms.every((term) => {
+      const nameMatch = p.name.toLowerCase().includes(term);
+      const skuMatch = p.sku.toLowerCase().includes(term);
+      const categoryMatch = p.category?.name?.toLowerCase().includes(term);
+      return nameMatch || skuMatch || categoryMatch;
+    });
+  });
 
   // Cart Helpers
   const addToCart = (product: Product) => {
@@ -164,7 +231,7 @@ export const PosPage: React.FC = () => {
       addToast('success', 'Transaksi Berhasil!', `Order ${res.orderNumber} telah dicatat.`);
 
       // Refresh product stock
-      loadData();
+      loadProducts(false);
     } catch (err: any) {
       addToast('error', 'Gagal Memproses Transaksi', err.message);
     } finally {
@@ -189,11 +256,24 @@ export const PosPage: React.FC = () => {
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Cari produk atau SKU..."
+              placeholder="Cari produk, SKU, atau kategori... (F2 / Esc)"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-9 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
             />
+            {search && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch('');
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 transition-colors"
+                title="Hapus pencarian (Esc)"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
 
           {/* Category Tabs */}
@@ -236,9 +316,9 @@ export const PosPage: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : products.length > 0 ? (
+          ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
-              {products.map((product) => {
+              {filteredProducts.map((product) => {
                 const cartQty = cart.find((i) => i.product.id === product.id)?.quantity || 0;
                 const isOutOfStock = product.stock <= 0;
 

@@ -210,14 +210,24 @@ export default async function handler(req: any, res: any) {
         const categoryId = parsedUrl.searchParams.get('categoryId') || undefined;
 
         const where: any = {};
-        if (search) {
-          where.OR = [
-            { name: { contains: search } },
-            { sku: { contains: search } },
-          ];
-        }
+
+        // Category filter (only apply if specified and not 'all')
         if (categoryId && categoryId !== 'all') {
           where.categoryId = categoryId;
+        }
+
+        // Case-insensitive multi-word search across name, sku, and category
+        if (search && search.trim() !== '') {
+          const words = search.trim().split(/\s+/).filter(Boolean);
+          if (words.length > 0) {
+            where.AND = words.map((word) => ({
+              OR: [
+                { name: { contains: word, mode: 'insensitive' } },
+                { sku: { contains: word, mode: 'insensitive' } },
+                { category: { name: { contains: word, mode: 'insensitive' } } },
+              ],
+            }));
+          }
         }
 
         const products = await prisma.product.findMany({
