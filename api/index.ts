@@ -1,4 +1,17 @@
-import { prisma } from '../src/lib/db';
+import { PrismaClient } from '@prisma/client';
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+function getPrisma(): PrismaClient {
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = new PrismaClient({
+      log: ['error'],
+    });
+  }
+  return globalForPrisma.prisma;
+}
 
 export default async function handler(req: any, res: any) {
   const jsonResponse = (data: any, status = 200) => {
@@ -43,6 +56,8 @@ export default async function handler(req: any, res: any) {
         return {};
       }
     };
+
+    const prisma = getPrisma();
 
     // 1. Health Check
     if (pathname === '/health' || pathname === '/') {
