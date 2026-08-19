@@ -1,7 +1,7 @@
 {
   "functions": {
-    "api/index.ts": {
-      "includeFiles": "prisma/**"
+    "api/**/*.ts": {
+      "includeFiles": ["prisma/**", "node_modules/.prisma/client/**"]
     }
   },
   "rewrites": [

@@ -1,40 +1,49 @@
 import { prisma } from '../src/lib/db';
 
 export default async function handler(req: any, res: any) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (req.method === 'OPTIONS') {
-    res.statusCode = 200;
-    return res.end();
-  }
-
-  const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
-  let pathname = url.pathname;
-  if (pathname.startsWith('/api')) {
-    pathname = pathname.replace(/^\/api/, '') || '/';
-  }
-  const method = req.method || 'GET';
-
   const jsonResponse = (data: any, status = 200) => {
-    res.statusCode = status;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
-  };
-
-  const getJsonBody = () => {
-    if (!req.body) return {};
-    if (typeof req.body === 'object') return req.body;
     try {
-      return JSON.parse(req.body);
-    } catch {
-      return {};
+      res.statusCode = status;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(data));
+    } catch (e) {
+      console.error('Failed to send JSON response:', e);
     }
   };
 
   try {
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    if (req.method === 'OPTIONS') {
+      res.statusCode = 200;
+      return res.end();
+    }
+
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost';
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const reqUrl = req.url || '/';
+    const fullUrl = reqUrl.startsWith('http') ? reqUrl : `${protocol}://${host}${reqUrl}`;
+    const url = new URL(fullUrl);
+
+    let pathname = url.pathname;
+    if (pathname.startsWith('/api')) {
+      pathname = pathname.replace(/^\/api/, '') || '/';
+    }
+    const method = req.method || 'GET';
+
+    const getJsonBody = () => {
+      if (!req.body) return {};
+      if (typeof req.body === 'object') return req.body;
+      try {
+        return JSON.parse(req.body);
+      } catch {
+        return {};
+      }
+    };
+
     // 1. Health Check
     if (pathname === '/health' || pathname === '/') {
       return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() });
