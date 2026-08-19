@@ -11,7 +11,8 @@ export interface Product {
   name: string;
   price: number;
   costPrice?: number | null;
-  stock: number;
+  stock: number; // Stok Etalase / Kasir
+  warehouseStock: number; // Stok Cadangan Gudang
   categoryId: string;
   category?: Category;
   imageUrl?: string | null;

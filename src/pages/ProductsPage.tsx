@@ -240,13 +240,6 @@ export const ProductsPage: React.FC = () => {
               </option>
             ))}
           </select>
-
-          <button
-            onClick={handleOpenAdd}
-            className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all shrink-0"
-          >
-            <Plus className="w-4 h-4" /> Tambah Produk
-          </button>
         </div>
       </div>
 
@@ -266,8 +259,7 @@ export const ProductsPage: React.FC = () => {
                   <th className="p-4">Kategori</th>
                   <th className="p-4">Harga Beli</th>
                   <th className="p-4">Harga Jual</th>
-                  <th className="p-4">Stok</th>
-                  <th className="p-4 text-right">Aksi</th>
+                  <th className="p-4">Stok Etalase</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60">
@@ -297,27 +289,6 @@ export const ProductsPage: React.FC = () => {
                       >
                         {prod.stock} unit
                       </span>
-                    </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenEdit(prod)}
-                          className="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
-                          title="Edit Produk"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setDeletingProduct(prod);
-                            setIsDeleteModalOpen(true);
-                          }}
-                          className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
-                          title="Hapus Produk"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 ))}

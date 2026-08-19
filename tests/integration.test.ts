@@ -172,6 +172,16 @@ describe('Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database', () =
     const getRes = await request(`/api/products/${createdProductId}`);
     expect(getRes.status).toBe(200);
     expect(getRes.json.data.name).toBe('Integration Test Wireless Mouse');
+
+    // 3d. Transfer Stock from Warehouse to Display via API
+    const transferRes = await request(`/api/products/${createdProductId}/transfer-to-display`, {
+      method: 'POST',
+      body: { amount: 5 },
+    });
+    expect(transferRes.status).toBe(200);
+    expect(transferRes.json.success).toBe(true);
+    expect(transferRes.json.data.stock).toBe(30); // 25 + 5 = 30
+    expect(transferRes.json.data.warehouseStock).toBe(15); // 20 - 5 = 15
   }, TEST_TIMEOUT);
 
   test('4. POS Checkout Transaction & Automatic Stock Deduction', async () => {

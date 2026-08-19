@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import http from 'http';
 
 let globalPrisma: PrismaClient | undefined;
 
@@ -239,7 +240,7 @@ export default async function handler(req: any, res: any) {
       }
 
       if (method === 'POST') {
-        const { sku, name, price, costPrice, stock, categoryId, imageUrl } = body;
+        const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body;
         if (!name || price === undefined || stock === undefined || !categoryId) {
           return jsonResponse({ success: false, error: 'Missing required fields' }, 400);
         }
@@ -251,6 +252,7 @@ export default async function handler(req: any, res: any) {
             price: Number(price),
             costPrice: costPrice ? Number(costPrice) : null,
             stock: Number(stock),
+            warehouseStock: warehouseStock !== undefined ? Number(warehouseStock) : 20,
             categoryId,
             imageUrl: imageUrl || null,
           },
@@ -258,6 +260,48 @@ export default async function handler(req: any, res: any) {
         });
         return jsonResponse({ success: true, data: product });
       }
+    }
+
+    // Endpoint for stock transfer from Gudang to Etalase Kasir
+    const transferMatch = pathname.match(/^\/api\/products\/([^/]+)\/transfer-to-display$/);
+    if (transferMatch && method === 'POST') {
+      const id = transferMatch[1];
+      const { amount } = body;
+      const transferQty = Number(amount);
+
+      if (isNaN(transferQty) || transferQty <= 0) {
+        return jsonResponse({ success: false, error: 'Jumlah transfer harus berupa angka positif' }, 400);
+      }
+
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product) {
+        return jsonResponse({ success: false, error: 'Produk tidak ditemukan' }, 404);
+      }
+
+      if (product.warehouseStock < transferQty) {
+        return jsonResponse(
+          {
+            success: false,
+            error: `Stok gudang tidak mencukupi. Sisa stok gudang: ${product.warehouseStock} unit.`,
+          },
+          400
+        );
+      }
+
+      const updated = await prisma.product.update({
+        where: { id },
+        data: {
+          warehouseStock: { decrement: transferQty },
+          stock: { increment: transferQty },
+        },
+        include: { category: true },
+      });
+
+      return jsonResponse({
+        success: true,
+        message: `Berhasil memindahkan ${transferQty} unit dari Gudang ke Etalase Kasir.`,
+        data: updated,
+      });
     }
 
     const productIdMatch = pathname.match(/^\/api\/products\/([^/]+)$/);
@@ -272,18 +316,23 @@ export default async function handler(req: any, res: any) {
         return jsonResponse({ success: true, data: product });
       }
       if (method === 'PUT') {
-        const { sku, name, price, costPrice, stock, categoryId, imageUrl } = body;
+        const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body;
+        const updateData: any = {
+          sku,
+          name,
+          price: Number(price),
+          costPrice: costPrice ? Number(costPrice) : null,
+          stock: Number(stock),
+          categoryId,
+          imageUrl: imageUrl || null,
+        };
+        if (warehouseStock !== undefined) {
+          updateData.warehouseStock = Number(warehouseStock);
+        }
+
         const product = await prisma.product.update({
           where: { id },
-          data: {
-            sku,
-            name,
-            price: Number(price),
-            costPrice: costPrice ? Number(costPrice) : null,
-            stock: Number(stock),
-            categoryId,
-            imageUrl: imageUrl || null,
-          },
+          data: updateData,
           include: { category: true },
         });
         return jsonResponse({ success: true, data: product });
@@ -377,7 +426,6 @@ export default async function handler(req: any, res: any) {
 
 // Local Development Server Listener (Runs on http://localhost:3000 when executed locally)
 if (!process.env.VERCEL && process.env.NODE_ENV !== 'test') {
-  const http = require('http');
   const PORT = process.env.PORT || 3000;
   const server = http.createServer((req: any, res: any) => {
     handler(req, res);

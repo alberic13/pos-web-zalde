@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   Package,
   FolderTree,
+  Warehouse,
   History,
   Store,
   X,
@@ -19,8 +20,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'POS Kasir', path: '/pos', icon: ShoppingBag, highlight: true },
-    { label: 'Produk', path: '/products', icon: Package },
+    { label: 'Produk Etalase', path: '/products', icon: Package },
     { label: 'Kategori', path: '/categories', icon: FolderTree },
+    { label: 'Stok Gudang', path: '/inventory', icon: Warehouse },
     { label: 'Riwayat Transaksi', path: '/orders', icon: History },
   ];
 

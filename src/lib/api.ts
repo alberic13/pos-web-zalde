@@ -42,6 +42,8 @@ export const api = {
     fetchApi<any>(`/products/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteProduct: (id: string) =>
     fetchApi<any>(`/products/${id}`, { method: 'DELETE' }),
+  transferToDisplay: (id: string, amount: number) =>
+    fetchApi<any>(`/products/${id}/transfer-to-display`, { method: 'POST', body: JSON.stringify({ amount }) }),
 
   // Categories
   getCategories: () => fetchApi<any>('/categories'),

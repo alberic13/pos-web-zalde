@@ -16,18 +16,19 @@ model Category {
 }
 
 model Product {
-  id         String      @id @default(cuid())
-  sku        String      @unique
-  name       String
-  price      Float
-  costPrice  Float?
-  stock      Int
-  categoryId String
-  imageUrl   String?
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  items      OrderItem[]
-  category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  id             String      @id @default(cuid())
+  sku            String      @unique
+  name           String
+  price          Float
+  costPrice      Float?
+  stock          Int         // Stok Etalase / Kasir
+  warehouseStock Int         @default(20) // Stok Cadangan Gudang
+  categoryId     String
+  imageUrl       String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  items          OrderItem[]
+  category       Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
 
 model Order {

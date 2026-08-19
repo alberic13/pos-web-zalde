@@ -5,6 +5,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { PosPage } from './pages/PosPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { CategoriesPage } from './pages/CategoriesPage';
+import { InventoryPage } from './pages/InventoryPage';
 import { OrdersHistoryPage } from './pages/OrdersHistoryPage';
 
 export const App: React.FC = () => {
@@ -30,7 +31,7 @@ export const App: React.FC = () => {
         <Route
           path="/products"
           element={
-            <Layout title="Manajemen Produk Katalog">
+            <Layout title="Produk di Etalase">
               <ProductsPage />
             </Layout>
           }
@@ -40,6 +41,14 @@ export const App: React.FC = () => {
           element={
             <Layout title="Kategori Produk">
               <CategoriesPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <Layout title="Manajemen Stok Gudang">
+              <InventoryPage />
             </Layout>
           }
         />
