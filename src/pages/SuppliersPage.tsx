@@ -13,8 +13,8 @@ import {
   Trash2,
   AlertTriangle,
   User,
-  Phone,
   Mail,
+  MessageCircle,
   MapPin,
   Package,
 } from 'lucide-react';
@@ -116,8 +116,8 @@ export const SuppliersPage: React.FC = () => {
 
   const handleSaveSupplier = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supplierForm.companyName.trim() || !supplierForm.contactPerson.trim() || !supplierForm.phone.trim()) {
-      addToast('error', 'Form Tidak Lengkap', 'Harap isi Nama Perusahaan, Contact Person, dan No Telepon.');
+    if (!supplierForm.companyName.trim() || !supplierForm.contactPerson.trim()) {
+      addToast('error', 'Form Tidak Lengkap', 'Harap isi Nama Perusahaan dan Contact Person.');
       return;
     }
 
@@ -125,11 +125,13 @@ export const SuppliersPage: React.FC = () => {
     if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
     else if (!waNum.startsWith('62') && waNum.length > 0) waNum = '62' + waNum;
 
+    const finalWa = waNum || '6281234567890';
+
     const payload = {
       companyName: supplierForm.companyName.trim(),
       contactPerson: supplierForm.contactPerson.trim(),
-      phone: supplierForm.phone.trim(),
-      whatsapp: waNum || supplierForm.phone.replace(/\D/g, ''),
+      phone: supplierForm.phone.trim() || finalWa,
+      whatsapp: finalWa,
       email: supplierForm.email.trim() || undefined,
       address: supplierForm.address.trim() || undefined,
       categorySupply: supplierForm.categorySupply.trim() || categories[0]?.name || 'Komponen & Aksesoris PC',
@@ -297,16 +299,25 @@ export const SuppliersPage: React.FC = () => {
                     <span className="font-semibold text-slate-200">{sup.contactPerson}</span>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span className="font-mono text-slate-300">{sup.phone}</span>
-                  </div>
-
                   {sup.email && (
                     <div className="flex items-center gap-2">
                       <Mail className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <a href={`mailto:${sup.email}`} className="text-slate-400 hover:text-cyan-400 transition-colors underline">
                         {sup.email}
+                      </a>
+                    </div>
+                  )}
+
+                  {sup.whatsapp && (
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <a
+                        href={`https://wa.me/${sup.whatsapp.replace(/\D/g, '').startsWith('0') ? '62' + sup.whatsapp.replace(/\D/g, '').slice(1) : sup.whatsapp.replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-emerald-400 hover:underline font-semibold"
+                      >
+                        {sup.whatsapp}
                       </a>
                     </div>
                   )}
@@ -390,29 +401,15 @@ export const SuppliersPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-slate-300 font-semibold block mb-1">Nomor Telepon *</label>
-              <input
-                type="tel"
-                required
-                placeholder="081234567890"
-                value={supplierForm.phone}
-                onChange={(e) => setSupplierForm({ ...supplierForm, phone: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-100 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="text-slate-300 font-semibold block mb-1">Nomor WhatsApp (Direct Chat)</label>
-              <input
-                type="tel"
-                placeholder="6281234567890"
-                value={supplierForm.whatsapp}
-                onChange={(e) => setSupplierForm({ ...supplierForm, whatsapp: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+          <div>
+            <label className="text-slate-300 font-semibold block mb-1">Nomor WhatsApp (Direct Chat / PO)</label>
+            <input
+              type="tel"
+              placeholder="081234567890 atau 6281234567890"
+              value={supplierForm.whatsapp}
+              onChange={(e) => setSupplierForm({ ...supplierForm, whatsapp: e.target.value })}
+              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+            />
           </div>
 
           <div>
