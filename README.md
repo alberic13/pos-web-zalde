@@ -52,7 +52,7 @@ pos-web-zalde/
 │   │   └── imageCompressor.ts # Browser WebP auto-compressor module (Resize + WebP 75%)
 │   ├── pages/
 │   │   ├── DashboardPage.tsx     # Dashboard analytics, KPI cards, & grafik omset 7 hari
-│   │   ├── PosPage.tsx           # Terminal Kasir POS (Shortcut: F2, F4, Esc)
+│   │   ├── PosPage.tsx           # Terminal Kasir POS 
 │   │   ├── ProductsPage.tsx      # Katalog Produk Etalase & File Upload WebP
 │   │   ├── CategoriesPage.tsx    # CRUD Kategori Produk
 │   │   ├── InventoryPage.tsx     # Stok Gudang & Restock Etalase Kasir (Pill Badges UX)
