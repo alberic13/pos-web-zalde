@@ -501,15 +501,15 @@ export const PosPage: React.FC = () => {
         <form onSubmit={handleProcessCheckout} className="space-y-4">
           {/* Payment Method Selector */}
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-2">Metode Pembayaran</label>
+            <label className="text-xs font-bold text-slate-700 block mb-2">Metode Pembayaran</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setPaymentMethod('CASH')}
-                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-extrabold transition-all ${
                   paymentMethod === 'CASH'
-                    ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-[#7a35ff] bg-[#f3eeff] text-[#7a35ff] shadow-xs'
+                    : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <Banknote className="w-4 h-4" /> Cash / Tunai
@@ -517,10 +517,10 @@ export const PosPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setPaymentMethod('QRIS')}
-                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-bold transition-all ${
+                className={`flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-extrabold transition-all ${
                   paymentMethod === 'QRIS'
-                    ? 'border-emerald-500 bg-emerald-950/40 text-emerald-300'
-                    : 'border-slate-800 bg-slate-900 text-slate-400'
+                    ? 'border-[#7a35ff] bg-[#f3eeff] text-[#7a35ff] shadow-xs'
+                    : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
                 <CreditCard className="w-4 h-4" /> QRIS / Digital
@@ -530,7 +530,7 @@ export const PosPage: React.FC = () => {
 
           {/* Payment Amount Input */}
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1.5">
+            <label className="text-xs font-bold text-slate-700 block mb-1.5">
               Nominal Yang Diterima (Rp)
             </label>
             <input
@@ -540,7 +540,7 @@ export const PosPage: React.FC = () => {
               placeholder="Masukkan nominal bayar..."
               value={paymentAmount}
               onChange={(e) => setPaymentAmount(e.target.value === '' ? '' : Number(e.target.value))}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+              className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm font-mono text-slate-900 placeholder-slate-400 font-extrabold focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 shadow-2xs transition-all"
             />
           </div>
 
@@ -549,7 +549,7 @@ export const PosPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setPaymentAmount(total)}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 rounded-lg transition-colors border border-slate-200"
+              className="px-2.5 py-1 bg-white hover:bg-[#f3eeff] hover:text-[#7a35ff] text-xs font-bold text-slate-800 rounded-lg transition-all border border-slate-300 shadow-2xs"
             >
               Uang Pas ({formatCurrency(total)})
             </button>
@@ -558,7 +558,7 @@ export const PosPage: React.FC = () => {
                 key={amt}
                 type="button"
                 onClick={() => setPaymentAmount(amt)}
-                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 rounded-lg transition-colors border border-slate-200"
+                className="px-2.5 py-1 bg-white hover:bg-[#f3eeff] hover:text-[#7a35ff] text-xs font-bold text-slate-800 rounded-lg transition-all border border-slate-300 shadow-2xs"
               >
                 Rp {amt / 1000}k
               </button>
@@ -577,7 +577,7 @@ export const PosPage: React.FC = () => {
           <button
             type="submit"
             disabled={submitting || numericPayment < total}
-            className="w-full py-3.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50"
+            className="w-full py-3.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {submitting ? 'Memproses...' : 'Konfirmasi & Selesaikan Transaksi'}
           </button>
