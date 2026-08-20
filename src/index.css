@@ -64,3 +64,33 @@
     box-shadow: none !important;
   }
 }
+
+/* Animated Area Chart Line Draw (GPU accelerated) */
+@keyframes drawLinePath {
+  from {
+    stroke-dashoffset: 2500;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeInFillArea {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-chart-draw path.recharts-curve {
+  stroke-dasharray: 2500;
+  stroke-dashoffset: 2500;
+  animation: drawLinePath 3.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.animate-chart-draw path.recharts-area-area {
+  animation: fadeInFillArea 4s ease-in-out forwards;
+}
+

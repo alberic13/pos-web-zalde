@@ -188,9 +188,13 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="h-72 w-full">
+          <div className="h-72 w-full animate-chart-draw">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={stats?.salesChart || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart
+                key={stats?.salesChart ? stats.salesChart.length : 0}
+                data={stats?.salesChart || []}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+              >
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#7a35ff" stopOpacity={0.3} />
@@ -217,6 +221,10 @@ export const DashboardPage: React.FC = () => {
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
+                  isAnimationActive={true}
+                  animationBegin={200}
+                  animationDuration={3800}
+                  animationEasing="ease-in-out"
                 />
               </AreaChart>
             </ResponsiveContainer>
