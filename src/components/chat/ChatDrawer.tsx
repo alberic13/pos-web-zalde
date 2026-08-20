@@ -386,7 +386,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder={`Ketik pesan sebagai ${roleConfig.shortLabel}...`}
-              className="flex-1 bg-slate-50 border border-slate-200 focus:border-[#7a35ff] focus:bg-white rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none transition-colors"
+              className="flex-1 bg-white border border-slate-300 focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none transition-all shadow-2xs font-medium"
             />
             <button
               type="submit"

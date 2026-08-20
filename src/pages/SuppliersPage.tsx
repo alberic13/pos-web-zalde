@@ -219,7 +219,7 @@ export const SuppliersPage: React.FC = () => {
               placeholder="Cari nama supplier / contact person..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7a35ff] focus:bg-white transition-all"
+              className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 transition-all font-medium"
             />
           </div>
 
@@ -227,7 +227,7 @@ export const SuppliersPage: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full sm:w-auto bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#7a35ff] focus:bg-white font-medium"
+            className="w-full sm:w-auto bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 font-semibold cursor-pointer"
           >
             <option value="all">Semua Kategori Pasokan</option>
             {categories.map((cat) => (

@@ -371,7 +371,7 @@ export const InventoryPage: React.FC = () => {
             placeholder="Cari produk gudang / SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7a35ff] focus:bg-white transition-all"
+            className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 transition-all font-medium"
           />
         </div>
 
