@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { useRole } from '../../context/RoleContext';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -19,6 +20,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
+  const { activeRole, activeName, roleConfig } = useRole();
+
   const navItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'POS Kasir', path: '/pos', icon: ShoppingBag, highlight: true },
@@ -110,12 +113,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
         {/* Footer Info */}
         <div className="p-4 border-t border-slate-800/80">
           <div className="glass-card rounded-xl p-3 flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-emerald-400 border border-slate-700">
-              AZ
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${roleConfig.avatarBg}`}>
+              {activeRole === 'KASIR' ? 'KT' : activeRole === 'GUDANG' ? 'SG' : 'AZ'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-slate-200 truncate">Admin Zalde</p>
-              <p className="text-[10px] text-slate-400 truncate">Online • Kasir Utama</p>
+              <p className="text-xs font-semibold text-slate-200 truncate">{activeName}</p>
+              <p className="text-[10px] text-slate-400 truncate flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>{roleConfig.shortLabel}</span>
+              </p>
             </div>
           </div>
         </div>
@@ -123,3 +129,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
     </>
   );
 };
+

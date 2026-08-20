@@ -1,12 +1,15 @@
 import React from 'react';
-import { Menu, Clock, Calendar } from 'lucide-react';
+import { Menu, Clock, Calendar, Store, Warehouse, ShieldAlert } from 'lucide-react';
+import { useRole } from '../../context/RoleContext';
 
 interface HeaderProps {
   onOpenMobileSidebar: () => void;
+  onToggleChatDrawer?: () => void;
   title: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) => {
+  const { activeRole, roleConfig } = useRole();
   const [time, setTime] = React.useState(new Date());
 
   React.useEffect(() => {
@@ -40,7 +43,15 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
         <h2 className="text-lg font-bold text-slate-100 tracking-tight">{title}</h2>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* User Role Badge */}
+        <div className={`hidden md:flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border ${roleConfig.badgeBg} ${roleConfig.badgeText} ${roleConfig.badgeBorder}`}>
+          {activeRole === 'KASIR' && <Store className="w-3.5 h-3.5" />}
+          {activeRole === 'GUDANG' && <Warehouse className="w-3.5 h-3.5" />}
+          {activeRole === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5" />}
+          <span>{roleConfig.shortLabel}</span>
+        </div>
+
         {/* Date & Time Widget */}
         <div className="hidden sm:flex items-center gap-3 text-xs text-slate-400 glass-card px-3.5 py-1.5 rounded-xl">
           <div className="flex items-center gap-1.5">
@@ -57,3 +68,4 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
     </header>
   );
 };
+

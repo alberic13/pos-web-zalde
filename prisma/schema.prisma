@@ -65,3 +65,13 @@ model Supplier {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  senderRole String   // "KASIR" | "GUDANG" | "ADMIN"
+  senderName String
+  message    String
+  isQuickMsg Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+

@@ -528,6 +528,76 @@ export default async function handler(req: any, res: any) {
       }
     }
 
+    // CHAT MESSAGES ENDPOINTS
+    if (pathname === '/api/chat/messages') {
+      if (method === 'GET') {
+        let messages = await prisma.chatMessage.findMany({
+          orderBy: { createdAt: 'asc' },
+          take: 100,
+        });
+
+        // Auto-seed starter messages if empty
+        if (messages.length === 0) {
+          await prisma.chatMessage.createMany({
+            data: [
+              {
+                senderRole: 'KASIR',
+                senderName: 'Kasir Toko Depan',
+                message: 'Halo Tim Gudang, tolong restok Tempered Glass Privacy iPhone 15 ke etalase ya 🙏',
+                isQuickMsg: true,
+              },
+              {
+                senderRole: 'GUDANG',
+                senderName: 'Staff Gudang',
+                message: 'Siap Kasir! Stok 10 unit Tempered Glass Privacy sedang disiapkan ke etalase.',
+                isQuickMsg: true,
+              },
+              {
+                senderRole: 'ADMIN',
+                senderName: 'Admin Zalde',
+                message: 'Sistem Chat Internal Toko Depan & Gudang Aktif. Selamat bertugas!',
+                isQuickMsg: false,
+              },
+            ],
+          });
+          messages = await prisma.chatMessage.findMany({
+            orderBy: { createdAt: 'asc' },
+            take: 100,
+          });
+        }
+
+        return jsonResponse({ success: true, data: messages });
+      }
+
+      if (method === 'POST') {
+        const { senderRole, senderName, message, isQuickMsg } = body;
+
+        if (!message || typeof message !== 'string' || message.trim() === '') {
+          return jsonResponse({ success: false, error: 'Pesan tidak boleh kosong' }, 400);
+        }
+
+        const validRoles = ['KASIR', 'GUDANG', 'ADMIN'];
+        const role = validRoles.includes(senderRole?.toUpperCase()) ? senderRole.toUpperCase() : 'KASIR';
+        const name = senderName && senderName.trim() !== '' ? senderName.trim() : (role === 'KASIR' ? 'Penjaga Toko' : role === 'GUDANG' ? 'Staff Gudang' : 'Admin Toko');
+
+        const newMessage = await prisma.chatMessage.create({
+          data: {
+            senderRole: role,
+            senderName: name,
+            message: message.trim(),
+            isQuickMsg: Boolean(isQuickMsg),
+          },
+        });
+
+        return jsonResponse({ success: true, data: newMessage, message: 'Pesan berhasil terkirim' }, 201);
+      }
+
+      if (method === 'DELETE') {
+        await prisma.chatMessage.deleteMany();
+        return jsonResponse({ success: true, message: 'Riwayat percakapan berhasil dibersihkan' });
+      }
+    }
+
     return jsonResponse({ success: false, error: `Endpoint '${pathname}' not found` }, 404);
   } catch (error: any) {
     console.error('API Error:', error);

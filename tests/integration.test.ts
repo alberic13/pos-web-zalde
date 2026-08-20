@@ -276,4 +276,61 @@ describe('Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database', () =
     expect(emptyOrderRes.status).toBe(400);
     expect(emptyOrderRes.json.success).toBe(false);
   }, TEST_TIMEOUT);
+
+  test('7. Store & Warehouse Internal Chat API', async () => {
+    // 7a. Get chat messages (auto-seeds if empty)
+    const getRes = await request('/api/chat/messages');
+    expect(getRes.status).toBe(200);
+    expect(getRes.json.success).toBe(true);
+    expect(Array.isArray(getRes.json.data)).toBe(true);
+    expect(getRes.json.data.length).toBeGreaterThan(0);
+
+    // 7b. Post chat message from Toko Depan (Kasir)
+    const postKasirRes = await request('/api/chat/messages', {
+      method: 'POST',
+      body: {
+        senderRole: 'KASIR',
+        senderName: 'Kasir Utama',
+        message: 'Mohon restok 5 unit Mouse Gaming ke etalase',
+        isQuickMsg: true,
+      },
+    });
+    expect(postKasirRes.status).toBe(201);
+    expect(postKasirRes.json.success).toBe(true);
+    expect(postKasirRes.json.data.senderRole).toBe('KASIR');
+    expect(postKasirRes.json.data.message).toContain('Mouse Gaming');
+
+    // 7c. Post chat message response from Staff Gudang
+    const postGudangRes = await request('/api/chat/messages', {
+      method: 'POST',
+      body: {
+        senderRole: 'GUDANG',
+        senderName: 'Staff Gudang Zalde',
+        message: 'Stok Mouse Gaming sudah dipindahkan ke etalase!',
+        isQuickMsg: true,
+      },
+    });
+    expect(postGudangRes.status).toBe(201);
+    expect(postGudangRes.json.success).toBe(true);
+    expect(postGudangRes.json.data.senderRole).toBe('GUDANG');
+
+    // 7d. Post invalid empty message -> 400 Bad Request
+    const badChatRes = await request('/api/chat/messages', {
+      method: 'POST',
+      body: { senderRole: 'KASIR', message: '   ' },
+    });
+    expect(badChatRes.status).toBe(400);
+    expect(badChatRes.json.success).toBe(false);
+
+    // 7e. Delete chat messages (Admin clear history)
+    const deleteRes = await request('/api/chat/messages', { method: 'DELETE' });
+    expect(deleteRes.status).toBe(200);
+    expect(deleteRes.json.success).toBe(true);
+
+    // Check history is cleared and then auto-seeded on next fetch
+    const reGetRes = await request('/api/chat/messages');
+    expect(reGetRes.status).toBe(200);
+    expect(Array.isArray(reGetRes.json.data)).toBe(true);
+  }, TEST_TIMEOUT);
 });
+
