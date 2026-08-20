@@ -7,36 +7,45 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse I
 ## 🔄 Workflow Operasional & Hak Akses 3 Role
 
 ```mermaid
-graph TD
-    classDef admin fill:#8b5cf6,stroke:#7c3aed,color:#ffffff,font-weight:bold
-    classDef kasir fill:#10b981,stroke:#059669,color:#ffffff,font-weight:bold
-    classDef gudang fill:#f59e0b,stroke:#d97706,color:#ffffff,font-weight:bold
-    classDef process fill:#0f172a,stroke:#334155,color:#f8fafc
+flowchart LR
+    %% Styling Classes
+    classDef roleAdmin fill:#1e1b4b,stroke:#8b5cf6,stroke-width:2px,color:#f3e8ff
+    classDef roleKasir fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#ecfdf5
+    classDef roleGudang fill:#451a03,stroke:#f59e0b,stroke-width:2px,color:#fffbeb
+    classDef stepNode fill:#0f172a,stroke:#334155,stroke-width:1.5px,color:#f8fafc
+    classDef highlightNode fill:#065f46,stroke:#34d399,stroke-width:2px,color:#ffffff
 
-    subgraph ROLES[" 👥 pembagian 3 Role & Hak Akses Halaman "]
-        ADMIN["👑 1. ADMIN (BOS)<br/>• Semua Akses Halaman (Full Access)<br/>• Dashboard, POS, Produk, Stok, Supplier, Chat, Laporan"]:::admin
-        KASIR["🛒 2. PENJAGA TOKO DEPAN (KASIR)<br/>• POS Kasir (/pos)<br/>• Produk Etalase (/products)<br/>• Riwayat Transaksi (/orders)<br/>• Chat Toko & Gudang"]:::kasir
-        GUDANG["📦 3. STAFF GUDANG<br/>• Produk Etalase (/products)<br/>• Kategori Produk (/categories)<br/>• Stok Gudang (/inventory)<br/>• Chat Toko & Gudang"]:::gudang
+    %% 1. ROLES DEFINITION
+    subgraph ROLES[" 👥 3 ROLE & HAK AKSES HASIL "]
+        direction TB
+        ADMIN["👑 <b>ADMIN (BOS)</b><br/>• Full Access Semua Halaman<br/>• Dashboard, POS, Produk, Stok, Supplier, Chat, Reports"]:::roleAdmin
+        KASIR["🛒 <b>PENJAGA TOKO (KASIR)</b><br/>• POS Kasir (/pos)<br/>• Produk Etalase (/products)<br/>• Riwayat Transaksi (/orders)<br/>• Chat Toko & Gudang"]:::roleKasir
+        GUDANG["📦 <b>STAFF GUDANG</b><br/>• Produk Etalase (/products)<br/>• Kategori Produk (/categories)<br/>• Stok Gudang (/inventory)<br/>• Chat Toko & Gudang"]:::roleGudang
     end
 
-    subgraph KASIR_FLOW[" 🛒 Workflow Penjaga Toko Depan (Kasir) "]
-        K1["Buka POS Kasir Terminal"] --> K2["Proses Transaksi Pembelian"]
-        K2 --> K3["Jika Stok Etalase ≤ 5 Unit"]
-        K3 --> K4["Kirim Chat Restok ke Gudang"]
-        K2 --> K5["🔔 Prosedur Penutupan Toko (Daily Closing)"]
-        K5 --> K6["📁 Export & Simpan Laporan Excel Harian"]
+    %% 2. KASIR WORKFLOW
+    subgraph KASIR_FLOW[" 🛒 WORKFLOW KASIR (TOKO DEPAN) "]
+        direction TB
+        K1["1️⃣ Buka Terminal POS Kasir"]:::stepNode --> K2["2️⃣ Layani Transaksi Pembeli"]:::stepNode
+        K2 --> K3{"Stok Etalase ≤ 5?"}:::stepNode
+        K3 -- Ya --> K4["📢 Kirim Chat Restok ke Gudang"]:::stepNode
+        K2 --> K5["🔔 Penutupan Toko (Daily Closing)"]:::stepNode
+        K5 --> K6["📊 Export & Simpan Laporan Excel Harian"]:::highlightNode
     end
 
-    subgraph GUDANG_FLOW[" 📦 Workflow Staff Gudang "]
-        G1["Terima Notifikasi Chat Restok"] --> G2["Cek Stok Cadangan Gudang"]
-        G2 --> G3["Transfer Stok Gudang ke Etalase"]
-        G3 --> G4["Konfirmasi via Chat ke Toko Depan"]
+    %% 3. GUDANG WORKFLOW
+    subgraph GUDANG_FLOW[" 📦 WORKFLOW STAFF GUDANG "]
+        direction TB
+        G1["📩 Terima Notifikasi Chat Restok"]:::stepNode --> G2["🔍 Cek Stok Cadangan Gudang"]:::stepNode
+        G2 --> G3["🚚 Transfer Stok Gudang ke Etalase"]:::stepNode
+        G3 --> G4["✅ Konfirmasi Selesai via Chat"]:::stepNode
     end
 
-    KASIR -.-> KASIR_FLOW
-    GUDANG -.-> GUDANG_FLOW
-    ADMIN -.->|Akses & Pengawasan Penuh| KASIR_FLOW
-    ADMIN -.->|Akses & Pengawasan Penuh| GUDANG_FLOW
+    %% CONNECTIVITY
+    KASIR ==> KASIR_FLOW
+    GUDANG ==> GUDANG_FLOW
+    ADMIN -. Akses Penuh .-> KASIR_FLOW
+    ADMIN -. Akses Penuh .-> GUDANG_FLOW
 ```
 
 ---
