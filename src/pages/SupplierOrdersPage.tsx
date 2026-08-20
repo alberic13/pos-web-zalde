@@ -5,7 +5,6 @@ import { TableSkeleton } from '../components/common/Skeleton';
 import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
 import {
-  Truck,
   Search,
   MessageCircle,
   Boxes,
@@ -20,53 +19,6 @@ import {
   Save,
 } from 'lucide-react';
 import { Supplier } from './SuppliersPage';
-
-const INITIAL_SUPPLIERS: Supplier[] = [
-  {
-    id: 'sup-1',
-    companyName: 'PT Fantech Indonesia Distribution',
-    contactPerson: 'Bpk. Hendra Setyawan',
-    phone: '081234567890',
-    whatsapp: '6281234567890',
-    email: 'sales@fantech.co.id',
-    address: 'Kawasan Industri Mangga Dua Plaza Blok A No. 12, Jakarta Pusat',
-    categorySupply: 'Komponen & Aksesoris PC',
-    notes: 'Minimal order 10 unit per SKU. Diskon 5% untuk pembelian > Rp 5.000.000',
-  },
-  {
-    id: 'sup-2',
-    companyName: 'CV SteelSeries Jaya Tech',
-    contactPerson: 'Ibu Rina Wijaya',
-    phone: '081987654321',
-    whatsapp: '6281987654321',
-    email: 'orders@steelseries-distro.id',
-    address: 'Ruko Dusit Mangga Dua No. 45, Jakarta Pusat',
-    categorySupply: 'Komponen & Aksesoris PC',
-    notes: 'Pengiriman H+1 setelah pembayaran (Transfer BCA).',
-  },
-  {
-    id: 'sup-3',
-    companyName: 'Distributor Anker & Powerbank Official',
-    contactPerson: 'Bpk. Andi Kurniawan',
-    phone: '085711223344',
-    whatsapp: '6285711223344',
-    email: 'supply@ankertech.co.id',
-    address: 'Kawasan Harco Mangga Dua lantai 3 Blok B No. 88, Jakarta Pusat',
-    categorySupply: 'Charger & Power',
-    notes: 'Garansi resmi 18 bulan per unit.',
-  },
-  {
-    id: 'sup-4',
-    companyName: 'Maju Bersama Gadget Accessories',
-    contactPerson: 'Ibu Maya Lestari',
-    phone: '082199887766',
-    whatsapp: '6282199887766',
-    email: 'sales@majubersama-gadget.com',
-    address: 'ITC Roxy Mas lantai 2 No. 102, Jakarta Barat',
-    categorySupply: 'Aksesoris HP',
-    notes: 'Spesialis Tempered Glass Privacy & Case MagSafe iPhone / Android.',
-  },
-];
 
 const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
   src,

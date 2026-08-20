@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { Category } from '../types';
+import { TableSkeleton } from '../components/common/Skeleton';
 import { Modal } from '../components/common/Modal';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
 import {
   Truck,
   Search,
-  MessageCircle,
   Building2,
   Plus,
   Edit3,
@@ -31,57 +31,10 @@ export interface Supplier {
   notes?: string;
 }
 
-const INITIAL_SUPPLIERS: Supplier[] = [
-  {
-    id: 'sup-1',
-    companyName: 'PT Fantech Indonesia Distribution',
-    contactPerson: 'Bpk. Hendra Setyawan',
-    phone: '081234567890',
-    whatsapp: '6281234567890',
-    email: 'sales@fantech.co.id',
-    address: 'Kawasan Industri Mangga Dua Plaza Blok A No. 12, Jakarta Pusat',
-    categorySupply: 'Komponen & Aksesoris PC',
-    notes: 'Minimal order 10 unit per SKU. Diskon 5% untuk pembelian > Rp 5.000.000',
-  },
-  {
-    id: 'sup-2',
-    companyName: 'CV SteelSeries Jaya Tech',
-    contactPerson: 'Ibu Rina Wijaya',
-    phone: '081987654321',
-    whatsapp: '6281987654321',
-    email: 'orders@steelseries-distro.id',
-    address: 'Ruko Dusit Mangga Dua No. 45, Jakarta Pusat',
-    categorySupply: 'Komponen & Aksesoris PC',
-    notes: 'Pengiriman H+1 setelah pembayaran (Transfer BCA).',
-  },
-  {
-    id: 'sup-3',
-    companyName: 'Distributor Anker & Powerbank Official',
-    contactPerson: 'Bpk. Andi Kurniawan',
-    phone: '085711223344',
-    whatsapp: '6285711223344',
-    email: 'supply@ankertech.co.id',
-    address: 'Kawasan Harco Mangga Dua lantai 3 Blok B No. 88, Jakarta Pusat',
-    categorySupply: 'Charger & Power',
-    notes: 'Garansi resmi 18 bulan per unit.',
-  },
-  {
-    id: 'sup-4',
-    companyName: 'Maju Bersama Gadget Accessories',
-    contactPerson: 'Ibu Maya Lestari',
-    phone: '082199887766',
-    whatsapp: '6282199887766',
-    email: 'sales@majubersama-gadget.com',
-    address: 'ITC Roxy Mas lantai 2 No. 102, Jakarta Barat',
-    categorySupply: 'Aksesoris HP',
-    notes: 'Spesialis Tempered Glass Privacy & Case MagSafe iPhone / Android.',
-  },
-];
-
 export const SuppliersPage: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -116,14 +69,14 @@ export const SuppliersPage: React.FC = () => {
   // Fetch suppliers & categories from Database API
   const loadData = async () => {
     try {
-      setLoadingSuppliers(true);
+      setLoading(true);
       const [sups, cats] = await Promise.all([api.getSuppliers(), api.getCategories()]);
       setSuppliers(sups);
       setCategories(cats);
     } catch (err: any) {
       addToast('error', 'Gagal memuat data supplier', err.message);
     } finally {
-      setLoadingSuppliers(false);
+      setLoading(false);
     }
   };
 
@@ -211,13 +164,6 @@ export const SuppliersPage: React.FC = () => {
     }
   };
 
-  const openWhatsAppChat = (sup: Supplier) => {
-    const waNumber = sup.whatsapp.replace(/\D/g, '');
-    const cleanWa = waNumber.startsWith('0') ? '62' + waNumber.slice(1) : waNumber.startsWith('62') ? waNumber : '62' + waNumber;
-    const msg = encodeURIComponent(`Halo ${sup.contactPerson} (${sup.companyName}), saya dari POS ZALDE STORE...`);
-    window.open(`https://wa.me/${cleanWa}?text=${msg}`, '_blank');
-  };
-
   const filteredSuppliers = suppliers.filter((sup) => {
     const matchesSearch =
       !search.trim() ||
@@ -299,7 +245,11 @@ export const SuppliersPage: React.FC = () => {
       </div>
 
       {/* Supplier Grid Cards */}
-      {filteredSuppliers.length > 0 ? (
+      {loading ? (
+        <div className="glass-card p-6 rounded-2xl border-slate-800">
+          <TableSkeleton rows={4} />
+        </div>
+      ) : filteredSuppliers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredSuppliers.map((sup) => (
             <div

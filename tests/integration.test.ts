@@ -1,6 +1,8 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
 import handler from '../api/index';
-import { prisma } from '../src/lib/db';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 const TEST_TIMEOUT = 15000; // 15 seconds for database network roundtrips
 

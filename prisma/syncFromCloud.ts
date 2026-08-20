@@ -46,10 +46,12 @@ async function syncFromCloudToLocal() {
     const categories = await cloudPrisma.category.findMany();
     const products = await cloudPrisma.product.findMany();
     const orders = await cloudPrisma.order.findMany({ include: { items: true } });
+    const suppliers = await cloudPrisma.supplier.findMany();
 
     console.log(`📦 Data dari Cloud ditemukan:`);
     console.log(`   - Kategori: ${categories.length}`);
     console.log(`   - Produk: ${products.length}`);
+    console.log(`   - Supplier: ${suppliers.length}`);
     console.log(`   - Transaksi (Order): ${orders.length}`);
 
     // 2. Bersihkan data lama di database lokal
@@ -58,8 +60,29 @@ async function syncFromCloudToLocal() {
     await localPrisma.order.deleteMany();
     await localPrisma.product.deleteMany();
     await localPrisma.category.deleteMany();
+    await localPrisma.supplier.deleteMany();
 
-    // 3. Masukkan Kategori ke Lokal
+    // 3. Masukkan Supplier ke Lokal
+    console.log('🚀 Memindahkan Supplier ke PostgreSQL Lokal...');
+    for (const sup of suppliers) {
+      await localPrisma.supplier.create({
+        data: {
+          id: sup.id,
+          companyName: sup.companyName,
+          contactPerson: sup.contactPerson,
+          phone: sup.phone,
+          whatsapp: sup.whatsapp,
+          email: sup.email,
+          address: sup.address,
+          categorySupply: sup.categorySupply,
+          notes: sup.notes,
+          createdAt: sup.createdAt,
+          updatedAt: sup.updatedAt,
+        },
+      });
+    }
+
+    // 4. Masukkan Kategori ke Lokal
     console.log('🚀 Memindahkan Kategori ke PostgreSQL Lokal...');
     for (const cat of categories) {
       await localPrisma.category.create({

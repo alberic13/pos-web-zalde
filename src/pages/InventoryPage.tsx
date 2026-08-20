@@ -19,7 +19,6 @@ import {
   ArrowRightLeft,
   Store,
   Save,
-  Layers,
 } from 'lucide-react';
 
 const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({

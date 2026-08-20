@@ -9,11 +9,9 @@ import {
   Trash2,
   Plus,
   Minus,
-  CheckCircle,
   Printer,
   CreditCard,
   Banknote,
-  Sparkles,
   PackageX,
   X,
 } from 'lucide-react';
