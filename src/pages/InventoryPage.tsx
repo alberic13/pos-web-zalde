@@ -612,22 +612,22 @@ export const InventoryPage: React.FC = () => {
         {transferProduct && (
           <form onSubmit={handleTransferToDisplay} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-blue-950/40 border border-blue-500/30 rounded-xl text-center">
-                <span className="text-[10px] text-blue-300 font-semibold uppercase block">Sisa Stok Gudang</span>
-                <span className="text-lg font-extrabold text-blue-400 font-mono">
+              <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-2xl text-center">
+                <span className="text-[10px] text-blue-800 font-bold uppercase block tracking-wider mb-0.5">Sisa Stok Gudang</span>
+                <span className="text-lg font-extrabold text-blue-700 font-mono">
                   {transferProduct.warehouseStock} Unit
                 </span>
               </div>
-              <div className="p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-center">
-                <span className="text-[10px] text-emerald-300 font-semibold uppercase block">Stok Etalase Saat Ini</span>
-                <span className="text-lg font-extrabold text-emerald-400 font-mono">
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
+                <span className="text-[10px] text-emerald-800 font-bold uppercase block tracking-wider mb-0.5">Stok Etalase Saat Ini</span>
+                <span className="text-lg font-extrabold text-emerald-700 font-mono">
                   {transferProduct.stock} Unit
                 </span>
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700 block mb-1">
                 Jumlah Unit yang Diambil dari Gudang ➔ Dipajang di Etalase *
               </label>
               <input
@@ -638,21 +638,21 @@ export const InventoryPage: React.FC = () => {
                 placeholder="Masukkan jumlah unit..."
                 value={transferAmount}
                 onChange={(e) => setTransferAmount(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-emerald-400 font-extrabold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-4 py-3 text-sm font-mono text-slate-900 font-extrabold focus:outline-none transition-all"
               />
             </div>
 
             {transferAmount !== '' && (
-              <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 text-xs space-y-1.5">
-                <div className="flex justify-between text-slate-400">
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5">
+                <div className="flex justify-between text-slate-600">
                   <span>Stok Gudang Setelah Dipindah:</span>
-                  <span className="font-mono font-bold text-slate-200">
+                  <span className="font-mono font-bold text-slate-900">
                     {Math.max(0, transferProduct.warehouseStock - Number(transferAmount))} Unit
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between text-slate-600">
                   <span>Stok Etalase Kasir Terbaru:</span>
-                  <span className="font-mono font-bold text-emerald-400">
+                  <span className="font-mono font-bold text-[#7a35ff]">
                     {transferProduct.stock + Number(transferAmount)} Unit
                   </span>
                 </div>
@@ -662,7 +662,7 @@ export const InventoryPage: React.FC = () => {
             <button
               type="submit"
               disabled={submitting || transferProduct.warehouseStock <= 0}
-              className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <ArrowRightLeft className="w-4 h-4" />
               {submitting ? 'Memindahkan Stok...' : 'Konfirmasi Restock Ke Etalase'}
@@ -680,15 +680,15 @@ export const InventoryPage: React.FC = () => {
       >
         {restockProduct && (
           <form onSubmit={handleRestockWarehouse} className="space-y-4">
-            <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-              <span className="text-slate-400">Stok Cadangan Gudang Saat Ini:</span>
-              <span className="font-mono font-extrabold text-blue-400 text-sm">
+            <div className="p-3.5 bg-blue-50 rounded-2xl border border-blue-200 text-xs flex justify-between items-center">
+              <span className="text-blue-900 font-semibold">Stok Cadangan Gudang Saat Ini:</span>
+              <span className="font-mono font-extrabold text-blue-700 text-sm">
                 {restockProduct.warehouseStock} Unit
               </span>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">
+              <label className="text-xs font-bold text-slate-700 block mb-1">
                 Jumlah Unit Baru yang Masuk ke Gudang *
               </label>
               <input
@@ -698,14 +698,14 @@ export const InventoryPage: React.FC = () => {
                 placeholder="Masukkan jumlah unit dari supplier..."
                 value={warehouseRestockQty}
                 onChange={(e) => setWarehouseRestockQty(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-blue-400 font-extrabold focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-4 py-3 text-sm font-mono text-slate-900 font-extrabold focus:outline-none transition-all"
               />
             </div>
 
             {warehouseRestockQty !== '' && (
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs flex justify-between items-center">
-                <span className="text-slate-400">Stok Gudang Setelah Tambah:</span>
-                <span className="font-mono font-extrabold text-blue-300 text-sm">
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs flex justify-between items-center">
+                <span className="text-slate-600 font-semibold">Stok Gudang Setelah Tambah:</span>
+                <span className="font-mono font-extrabold text-[#7a35ff] text-sm">
                   {restockProduct.warehouseStock + Number(warehouseRestockQty)} Unit
                 </span>
               </div>
@@ -714,7 +714,7 @@ export const InventoryPage: React.FC = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 bg-blue-500 hover:bg-blue-400 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Boxes className="w-4 h-4" />
               {submitting ? 'Menyimpan Pasokan...' : 'Simpan Pasokan Masuk Gudang'}
@@ -733,23 +733,23 @@ export const InventoryPage: React.FC = () => {
         <form onSubmit={handleSaveProduct} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">SKU Barang *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">SKU Barang *</label>
               <input
                 type="text"
                 required
                 value={formData.sku}
                 onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3.5 py-2 text-xs font-mono text-[#7a35ff] font-bold focus:outline-none"
                 placeholder="PRD-123456"
               />
             </div>
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">Kategori Produk *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Kategori Produk *</label>
               <select
                 required
                 value={formData.categoryId}
                 onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3 py-2 text-xs text-slate-900 font-medium focus:outline-none"
               >
                 <option value="" disabled>Pilih Kategori</option>
                 {categories.map((cat) => (
@@ -762,19 +762,19 @@ export const InventoryPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">Nama Produk *</label>
+            <label className="text-xs font-bold text-slate-700 block mb-1">Nama Produk *</label>
             <input
               type="text"
               required
               placeholder="Contoh: Mouse Gaming Wireless RGB..."
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none font-medium"
             />
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">Harga Jual Produk *</label>
+            <label className="text-xs font-bold text-slate-700 block mb-1">Harga Jual Produk *</label>
             <input
               type="number"
               required
@@ -782,13 +782,13 @@ export const InventoryPage: React.FC = () => {
               placeholder="Rp 0"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3.5 py-2 text-xs font-mono text-[#7a35ff] font-extrabold focus:outline-none"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">🏪 Stok Etalase Kasir</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">🏪 Stok Etalase Kasir</label>
               <input
                 type="number"
                 required
@@ -796,12 +796,12 @@ export const InventoryPage: React.FC = () => {
                 placeholder="0"
                 value={formData.stock}
                 onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-emerald-400 font-bold focus:outline-none focus:border-emerald-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3 py-2 text-xs font-mono text-emerald-700 font-extrabold focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-slate-300 block mb-1">📦 Stok Cadangan Gudang</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">📦 Stok Cadangan Gudang</label>
               <input
                 type="number"
                 required
@@ -809,26 +809,26 @@ export const InventoryPage: React.FC = () => {
                 placeholder="0"
                 value={formData.warehouseStock}
                 onChange={(e) => setFormData({ ...formData, warehouseStock: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-blue-400 font-bold focus:outline-none focus:border-blue-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3 py-2 text-xs font-mono text-blue-700 font-extrabold focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold text-slate-300 block mb-1">URL Foto Produk (Opsional)</label>
+            <label className="text-xs font-bold text-slate-700 block mb-1">URL Foto Produk (Opsional)</label>
             <input
               type="url"
               placeholder="https://images.unsplash.com/photo-..."
               value={formData.imageUrl}
               onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-              className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+              className="w-full bg-[#f0f2f5] border border-slate-200 focus:bg-white focus:border-[#7a35ff] rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none"
             />
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" /> {submitting ? 'Menyimpan...' : editingProduct ? 'Simpan Perubahan' : 'Tambah Produk Sekarang'}
           </button>
@@ -844,8 +844,8 @@ export const InventoryPage: React.FC = () => {
       >
         {deletingProduct && (
           <div className="space-y-4">
-            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center gap-3 text-rose-300 text-xs">
-              <AlertTriangle className="w-5 h-5 shrink-0" />
+            <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center gap-3 text-rose-700 text-xs">
+              <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
               <span>
                 Tindakan ini tidak dapat dibatalkan. Produk <strong>"{deletingProduct.name}"</strong> akan dihapus permanen.
               </span>
@@ -855,7 +855,7 @@ export const InventoryPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-xl"
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors"
               >
                 Batal
               </button>
@@ -863,7 +863,7 @@ export const InventoryPage: React.FC = () => {
                 type="button"
                 disabled={submitting}
                 onClick={handleDeleteProduct}
-                className="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-500/20 transition-all disabled:opacity-50"
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all disabled:opacity-50"
               >
                 {submitting ? 'Menghapus...' : 'Ya, Hapus Produk'}
               </button>
@@ -881,37 +881,37 @@ export const InventoryPage: React.FC = () => {
       >
         {viewingProduct && (
           <div className="space-y-4 text-xs">
-            <div className="flex gap-4 items-center p-3 bg-slate-900 rounded-xl border border-slate-800">
-              <div className="w-16 h-16 rounded-xl bg-slate-800 overflow-hidden border border-slate-700 shrink-0">
+            <div className="flex gap-4 items-center p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80">
+              <div className="w-16 h-16 rounded-xl bg-white overflow-hidden border border-slate-200 shrink-0">
                 <ProductImage src={viewingProduct.imageUrl} alt={viewingProduct.name} />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">{viewingProduct.name}</h4>
-                <p className="text-xs text-slate-400 mt-0.5">{viewingProduct.category?.name || 'Kategori'}</p>
+                <h4 className="text-base font-bold text-slate-900">{viewingProduct.name}</h4>
+                <p className="text-xs text-slate-500 mt-0.5">{viewingProduct.category?.name || 'Kategori'}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/20">
-                <span className="text-[10px] text-emerald-300 block uppercase font-semibold">🏪 Stok Etalase (Kasir)</span>
-                <span className="text-base font-extrabold text-emerald-400 font-mono">{viewingProduct.stock} Unit</span>
+              <div className="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+                <span className="text-[10px] text-emerald-900 block uppercase font-bold tracking-wider mb-1">🏪 Stok Etalase (Kasir)</span>
+                <span className="text-lg font-extrabold text-emerald-700 font-mono">{viewingProduct.stock} Unit</span>
               </div>
-              <div className="p-3 bg-blue-950/30 rounded-xl border border-blue-500/20">
-                <span className="text-[10px] text-blue-300 block uppercase font-semibold">📦 Stok Cadangan Gudang</span>
-                <span className="text-base font-extrabold text-blue-400 font-mono">{viewingProduct.warehouseStock} Unit</span>
+              <div className="p-3.5 bg-blue-50 rounded-2xl border border-blue-200">
+                <span className="text-[10px] text-blue-900 block uppercase font-bold tracking-wider mb-1">📦 Stok Cadangan Gudang</span>
+                <span className="text-lg font-extrabold text-blue-700 font-mono">{viewingProduct.warehouseStock} Unit</span>
               </div>
             </div>
 
-            <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
-              <span className="text-[10px] text-slate-400 block uppercase">Harga Jual Produk (Etalase)</span>
-              <span className="text-base font-extrabold text-emerald-400 font-mono">
+            <div className="p-3.5 bg-[#f3eeff] rounded-2xl border border-[#d1adff]">
+              <span className="text-[10px] text-[#5518cc] block uppercase font-bold tracking-wider mb-1">Harga Jual Produk (Etalase)</span>
+              <span className="text-lg font-extrabold text-[#7a35ff] font-mono">
                 {formatCurrency(viewingProduct.price)}
               </span>
             </div>
 
-            <div className="p-3 bg-slate-900 rounded-xl border border-slate-800">
-              <span className="text-[10px] text-slate-400 block uppercase">Total Nilai Produk Ini (Toko + Gudang)</span>
-              <span className="text-base font-extrabold text-cyan-400 font-mono">
+            <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+              <span className="text-[10px] text-slate-600 block uppercase font-bold tracking-wider mb-1">Total Nilai Produk Ini (Toko + Gudang)</span>
+              <span className="text-lg font-extrabold text-slate-900 font-mono">
                 {formatCurrency(viewingProduct.price * (viewingProduct.stock + viewingProduct.warehouseStock))}
               </span>
             </div>
@@ -922,9 +922,9 @@ export const InventoryPage: React.FC = () => {
                   setIsDetailModalOpen(false);
                   openEditModal(viewingProduct);
                 }}
-                className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500 text-amber-300 hover:text-slate-950 font-bold rounded-xl flex items-center gap-1.5 transition-all"
+                className="px-4 py-2.5 bg-[#f3eeff] hover:bg-[#e6d6ff] text-[#7a35ff] border border-[#d1adff] font-bold rounded-xl flex items-center gap-1.5 transition-all shadow-xs"
               >
-                <Edit3 className="w-3.5 h-3.5" /> Edit Informasi Produk
+                <Edit3 className="w-4 h-4" /> Edit Informasi Produk
               </button>
             </div>
           </div>

@@ -61,13 +61,13 @@ export const DashboardPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-6 glass-card border-rose-500/30 text-center rounded-2xl">
-        <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto mb-3" />
-        <h3 className="text-base font-semibold text-rose-300">Gagal Memuat Dashboard</h3>
-        <p className="text-sm text-slate-400 mt-1">{error}</p>
+      <div className="p-6 bg-rose-50 border border-rose-200 text-center rounded-2xl">
+        <AlertTriangle className="w-10 h-10 text-rose-600 mx-auto mb-3" />
+        <h3 className="text-base font-bold text-rose-900">Gagal Memuat Dashboard</h3>
+        <p className="text-sm text-slate-600 mt-1">{error}</p>
         <button
           onClick={loadDashboardData}
-          className="mt-4 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-sm font-medium rounded-xl text-slate-200 transition-colors"
+          className="mt-4 px-4 py-2 bg-[#7a35ff] hover:bg-[#6825e6] text-sm font-bold rounded-xl text-white transition-all shadow-md shadow-[#7a35ff]/25"
         >
           Coba Lagi
         </button>

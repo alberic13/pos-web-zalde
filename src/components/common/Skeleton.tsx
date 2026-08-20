@@ -5,7 +5,7 @@ export const Skeleton: React.FC<{ className?: string }> = ({ className = 'h-4 w-
     <div
       aria-busy="true"
       aria-label="Memuat data"
-      className={`bg-slate-800/60 animate-pulse rounded-lg ${className}`}
+      className={`bg-slate-200/80 animate-pulse rounded-lg ${className}`}
     />
   );
 };

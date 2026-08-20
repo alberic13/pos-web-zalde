@@ -24,7 +24,7 @@ const ProductImage: React.FC<{ src?: string | null; alt: string; className?: str
   const [error, setError] = useState(false);
   if (!src || error) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-500">
+      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
         <PackageX className="w-6 h-6 opacity-60" />
       </div>
     );
@@ -549,7 +549,7 @@ export const PosPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setPaymentAmount(total)}
-              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 rounded-lg"
+              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 rounded-lg transition-colors border border-slate-200"
             >
               Uang Pas ({formatCurrency(total)})
             </button>
@@ -558,7 +558,7 @@ export const PosPage: React.FC = () => {
                 key={amt}
                 type="button"
                 onClick={() => setPaymentAmount(amt)}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 rounded-lg"
+                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 rounded-lg transition-colors border border-slate-200"
               >
                 Rp {amt / 1000}k
               </button>
@@ -566,9 +566,9 @@ export const PosPage: React.FC = () => {
           </div>
 
           {/* Kembalian Calculation */}
-          <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-            <span className="text-slate-400">Kembalian:</span>
-            <span className={`font-mono font-extrabold text-sm ${change >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+          <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+            <span className="text-slate-600 font-semibold">Kembalian:</span>
+            <span className={`font-mono font-extrabold text-sm ${change >= 0 ? 'text-[#7a35ff]' : 'text-rose-600'}`}>
               {change >= 0 ? formatCurrency(change) : 'Kurang ' + formatCurrency(Math.abs(change))}
             </span>
           </div>
@@ -577,7 +577,7 @@ export const PosPage: React.FC = () => {
           <button
             type="submit"
             disabled={submitting || numericPayment < total}
-            className="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
+            className="w-full py-3.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50"
           >
             {submitting ? 'Memproses...' : 'Konfirmasi & Selesaikan Transaksi'}
           </button>
@@ -592,31 +592,31 @@ export const PosPage: React.FC = () => {
         subtitle="Transaksi Berhasil Disimpan"
       >
         {completedOrder && (
-          <div className="space-y-4 text-xs font-mono text-slate-300">
-            <div className="text-center pb-3 border-b border-dashed border-slate-700 space-y-1">
-              <h4 className="font-sans text-base font-extrabold text-white">POS ZALDE STORE</h4>
-              <p className="text-[11px] text-slate-400">Jl. Teknologi No. 88, Jakarta</p>
-              <p className="text-[10px] text-slate-500">No: {completedOrder.orderNumber}</p>
+          <div className="space-y-4 text-xs font-mono text-slate-700">
+            <div className="text-center pb-3 border-b border-dashed border-slate-200 space-y-1">
+              <h4 className="font-sans text-base font-extrabold text-slate-900">POS ZALDE STORE</h4>
+              <p className="text-[11px] text-slate-500">Jl. Teknologi No. 88, Jakarta</p>
+              <p className="text-[10px] text-slate-400">No: {completedOrder.orderNumber}</p>
             </div>
 
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {completedOrder.items?.map((item: any) => (
                 <div key={item.id} className="flex justify-between">
                   <div>
-                    <p className="font-sans font-semibold text-slate-200">{item.product?.name}</p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="font-sans font-semibold text-slate-900">{item.product?.name}</p>
+                    <p className="text-[10px] text-slate-500">
                       {item.quantity} x {formatCurrency(item.price)}
                     </p>
                   </div>
-                  <span className="font-bold text-slate-200">{formatCurrency(item.quantity * item.price)}</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(item.quantity * item.price)}</span>
                 </div>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-dashed border-slate-700 space-y-1 text-slate-400">
+            <div className="pt-3 border-t border-dashed border-slate-200 space-y-1 text-slate-600">
               <div className="flex justify-between">
                 <span>Total:</span>
-                <span className="font-bold text-emerald-400">{formatCurrency(completedOrder.totalAmount)}</span>
+                <span className="font-bold text-[#7a35ff]">{formatCurrency(completedOrder.totalAmount)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Dibayar ({completedOrder.paymentMethod}):</span>
@@ -624,20 +624,20 @@ export const PosPage: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span>Kembali:</span>
-                <span className="font-bold text-slate-100">{formatCurrency(completedOrder.changeAmount)}</span>
+                <span className="font-bold text-slate-900">{formatCurrency(completedOrder.changeAmount)}</span>
               </div>
             </div>
 
-            <div className="pt-4 flex gap-2">
+            <div className="pt-4 flex gap-2 font-sans">
               <button
                 onClick={() => window.print()}
-                className="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-sans text-xs font-semibold rounded-xl flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition-colors border border-slate-200"
               >
                 <Printer className="w-4 h-4" /> Cetak Struk
               </button>
               <button
                 onClick={() => setIsReceiptOpen(false)}
-                className="flex-1 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sans text-xs font-bold rounded-xl"
+                className="flex-1 py-2.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white text-xs font-extrabold rounded-xl shadow-md shadow-[#7a35ff]/25 transition-all"
               >
                 Selesai
               </button>
