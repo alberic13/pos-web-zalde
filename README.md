@@ -4,6 +4,43 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse I
 
 ---
 
+## 🔄 Workflow Operasional & Hak Akses 3 Role
+
+```mermaid
+graph TD
+    classDef admin fill:#8b5cf6,stroke:#7c3aed,color:#ffffff,font-weight:bold
+    classDef kasir fill:#10b981,stroke:#059669,color:#ffffff,font-weight:bold
+    classDef gudang fill:#f59e0b,stroke:#d97706,color:#ffffff,font-weight:bold
+    classDef process fill:#0f172a,stroke:#334155,color:#f8fafc
+
+    subgraph ROLES[" 👥 pembagian 3 Role & Hak Akses Halaman "]
+        ADMIN["👑 1. ADMIN (BOS)<br/>• Semua Akses Halaman (Full Access)<br/>• Dashboard, POS, Produk, Stok, Supplier, Chat, Laporan"]:::admin
+        KASIR["🛒 2. PENJAGA TOKO DEPAN (KASIR)<br/>• POS Kasir (/pos)<br/>• Produk Etalase (/products)<br/>• Riwayat Transaksi (/orders)<br/>• Chat Toko & Gudang"]:::kasir
+        GUDANG["📦 3. STAFF GUDANG<br/>• Produk Etalase (/products)<br/>• Kategori Produk (/categories)<br/>• Stok Gudang (/inventory)<br/>• Chat Toko & Gudang"]:::gudang
+    end
+
+    subgraph KASIR_FLOW[" 🛒 Workflow Penjaga Toko Depan (Kasir) "]
+        K1["Buka POS Kasir Terminal"] --> K2["Proses Transaksi Pembelian"]
+        K2 --> K3["Jika Stok Etalase ≤ 5 Unit"]
+        K3 --> K4["Kirim Chat Restok ke Gudang"]
+        K2 --> K5["🔔 Prosedur Penutupan Toko (Daily Closing)"]
+        K5 --> K6["📁 Export & Simpan Laporan Excel Harian"]
+    end
+
+    subgraph GUDANG_FLOW[" 📦 Workflow Staff Gudang "]
+        G1["Terima Notifikasi Chat Restok"] --> G2["Cek Stok Cadangan Gudang"]
+        G2 --> G3["Transfer Stok Gudang ke Etalase"]
+        G3 --> G4["Konfirmasi via Chat ke Toko Depan"]
+    end
+
+    KASIR -.-> KASIR_FLOW
+    GUDANG -.-> GUDANG_FLOW
+    ADMIN -.->|Akses & Pengawasan Penuh| KASIR_FLOW
+    ADMIN -.->|Akses & Pengawasan Penuh| GUDANG_FLOW
+```
+
+---
+
 ## 🛠️ Tech Stack & Architecture
 
 ### **Frontend Framework & UI**
