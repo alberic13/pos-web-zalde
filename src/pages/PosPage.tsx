@@ -247,7 +247,7 @@ export const PosPage: React.FC = () => {
       {/* LEFT AREA: Product Catalog (70%) */}
       <div className="flex-1 flex flex-col space-y-4">
         {/* Search & Category Filter Bar */}
-        <div className="glass-card p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
+        <div className="bg-white border border-slate-200/80 p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3 shadow-xs">
           {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -257,7 +257,7 @@ export const PosPage: React.FC = () => {
               placeholder="Cari produk, SKU, atau kategori... (F2 / Esc)"
               value={search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-10 pr-9 py-2.5 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all"
+              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl pl-10 pr-9 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7a35ff] focus:bg-white focus:ring-1 focus:ring-[#7a35ff] transition-all"
             />
             {search && (
               <button
@@ -266,7 +266,7 @@ export const PosPage: React.FC = () => {
                   setSearch('');
                   searchInputRef.current?.focus();
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 p-1 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 p-1 transition-colors"
                 title="Hapus pencarian (Esc)"
               >
                 <X className="w-3.5 h-3.5" />
@@ -278,10 +278,10 @@ export const PosPage: React.FC = () => {
           <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 selectedCategory === 'all'
-                  ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  ? 'bg-[#7a35ff] text-white shadow-md shadow-[#7a35ff]/20'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-[#f3eeff] hover:text-[#7a35ff]'
               }`}
             >
               Semua
@@ -290,10 +290,10 @@ export const PosPage: React.FC = () => {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
-                    ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#7a35ff] text-white shadow-md shadow-[#7a35ff]/20'
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-[#f3eeff] hover:text-[#7a35ff]'
                 }`}
               >
                 {cat.name}
@@ -307,10 +307,10 @@ export const PosPage: React.FC = () => {
           {loading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="h-44 glass-card rounded-2xl animate-pulse p-4 space-y-3">
-                  <div className="h-20 bg-slate-800 rounded-xl" />
-                  <div className="h-4 w-3/4 bg-slate-800 rounded" />
-                  <div className="h-4 w-1/2 bg-slate-800 rounded" />
+                <div key={i} className="h-44 bg-white border border-slate-200 rounded-2xl animate-pulse p-4 space-y-3">
+                  <div className="h-20 bg-slate-100 rounded-xl" />
+                  <div className="h-4 w-3/4 bg-slate-100 rounded" />
+                  <div className="h-4 w-1/2 bg-slate-100 rounded" />
                 </div>
               ))}
             </div>
@@ -325,27 +325,27 @@ export const PosPage: React.FC = () => {
                     key={product.id}
                     onClick={() => addToCart(product)}
                     disabled={isOutOfStock}
-                    className={`glass-card glass-card-hover rounded-2xl p-3 flex flex-col justify-between text-left relative overflow-hidden group border transition-all ${
+                    className={`bg-white rounded-2xl p-3 flex flex-col justify-between text-left relative overflow-hidden group border transition-all ${
                       isOutOfStock
-                        ? 'opacity-50 cursor-not-allowed border-rose-500/20'
+                        ? 'opacity-50 cursor-not-allowed border-rose-200 bg-slate-50'
                         : cartQty > 0
-                        ? 'border-emerald-500/50 bg-emerald-950/20'
-                        : 'border-slate-800'
+                        ? 'border-[#7a35ff] bg-[#f3eeff]/40 shadow-xs'
+                        : 'border-slate-200 hover:border-[#7a35ff]/50 hover:shadow-violet'
                     }`}
                   >
                     {/* Badge Quantity in Cart */}
                     {cartQty > 0 && (
-                      <span className="absolute top-2 right-2 bg-emerald-500 text-slate-950 font-extrabold text-[11px] px-2 py-0.5 rounded-full shadow-lg z-10">
+                      <span className="absolute top-2 right-2 bg-[#7a35ff] text-white font-extrabold text-[11px] px-2 py-0.5 rounded-full shadow-md z-10">
                         {cartQty}x
                       </span>
                     )}
 
                     {/* Image */}
-                    <div className="w-full h-24 rounded-xl bg-slate-800 overflow-hidden mb-2.5 relative">
+                    <div className="w-full h-24 rounded-xl bg-slate-100 overflow-hidden mb-2.5 relative">
                       <ProductImage src={product.imageUrl} alt={product.name} />
 
                       {isOutOfStock && (
-                        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center text-xs font-bold text-rose-400">
+                        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center text-xs font-bold text-white">
                           Stok Habis
                         </div>
                       )}
@@ -353,23 +353,23 @@ export const PosPage: React.FC = () => {
 
                     {/* Info */}
                     <div>
-                      <span className="text-[10px] font-semibold text-emerald-400/80 block uppercase">
+                      <span className="text-[10px] font-bold text-[#7a35ff] block uppercase">
                         {product.category?.name || 'Umum'}
                       </span>
-                      <h4 className="text-xs font-bold text-slate-100 line-clamp-1 group-hover:text-emerald-400 transition-colors">
+                      <h4 className="text-xs font-bold text-slate-900 line-clamp-1 group-hover:text-[#7a35ff] transition-colors">
                         {product.name}
                       </h4>
-                      <p className="text-[11px] font-mono text-slate-400 mt-0.5">{product.sku}</p>
+                      <p className="text-[11px] font-mono text-slate-500 mt-0.5">{product.sku}</p>
                     </div>
 
                     {/* Footer Price & Stock */}
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-800/80">
-                      <span className="text-xs font-extrabold text-emerald-400">
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-100">
+                      <span className="text-xs font-extrabold text-[#7a35ff]">
                         {formatCurrency(product.price)}
                       </span>
                       <span
-                        className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
-                          product.stock <= 5 ? 'text-amber-400 bg-amber-500/10' : 'text-slate-400'
+                        className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
+                          product.stock <= 5 ? 'text-amber-800 bg-amber-100' : 'text-slate-500 bg-slate-100'
                         }`}
                       >
                         Stok: {product.stock}
@@ -380,28 +380,28 @@ export const PosPage: React.FC = () => {
               })}
             </div>
           ) : (
-            <div className="text-center py-16 glass-card rounded-2xl">
-              <PackageX className="w-12 h-12 text-slate-500 mx-auto mb-3" />
-              <h3 className="text-sm font-semibold text-slate-300">Tidak ada produk ditemukan</h3>
-              <p className="text-xs text-slate-400 mt-1">Coba kata kunci lain atau pilih kategori lain.</p>
+            <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-xs">
+              <PackageX className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+              <h3 className="text-sm font-semibold text-slate-800">Tidak ada produk ditemukan</h3>
+              <p className="text-xs text-slate-500 mt-1">Coba kata kunci lain atau pilih kategori lain.</p>
             </div>
           )}
         </div>
       </div>
 
       {/* RIGHT AREA: Cart Checkout Panel (30%) */}
-      <div className="w-full lg:w-96 glass-card rounded-2xl p-5 flex flex-col justify-between border-slate-800 shadow-2xl">
+      <div className="w-full lg:w-96 bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col justify-between shadow-xs">
         {/* Cart Header */}
         <div>
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-emerald-400" />
-              <h3 className="text-base font-bold text-slate-100">Keranjang Kasir</h3>
+              <ShoppingCart className="w-5 h-5 text-[#7a35ff]" />
+              <h3 className="text-base font-bold text-slate-900">Keranjang Kasir</h3>
             </div>
             {cart.length > 0 && (
               <button
                 onClick={clearCart}
-                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 hover:bg-rose-500/10 px-2 py-1 rounded-lg transition-colors"
+                className="text-xs text-rose-600 hover:text-rose-700 flex items-center gap-1 hover:bg-rose-50 px-2 py-1 rounded-lg transition-colors font-medium"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Kosongkan
@@ -410,32 +410,32 @@ export const PosPage: React.FC = () => {
           </div>
 
           {/* Cart Items List */}
-          <div className="divide-y divide-slate-800 max-h-72 overflow-y-auto py-2 pr-1 my-2">
+          <div className="divide-y divide-slate-100 max-h-72 overflow-y-auto py-2 pr-1 my-2">
             {cart.length > 0 ? (
               cart.map((item) => (
                 <div key={item.product.id} className="py-3 flex items-center gap-3">
                   <div className="flex-1 min-w-0">
-                    <h5 className="text-xs font-bold text-slate-200 truncate">{item.product.name}</h5>
-                    <p className="text-[11px] text-emerald-400 font-semibold mt-0.5">
+                    <h5 className="text-xs font-bold text-slate-900 truncate">{item.product.name}</h5>
+                    <p className="text-[11px] text-[#7a35ff] font-semibold mt-0.5">
                       {formatCurrency(item.product.price)}{' '}
-                      <span className="text-slate-400 font-normal">x {item.quantity}</span>
+                      <span className="text-slate-500 font-normal">x {item.quantity}</span>
                     </p>
                   </div>
 
                   {/* Quantity Controls */}
-                  <div className="flex items-center gap-1 bg-slate-900 border border-slate-700/80 rounded-xl p-1">
+                  <div className="flex items-center gap-1 bg-[#f0f2f5] border border-slate-200 rounded-xl p-1">
                     <button
                       onClick={() => updateQuantity(item.product.id, -1)}
-                      className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs transition-colors"
+                      className="w-6 h-6 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center text-xs transition-colors shadow-2xs"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="w-6 text-center text-xs font-bold text-slate-100">
+                    <span className="w-6 text-center text-xs font-bold text-slate-900">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.product.id, 1)}
-                      className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center text-xs transition-colors"
+                      className="w-6 h-6 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 flex items-center justify-center text-xs transition-colors shadow-2xs"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
@@ -443,16 +443,16 @@ export const PosPage: React.FC = () => {
 
                   <button
                     onClick={() => removeFromCart(item.product.id)}
-                    className="text-slate-500 hover:text-rose-400 p-1"
+                    className="text-slate-400 hover:text-rose-600 p-1"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ))
             ) : (
-              <div className="text-center py-10 text-slate-500 space-y-2">
-                <ShoppingCart className="w-8 h-8 mx-auto opacity-30" />
-                <p className="text-xs">Keranjang masih kosong.</p>
+              <div className="text-center py-10 text-slate-400 space-y-2">
+                <ShoppingCart className="w-8 h-8 mx-auto opacity-40" />
+                <p className="text-xs text-slate-600">Keranjang masih kosong.</p>
                 <p className="text-[11px] text-slate-400">Klik item di katalog untuk menambahkan.</p>
               </div>
             )}
@@ -460,19 +460,19 @@ export const PosPage: React.FC = () => {
         </div>
 
         {/* Cart Calculation & Checkout Button */}
-        <div className="pt-4 border-t border-slate-800 space-y-3">
-          <div className="space-y-1.5 text-xs text-slate-400">
+        <div className="pt-4 border-t border-slate-100 space-y-3">
+          <div className="space-y-1.5 text-xs text-slate-500">
             <div className="flex justify-between">
               <span>Subtotal</span>
-              <span className="text-slate-200 font-semibold">{formatCurrency(subtotal)}</span>
+              <span className="text-slate-900 font-semibold">{formatCurrency(subtotal)}</span>
             </div>
             <div className="flex justify-between">
               <span>PPN (11%)</span>
-              <span className="text-slate-200 font-semibold">{formatCurrency(tax)}</span>
+              <span className="text-slate-900 font-semibold">{formatCurrency(tax)}</span>
             </div>
-            <div className="flex justify-between text-sm font-extrabold text-white pt-2 border-t border-slate-800/80">
+            <div className="flex justify-between text-sm font-extrabold text-slate-900 pt-2 border-t border-slate-100">
               <span>Total Akhir</span>
-              <span className="text-emerald-400">{formatCurrency(total)}</span>
+              <span className="text-[#7a35ff]">{formatCurrency(total)}</span>
             </div>
           </div>
 
@@ -481,8 +481,8 @@ export const PosPage: React.FC = () => {
             onClick={() => setIsCheckoutOpen(true)}
             className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
               cart.length > 0
-                ? 'bg-gradient-to-r from-brand-600 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                ? 'bg-[#7a35ff] hover:bg-[#6825e6] text-white shadow-md shadow-[#7a35ff]/25'
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed'
             }`}
           >
             <Banknote className="w-4 h-4" />

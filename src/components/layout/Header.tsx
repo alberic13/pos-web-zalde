@@ -31,16 +31,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
   });
 
   return (
-    <header className="h-16 bg-slate-900/80 border-b border-slate-800/80 sticky top-0 z-30 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
+    <header className="h-16 bg-white/90 border-b border-slate-200/80 sticky top-0 z-30 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="md:hidden p-2 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors"
+          className="md:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
           aria-label="Buka menu navigasi"
         >
           <Menu className="w-5 h-5" />
         </button>
-        <h2 className="text-lg font-bold text-slate-100 tracking-tight">{title}</h2>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h2>
       </div>
 
       <div className="flex items-center gap-3">
@@ -53,14 +53,14 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
         </div>
 
         {/* Date & Time Widget */}
-        <div className="hidden sm:flex items-center gap-3 text-xs text-slate-400 glass-card px-3.5 py-1.5 rounded-xl">
+        <div className="hidden sm:flex items-center gap-3 text-xs text-slate-600 bg-white border border-slate-200/80 shadow-xs px-3.5 py-1.5 rounded-xl">
           <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{formattedDate}</span>
+            <Calendar className="w-3.5 h-3.5 text-[#7a35ff]" />
+            <span className="font-medium">{formattedDate}</span>
           </div>
-          <div className="w-px h-3 bg-slate-700" />
-          <div className="flex items-center gap-1.5 font-mono text-slate-200">
-            <Clock className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="w-px h-3 bg-slate-200" />
+          <div className="flex items-center gap-1.5 font-mono font-semibold text-slate-800">
+            <Clock className="w-3.5 h-3.5 text-[#7a35ff]" />
             <span>{formattedTime}</span>
           </div>
         </div>

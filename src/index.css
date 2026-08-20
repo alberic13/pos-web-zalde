@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans antialiased;
+    @apply bg-[#f0f2f5] text-slate-900 font-sans antialiased;
   }
 }
 
@@ -14,29 +14,30 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #f0f2f5;
 }
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #7a35ff;
 }
 
-/* Glassmorphism utility */
+/* Card Utility System - Signal Violet & Mist Gray Theme */
 .glass-card {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(122, 53, 255, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
 }
 
 .glass-card-hover {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .glass-card-hover:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(16, 185, 129, 0.3);
+  background: #ffffff;
+  border-color: rgba(122, 53, 255, 0.4);
+  box-shadow: 0 10px 25px -3px rgba(122, 53, 255, 0.12), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
   transform: translateY(-2px);
 }
 

@@ -225,51 +225,51 @@ export const SupplierOrdersPage: React.FC = () => {
 
       {/* Top Banner KPI Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="glass-card p-4.5 rounded-2xl border-slate-800 flex items-center gap-4 hover:border-emerald-500/30 transition-all">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shrink-0">
+        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-emerald-500/40 hover:shadow-xs transition-all shadow-2xs">
+          <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
             <Building2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Supplier Terdaftar
             </span>
-            <h3 className="text-xl font-extrabold text-white mt-0.5">{suppliers.length} <span className="text-xs font-semibold text-slate-400">Distributor</span></h3>
+            <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">{suppliers.length} <span className="text-xs font-semibold text-slate-500">Distributor</span></h3>
           </div>
         </div>
 
-        <div className="glass-card p-4.5 rounded-2xl border-slate-800 flex items-center gap-4 hover:border-blue-500/30 transition-all">
-          <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
+        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-blue-500/40 hover:shadow-xs transition-all shadow-2xs">
+          <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-700 shrink-0">
             <Boxes className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Stok Cadangan Gudang
             </span>
-            <h3 className="text-xl font-extrabold text-white mt-0.5">{totalWarehouseStock} <span className="text-xs font-semibold text-slate-400">Unit</span></h3>
+            <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">{totalWarehouseStock} <span className="text-xs font-semibold text-slate-500">Unit</span></h3>
           </div>
         </div>
 
-        <div className="glass-card p-4.5 rounded-2xl border-slate-800 flex items-center gap-4 hover:border-amber-500/30 transition-all">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-amber-500/40 hover:shadow-xs transition-all shadow-2xs">
+          <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-700 shrink-0">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Gudang Menipis (≤ 5 Unit)
             </span>
-            <h3 className="text-xl font-extrabold text-amber-400 mt-0.5">{lowWarehouseCount} <span className="text-xs font-semibold text-amber-400/80">Produk</span></h3>
+            <h3 className="text-xl font-extrabold text-amber-600 mt-0.5">{lowWarehouseCount} <span className="text-xs font-semibold text-amber-700/80">Produk</span></h3>
           </div>
         </div>
 
-        <div className="glass-card p-4.5 rounded-2xl border-slate-800 flex items-center gap-4 hover:border-cyan-500/30 transition-all">
-          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0">
+        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-[#7a35ff]/40 hover:shadow-violet transition-all shadow-2xs">
+          <div className="w-12 h-12 rounded-xl bg-[#f3eeff] flex items-center justify-center text-[#7a35ff] shrink-0">
             <Banknote className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
               Estimasi Rencana Restock
             </span>
-            <h3 className="text-xl font-extrabold text-cyan-400 mt-0.5">{formatCurrency(totalOrderValue)}</h3>
+            <h3 className="text-xl font-extrabold text-[#7a35ff] mt-0.5">{formatCurrency(totalOrderValue)}</h3>
           </div>
         </div>
       </div>
@@ -277,13 +277,13 @@ export const SupplierOrdersPage: React.FC = () => {
       {/* Filter Bar & Search Header */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Filter Badges */}
-        <div className="flex items-center gap-1.5 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800 w-full sm:w-auto">
+        <div className="flex items-center gap-1.5 bg-white p-1.5 rounded-xl border border-slate-200 shadow-2xs w-full sm:w-auto">
           <button
             onClick={() => setFilterMode('all')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterMode === 'all'
-                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#7a35ff] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Semua Produk ({products.length})
@@ -292,8 +292,8 @@ export const SupplierOrdersPage: React.FC = () => {
             onClick={() => setFilterMode('low')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterMode === 'low'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-amber-500 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             ⚠️ Gudang Menipis ({lowWarehouseCount})
@@ -302,8 +302,8 @@ export const SupplierOrdersPage: React.FC = () => {
             onClick={() => setFilterMode('empty')}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filterMode === 'empty'
-                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-rose-600 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             🚫 Gudang Kosong
@@ -318,13 +318,13 @@ export const SupplierOrdersPage: React.FC = () => {
             placeholder="Cari barang / SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7a35ff] focus:bg-white transition-all"
           />
         </div>
       </div>
 
       {/* TABLE */}
-      <div className="glass-card rounded-2xl overflow-hidden border-slate-800">
+      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
         {loading ? (
           <div className="p-6">
             <TableSkeleton rows={6} />
@@ -332,7 +332,7 @@ export const SupplierOrdersPage: React.FC = () => {
         ) : filteredProducts.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-900/90 text-slate-400 uppercase tracking-wider border-b border-slate-800 text-[11px] font-extrabold">
+              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider border-b border-slate-200 text-[11px] font-extrabold">
                 <tr>
                   <th className="px-4 py-3.5">Foto & Nama Produk</th>
                   <th className="px-4 py-3.5">Supplier Tujuan</th>
@@ -344,7 +344,7 @@ export const SupplierOrdersPage: React.FC = () => {
                   <th className="px-4 py-3.5 text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {filteredProducts.map((prod) => {
                   const isWarehouseOut = prod.warehouseStock <= 0;
                   const isWarehouseLow = prod.warehouseStock <= 5;
@@ -354,16 +354,16 @@ export const SupplierOrdersPage: React.FC = () => {
                   const activeSupplierId = selectedSupplierMap[prod.id] || suppliers[0]?.id || '';
 
                   return (
-                    <tr key={prod.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors">
                       {/* FOTO & NAMA PRODUK */}
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-slate-800 overflow-hidden border border-slate-700/80 shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 shrink-0">
                             <ProductImage src={prod.imageUrl} alt={prod.name} />
                           </div>
                           <div>
-                            <span className="font-bold text-slate-100 block text-xs line-clamp-1">{prod.name}</span>
-                            <span className="text-[10px] text-slate-400 font-mono">{prod.sku} • {prod.category?.name || 'Kategori'}</span>
+                            <span className="font-bold text-slate-900 block text-xs line-clamp-1">{prod.name}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">{prod.sku} • {prod.category?.name || 'Kategori'}</span>
                           </div>
                         </div>
                       </td>
@@ -373,7 +373,7 @@ export const SupplierOrdersPage: React.FC = () => {
                         <select
                           value={activeSupplierId}
                           onChange={(e) => handleSupplierChange(prod.id, e.target.value)}
-                          className="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-medium cursor-pointer"
+                          className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-[#7a35ff] focus:bg-white font-medium cursor-pointer"
                         >
                           {suppliers.map((s) => (
                             <option key={s.id} value={s.id}>
@@ -388,38 +388,38 @@ export const SupplierOrdersPage: React.FC = () => {
                         <div
                           className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border transition-all ${
                             isWarehouseOut
-                              ? 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                              ? 'bg-rose-50 text-rose-700 border-rose-200'
                               : isWarehouseLow
-                              ? 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-                              : 'bg-indigo-500/10 text-indigo-300 border-indigo-500/30'
+                              ? 'bg-amber-50 text-amber-800 border-amber-200'
+                              : 'bg-blue-50 text-blue-800 border-blue-200'
                           }`}
                         >
                           {isWarehouseOut ? (
-                            <PackageX className="w-3.5 h-3.5 shrink-0 text-rose-400" />
+                            <PackageX className="w-3.5 h-3.5 shrink-0 text-rose-600" />
                           ) : (
-                            <Boxes className="w-3.5 h-3.5 shrink-0 text-indigo-400" />
+                            <Boxes className="w-3.5 h-3.5 shrink-0 text-blue-600" />
                           )}
                           <span>{prod.warehouseStock} Unit</span>
                         </div>
                       </td>
 
                       {/* HARGA MODAL */}
-                      <td className="px-4 py-3.5 font-mono text-slate-300 font-bold text-xs whitespace-nowrap">
+                      <td className="px-4 py-3.5 font-mono text-slate-700 font-bold text-xs whitespace-nowrap">
                         {formatCurrency(costPrice)}
                       </td>
 
                       {/* HARGA JUAL */}
-                      <td className="px-4 py-3.5 font-mono text-emerald-400 font-extrabold text-xs whitespace-nowrap">
+                      <td className="px-4 py-3.5 font-mono text-[#7a35ff] font-extrabold text-xs whitespace-nowrap">
                         {formatCurrency(prod.price)}
                       </td>
 
                       {/* INPUT QTY WITH STEPPER (+ / -) */}
                       <td className="px-4 py-3.5 text-center">
-                        <div className="inline-flex items-center bg-slate-900 border border-slate-700/80 rounded-xl p-1 gap-1">
+                        <div className="inline-flex items-center bg-[#f0f2f5] border border-slate-200 rounded-xl p-1 gap-1">
                           <button
                             type="button"
                             onClick={() => updateQty(prod.id, -5)}
-                            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+                            className="p-1 hover:bg-white text-slate-500 hover:text-slate-900 rounded-lg transition-colors shadow-2xs"
                             title="-5 Unit"
                           >
                             <Minus className="w-3 h-3" />
@@ -430,13 +430,13 @@ export const SupplierOrdersPage: React.FC = () => {
                             min="1"
                             value={currentQty}
                             onChange={(e) => setQtyDirect(prod.id, e.target.value)}
-                            className="w-12 bg-transparent text-center text-xs font-mono font-extrabold text-emerald-400 focus:outline-none"
+                            className="w-12 bg-transparent text-center text-xs font-mono font-extrabold text-[#7a35ff] focus:outline-none"
                           />
 
                           <button
                             type="button"
                             onClick={() => updateQty(prod.id, 5)}
-                            className="p-1 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+                            className="p-1 hover:bg-white text-slate-500 hover:text-slate-900 rounded-lg transition-colors shadow-2xs"
                             title="+5 Unit"
                           >
                             <Plus className="w-3 h-3" />
@@ -445,7 +445,7 @@ export const SupplierOrdersPage: React.FC = () => {
                       </td>
 
                       {/* TOTAL BAYAR */}
-                      <td className="px-4 py-3.5 font-mono text-emerald-400 font-extrabold text-sm whitespace-nowrap">
+                      <td className="px-4 py-3.5 font-mono text-[#7a35ff] font-extrabold text-sm whitespace-nowrap">
                         {formatCurrency(totalToPay)}
                       </td>
 
@@ -455,7 +455,7 @@ export const SupplierOrdersPage: React.FC = () => {
                           {/* EDIT HARGA MODAL */}
                           <button
                             onClick={() => openEditCostModal(prod)}
-                            className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-800 rounded-xl border border-slate-700/60 hover:border-amber-500/40 transition-all"
+                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-slate-100 rounded-xl border border-slate-200 transition-all"
                             title="Edit Harga Modal (Beli) Produk Ini"
                           >
                             <Edit3 className="w-4 h-4" />
@@ -464,10 +464,10 @@ export const SupplierOrdersPage: React.FC = () => {
                           {/* ORDER WA */}
                           <button
                             onClick={() => directWhatsAppOrder(prod)}
-                            className="p-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl shadow-md shadow-emerald-500/20 transition-all"
+                            className="p-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs transition-all"
                             title="Hubungi Supplier & kirim PO via WhatsApp"
                           >
-                            <MessageCircle className="w-4 h-4 fill-slate-950" />
+                            <MessageCircle className="w-4 h-4 fill-white" />
                           </button>
                         </div>
                       </td>
@@ -478,8 +478,8 @@ export const SupplierOrdersPage: React.FC = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-16 text-slate-400 space-y-2">
-            <Boxes className="w-12 h-12 mx-auto opacity-30" />
+          <div className="text-center py-16 text-slate-500 space-y-2">
+            <Boxes className="w-12 h-12 mx-auto opacity-40" />
             <p className="text-sm font-semibold">Tidak ada produk ditemukan</p>
           </div>
         )}
@@ -494,13 +494,13 @@ export const SupplierOrdersPage: React.FC = () => {
       >
         {costProduct && (
           <form onSubmit={handleSaveCostPrice} className="space-y-4 text-xs">
-            <div className="p-3.5 bg-slate-900 rounded-xl border border-slate-800 space-y-1">
-              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block">Harga Jual Etalase</span>
-              <span className="text-sm font-extrabold text-emerald-400 font-mono">{formatCurrency(costProduct.price)}</span>
+            <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider block">Harga Jual Etalase</span>
+              <span className="text-sm font-extrabold text-[#7a35ff] font-mono">{formatCurrency(costProduct.price)}</span>
             </div>
 
             <div>
-              <label className="text-slate-300 font-semibold block mb-1">
+              <label className="text-slate-700 font-semibold block mb-1">
                 Harga Modal Baru (Rp) *
               </label>
               <input
@@ -510,14 +510,14 @@ export const SupplierOrdersPage: React.FC = () => {
                 placeholder="Masukkan harga modal beli..."
                 value={newCostPrice}
                 onChange={(e) => setNewCostPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm font-mono text-amber-300 font-extrabold focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-4 py-3 text-sm font-mono text-slate-900 font-extrabold focus:outline-none focus:border-[#7a35ff]"
               />
             </div>
 
             {newCostPrice !== '' && (
-              <div className="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                <span className="text-slate-400">Estimasi Margin Keuntungan / Unit:</span>
-                <span className="font-mono font-extrabold text-emerald-400 text-sm">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center text-xs">
+                <span className="text-slate-500">Estimasi Margin Keuntungan / Unit:</span>
+                <span className="font-mono font-extrabold text-[#7a35ff] text-sm">
                   {formatCurrency(costProduct.price - Number(newCostPrice))}
                 </span>
               </div>
@@ -526,7 +526,7 @@ export const SupplierOrdersPage: React.FC = () => {
             <button
               type="submit"
               disabled={submittingCost}
-              className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <Save className="w-4 h-4" /> {submittingCost ? 'Menyimpan...' : 'Simpan Harga Modal Baru'}
             </button>

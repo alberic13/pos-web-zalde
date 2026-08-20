@@ -22,7 +22,7 @@ const ProductImage: React.FC<{ src?: string | null; alt: string; className?: str
 
   if (!src || error) {
     return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-800 text-slate-500">
+      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
         <ImageIcon className="w-4 h-4" />
       </div>
     );
@@ -84,7 +84,7 @@ export const ProductsPage: React.FC = () => {
             placeholder="Cari berdasarkan nama atau SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-700/80 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+            className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-[#7a35ff] focus:bg-white transition-all"
           />
         </div>
 
@@ -92,7 +92,7 @@ export const ProductsPage: React.FC = () => {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full sm:w-auto bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-medium"
+          className="w-full sm:w-auto bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-700 focus:outline-none focus:border-[#7a35ff] focus:bg-white font-medium"
         >
           <option value="all">Semua Kategori</option>
           {categories.map((cat) => (
@@ -104,7 +104,7 @@ export const ProductsPage: React.FC = () => {
       </div>
 
       {/* Table Container */}
-      <div className="glass-card rounded-2xl overflow-hidden border-slate-800">
+      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
         {loading ? (
           <div className="p-6">
             <TableSkeleton rows={5} />
@@ -112,7 +112,7 @@ export const ProductsPage: React.FC = () => {
         ) : products.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-900/90 text-slate-400 uppercase tracking-wider border-b border-slate-800 text-[11px] font-bold">
+              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider border-b border-slate-200 text-[11px] font-bold">
                 <tr>
                   <th className="p-4">Produk</th>
                   <th className="p-4">SKU</th>
@@ -121,30 +121,30 @@ export const ProductsPage: React.FC = () => {
                   <th className="p-4">Stok Etalase</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100">
                 {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-slate-800/40 transition-colors">
+                  <tr key={product.id} className="hover:bg-slate-50/80 transition-colors">
                     <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 overflow-hidden border border-slate-700/80 shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 shrink-0">
                           <ProductImage src={product.imageUrl} alt={product.name} />
                         </div>
                         <div>
-                          <span className="font-bold text-slate-100 block text-xs">{product.name}</span>
-                          <span className="text-[10px] text-slate-400">Kasir Etalase</span>
+                          <span className="font-bold text-slate-900 block text-xs">{product.name}</span>
+                          <span className="text-[10px] text-slate-500">Kasir Etalase</span>
                         </div>
                       </div>
                     </td>
 
-                    <td className="p-4 font-mono text-slate-400 text-xs">{product.sku}</td>
+                    <td className="p-4 font-mono text-slate-500 text-xs">{product.sku}</td>
 
                     <td className="p-4">
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-[10px] font-semibold border border-slate-700">
+                      <span className="inline-block px-2.5 py-1 rounded-full bg-[#f3eeff] text-[#7a35ff] text-[10px] font-semibold border border-[#d1adff]/40">
                         {product.category?.name || 'Uncategorized'}
                       </span>
                     </td>
 
-                    <td className="p-4 font-extrabold text-emerald-400 font-mono text-xs">
+                    <td className="p-4 font-extrabold text-[#7a35ff] font-mono text-xs">
                       {formatCurrency(product.price)}
                     </td>
 
@@ -152,8 +152,8 @@ export const ProductsPage: React.FC = () => {
                       <span
                         className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                           product.stock <= 5
-                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                            : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                            : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                         }`}
                       >
                         {product.stock} unit
@@ -165,10 +165,10 @@ export const ProductsPage: React.FC = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-16 text-slate-400 space-y-2">
-            <Package className="w-12 h-12 mx-auto opacity-30" />
+          <div className="text-center py-16 text-slate-500 space-y-2">
+            <Package className="w-12 h-12 mx-auto opacity-40" />
             <p className="text-sm font-semibold">Tidak ada produk ditemukan</p>
-            <p className="text-xs text-slate-500">Coba ubah kata kunci pencarian atau kategori filter.</p>
+            <p className="text-xs text-slate-400">Coba ubah kata kunci pencarian atau kategori filter.</p>
           </div>
         )}
       </div>

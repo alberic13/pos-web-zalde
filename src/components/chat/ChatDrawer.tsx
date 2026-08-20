@@ -179,22 +179,22 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/60 backdrop-blur-sm transition-opacity">
-      <div className="w-full max-w-md bg-slate-900 border-l border-slate-800 shadow-2xl flex flex-col h-full animate-in slide-in-from-right duration-300">
-        
-        {/* Header Drawer */}
-        <div className="p-4 border-b border-slate-800 bg-slate-900/90 flex flex-col gap-3">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm transition-opacity">
+      <div
+        className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-96 bg-white border-l border-slate-200 shadow-2xl flex flex-col transition-transform duration-300 ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        {/* Header */}
+        <div className="p-4 border-b border-slate-100 bg-white space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/20 text-slate-950 font-bold">
-                <MessageSquare className="w-5 h-5" />
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center font-bold">
+                <MessageSquare className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-bold text-slate-100 text-sm flex items-center gap-2">
-                  Chat Toko & Gudang
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                </h3>
-                <p className="text-[11px] text-slate-400">Komunikasi Penjaga Toko Depan & Gudang</p>
+                <h3 className="text-sm font-bold text-slate-900">Chat Toko & Gudang</h3>
+                <p className="text-[10px] text-slate-500">Komunikasi internal real-time</p>
               </div>
             </div>
 
@@ -202,7 +202,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               {activeRole === 'ADMIN' && (
                 <button
                   onClick={handleClearHistory}
-                  className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition-colors"
                   title="Hapus Riwayat Chat (Admin Only)"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -210,7 +210,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               )}
               <button
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors"
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -218,10 +218,10 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
           </div>
 
           {/* Role Switcher Bar */}
-          <div className="glass-card rounded-xl p-2.5 flex items-center justify-between border border-slate-800">
+          <div className="bg-[#f0f2f5] border border-slate-200 rounded-xl p-2.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs text-slate-400 font-medium">Role Aktif Saya:</span>
+              <UserCheck className="w-4 h-4 text-[#7a35ff]" />
+              <span className="text-xs text-slate-600 font-medium">Role Aktif Saya:</span>
             </div>
 
             <div className="relative">
@@ -237,8 +237,8 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               </button>
 
               {showRoleDropdown && (
-                <div className="absolute right-0 mt-1 w-56 bg-slate-800 border border-slate-700 rounded-xl shadow-xl z-50 py-1 overflow-hidden">
-                  <p className="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-700/60">
+                <div className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1 overflow-hidden">
+                  <p className="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-100">
                     Pilih Peran Pengguna
                   </p>
                   {(Object.keys(ROLE_CONFIGS) as UserRole[]).map((r) => {
@@ -251,12 +251,12 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
                           setShowRoleDropdown(false);
                         }}
                         className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-left transition-colors ${
-                          activeRole === r ? 'bg-slate-700/80 text-white' : 'text-slate-300 hover:bg-slate-700/40'
+                          activeRole === r ? 'bg-[#f3eeff] text-[#7a35ff] font-bold' : 'text-slate-600 hover:bg-slate-50'
                         }`}
                       >
-                        {r === 'KASIR' && <Store className="w-3.5 h-3.5 text-emerald-400" />}
-                        {r === 'GUDANG' && <Warehouse className="w-3.5 h-3.5 text-amber-400" />}
-                        {r === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5 text-purple-400" />}
+                        {r === 'KASIR' && <Store className="w-3.5 h-3.5 text-[#7a35ff]" />}
+                        {r === 'GUDANG' && <Warehouse className="w-3.5 h-3.5 text-amber-600" />}
+                        {r === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5 text-purple-600" />}
                         <span>{cfg.label}</span>
                       </button>
                     );
@@ -268,16 +268,16 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Message Area */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-slate-950/40">
+        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#f0f2f5]/60">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-slate-500 gap-2 text-xs">
-              <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+            <div className="flex items-center justify-center h-full text-slate-400 gap-2 text-xs">
+              <RefreshCw className="w-4 h-4 animate-spin text-[#7a35ff]" />
               <span>Memuat riwayat chat...</span>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-500 text-center p-6 space-y-2">
-              <MessageSquare className="w-10 h-10 text-slate-700" />
-              <p className="text-xs font-semibold text-slate-400">Belum ada percakapan</p>
+            <div className="flex flex-col items-center justify-center h-full text-slate-400 text-center p-6 space-y-2">
+              <MessageSquare className="w-10 h-10 text-slate-300" />
+              <p className="text-xs font-semibold text-slate-700">Belum ada percakapan</p>
               <p className="text-[11px] text-slate-500">
                 Gunakan template cepat di bawah atau ketik pesan untuk berkomunikasi.
               </p>
@@ -297,22 +297,22 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
                   className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} gap-1`}
                 >
                   {/* Sender Header */}
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 px-1">
+                  <div className="flex items-center gap-1.5 text-[10px] text-slate-500 px-1">
                     <span className={`px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${senderCfg.badgeBg} ${senderCfg.badgeText}`}>
                       {msg.senderRole === 'KASIR' ? 'Toko Depan' : msg.senderRole === 'GUDANG' ? 'Gudang' : 'Admin'}
                     </span>
-                    <span className="font-medium text-slate-300">{msg.senderName}</span>
+                    <span className="font-semibold text-slate-700">{msg.senderName}</span>
                     <span>•</span>
-                    <span className="text-slate-500">{formattedTime}</span>
+                    <span className="text-slate-400">{formattedTime}</span>
                   </div>
 
                   {/* Message Bubble */}
                   <div
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
                       isMine
-                        ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-br-none shadow-md shadow-emerald-900/20'
-                        : 'bg-slate-800 text-slate-100 border border-slate-700/70 rounded-bl-none'
-                    } ${msg.isQuickMsg ? 'border-l-4 border-l-amber-400' : ''}`}
+                        ? 'bg-gradient-to-r from-[#7a35ff] to-[#9333ea] text-white rounded-br-none shadow-sm'
+                        : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-2xs'
+                    } ${msg.isQuickMsg ? 'border-l-4 border-l-amber-500' : ''}`}
                   >
                     {msg.message}
                   </div>
@@ -324,16 +324,16 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Quick Action Templates Section */}
-        <div className="p-3 border-t border-slate-800 bg-slate-900/90 space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-400">
-            <span className="flex items-center gap-1 font-semibold text-amber-400">
-              <Zap className="w-3.5 h-3.5" /> Template Pesan Cepat
+        <div className="p-3 border-t border-slate-100 bg-white space-y-2">
+          <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <span className="flex items-center gap-1 font-semibold text-amber-600">
+              <Zap className="w-3.5 h-3.5 text-amber-500" /> Template Pesan Cepat
             </span>
             {products.length > 0 && (
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className="bg-slate-800 border border-slate-700 text-slate-200 rounded px-2 py-0.5 text-[10px] outline-none max-w-[170px] truncate"
+                className="bg-slate-50 border border-slate-200 text-slate-700 rounded px-2 py-0.5 text-[10px] outline-none max-w-[170px] truncate"
               >
                 <option value="">-- Pilih Produk Low Stock --</option>
                 {products.map((p) => (
@@ -349,7 +349,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
             {activeRole === 'KASIR' || activeRole === 'ADMIN' ? (
               <button
                 onClick={() => handleQuickTemplate('RESTOCK_REQ')}
-                className="px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all"
+                className="px-2.5 py-1 bg-[#f3eeff] hover:bg-[#e6d6ff] text-[#7a35ff] border border-[#d1adff] rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
               >
                 📢 Minta Restok Etalase
               </button>
@@ -359,13 +359,13 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               <>
                 <button
                   onClick={() => handleQuickTemplate('RESTOCK_DONE')}
-                  className="px-2.5 py-1 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all"
+                  className="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
                 >
                   ✅ Stok Etalase Diisi
                 </button>
                 <button
                   onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
-                  className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-lg text-[11px] font-medium flex items-center gap-1 transition-all"
+                  className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
                 >
                   ⚠️ Stok Gudang Menipis
                 </button>
@@ -386,18 +386,17 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder={`Ketik pesan sebagai ${roleConfig.shortLabel}...`}
-              className="flex-1 bg-slate-950 border border-slate-700/80 focus:border-emerald-500 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 outline-none transition-colors"
+              className="flex-1 bg-slate-50 border border-slate-200 focus:border-[#7a35ff] focus:bg-white rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none transition-colors"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || sending}
-              className="w-9 h-9 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-bold rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 transition-all shrink-0"
+              className="w-9 h-9 bg-[#7a35ff] hover:bg-[#6825e6] disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center shadow-sm transition-all shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>
           </form>
         </div>
-
       </div>
     </div>
   );
