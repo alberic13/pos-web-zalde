@@ -1,6 +1,6 @@
 # 🛒 POS Web Zalde
 
-A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse Inventory Management, & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Native Serverless API**, **Prisma ORM**, and **PostgreSQL (Local & Neon Cloud)**.
+A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse Inventory Management, Real-Time Store & Warehouse Communication Chat, & Sales Analytics Dashboard** built with **React 18**, **TypeScript**, **Tailwind CSS**, **Node.js Native Serverless API**, **Prisma ORM**, and **PostgreSQL (Local & Neon Cloud)**.
 
 ---
 
@@ -13,6 +13,7 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse I
 - **Recharts**: Interactive sales analytics graphs & financial charts.
 - **Lucide React**: Clean & modern iconography.
 - **React Router DOM**: SPA client-side routing (`/`, `/pos`, `/products`, `/categories`, `/inventory`, `/supplier-orders`, `/suppliers`, `/orders`).
+- **Role Context & State Management**: Global user role manager (`src/context/RoleContext.tsx`) for switching between **Kasir (Toko Depan)**, **Staff Gudang**, and **Admin Toko** with `localStorage` persistence.
 - **Browser WebP Auto-Compressor**: Built-in client-side image processing utility (`src/lib/imageCompressor.ts`) converting uploaded product images to WebP format (~15 KB – 25 KB) with 95%+ DB payload savings.
 
 ### **Backend & Database Architecture**
@@ -21,12 +22,84 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse I
 - **PostgreSQL Database Engine**:
   - **Local Development**: Local PostgreSQL Server (`pos_zalde_dev` on `localhost:5432`) for fast, robust local development.
   - **Production Deployment**: PostgreSQL (Neon Cloud Serverless) for Vercel production hosting.
-  - **Full DB Models**: `Category`, `Product` (Dual Stock: Etalase + Gudang), `Order`, `OrderItem`, and `Supplier`.
+  - **Full DB Models**: `Category`, `Product` (Dual Stock: Etalase + Gudang), `Order`, `OrderItem`, `Supplier`, and `ChatMessage`.
 
 ### **Testing & Deployment**
-- **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 6 test suites against PostgreSQL.
+- **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 7 test suites against PostgreSQL.
 - **Vercel Deployment**: Serverless Functions hosting (`/api/*`) + SPA Client static hosting.
-- **Auto DB Push Build Pipeline**: Automated `prisma db push && prisma generate && tsc && vite build` on Vercel deployment.
+---
+
+## 🗄️ Entity Relationship Diagram (ERD)
+
+Visualisasi relasi antar entitas database PostgreSQL (Prisma ORM):
+
+```mermaid
+erDiagram
+    Category ||--o{ Product : "contains (1-to-N)"
+    Product ||--o{ OrderItem : "ordered_in (1-to-N)"
+    Order ||--o{ OrderItem : "includes (1-to-N)"
+
+    Category {
+        string id PK
+        string name UK
+        datetime createdAt
+    }
+
+    Product {
+        string id PK
+        string sku UK
+        string name
+        float price
+        float costPrice
+        int stock "Stok Etalase"
+        int warehouseStock "Stok Gudang"
+        string categoryId FK
+        string imageUrl
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Order {
+        string id PK
+        string orderNumber UK
+        float totalAmount
+        float paymentAmount
+        float changeAmount
+        string paymentMethod
+        datetime createdAt
+    }
+
+    OrderItem {
+        string id PK
+        string orderId FK
+        string productId FK
+        int quantity
+        float price
+    }
+
+    Supplier {
+        string id PK
+        string companyName
+        string contactPerson
+        string phone
+        string whatsapp
+        string email
+        string address
+        string categorySupply
+        string notes
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    ChatMessage {
+        string id PK
+        string senderRole "KASIR | GUDANG | ADMIN"
+        string senderName
+        string message
+        boolean isQuickMsg
+        datetime createdAt
+    }
+```
 
 ---
 
@@ -35,18 +108,22 @@ A modern, fast, and responsive **Point of Sale (POS) Terminal, Multi-Warehouse I
 ```text
 pos-web-zalde/
 ├── api/
-│   └── index.ts               # Vercel Serverless Function & Local API Server handler (Products, Categories, Orders, Suppliers, Dashboard)
+│   └── index.ts               # Serverless API Handler (Products, Categories, Orders, Suppliers, Chat, Dashboard)
 ├── docs/
 │   └── PRD_POS_Dashboard.md   # Product Requirement Document (Fitur, UI/UX, & Skema DB)
 ├── prisma/
-│   ├── schema.prisma          # Skema Database PostgreSQL (Category, Product, Order, OrderItem, Supplier)
+│   ├── schema.prisma          # Skema Database PostgreSQL (Category, Product, Order, OrderItem, Supplier, ChatMessage)
 │   ├── syncToCloud.ts         # Skrip penarik & migrasi data lokal PostgreSQL ➔ Neon Cloud PostgreSQL
 │   ├── syncFromCloud.ts       # Skrip penarik & migrasi data live Neon Cloud ➔ Local PostgreSQL
 │   └── seed.ts                # Script seeding data sampel (Kategori, Produk, Supplier, & Transaksi)
 ├── src/
 │   ├── components/
+│   │   ├── chat/
+│   │   │   └── ChatDrawer.tsx # Floating Chat Widget Komunikasi Toko & Gudang (Short Polling + Quick Templates)
 │   │   ├── common/            # Modal, Toast notifications, & Skeleton loaders
-│   │   └── layout/            # Header & Sidebar navigasi 8 menu
+│   │   └── layout/            # Header, Sidebar (7 Nav Menu Utama), & Layout wrapper + Floating FAB Chat
+│   ├── context/
+│   │   └── RoleContext.tsx    # State Management & Role Switcher (Kasir, Staff Gudang, Admin Toko)
 │   ├── lib/
 │   │   ├── api.ts             # Client API fetch wrapper dengan error handling (CRUD lengkap)
 │   │   └── imageCompressor.ts # Browser WebP auto-compressor module (Resize + WebP 75%)
@@ -57,15 +134,16 @@ pos-web-zalde/
 │   │   ├── CategoriesPage.tsx    # CRUD Kategori Produk
 │   │   ├── InventoryPage.tsx     # Stok Gudang & Restock Etalase Kasir (Pill Badges UX)
 │   │   ├── SupplierOrdersPage.tsx# Order Pasokan Supplier (Qty Stepper, Cost Price Modal, 1-Click WA PO)
-│   │   ├── SuppliersPage.tsx     # Direktori Kontak Supplier & Kategori Pasokan Dinamis (Database API)
+│   │   ├── SuppliersPage.tsx     # Direktori Kontak Supplier & Kategori Pasokan Dinamis
 │   │   └── OrdersHistoryPage.tsx # Riwayat Transaksi Penjualan & Struk Pembayaran
-│   ├── types/                 # Interface TypeScript (Product, Category, Order, Supplier, CartItem)
-│   ├── App.tsx                # Client Routing (React Router DOM)
-│   └── main.tsx               # Entrypoint React Vite
+│   ├── types/                 # Interface TypeScript (Product, Category, Order, Supplier, CartItem, ChatMessage)
+│   ├── App.tsx                # Client Routing (React Router DOM) & RoleProvider Wrapper
+│   ├── main.tsx               # Entrypoint React Vite
+│   └── index.css              # Custom Tailwind CSS & Design System
 ├── tests/
-│   └── integration.test.ts    # Integration Test Suite (API ↔ Prisma ORM ↔ PostgreSQL)
+│   └── integration.test.ts    # Integration Test Suite (API ↔ Prisma ORM ↔ PostgreSQL - 7 Test Cases)
 ├── .env                       # Variabel lingkungan lokal (Local Postgres / Neon Cloud)
-├── package.json               # Dependensi & NPM Scripts (dev, server, test, db:push, db:sync:to-cloud, db:sync:from-cloud)
+├── package.json               # Dependensi & NPM Scripts (dev, server, test, lint, db:push, db:sync:to-cloud)
 ├── tailwind.config.js         # Konfigurasi Tailwind CSS theme
 ├── vercel.json                # Konfigurasi Vercel deployment & includeFiles Prisma
 └── vite.config.ts             # Vite server proxy & rollup manual chunks
@@ -75,22 +153,28 @@ pos-web-zalde/
 
 ## 🌟 Fitur Utama & Pembaruan Terkini (Recent Updates)
 
-### 1. **Order Pasokan Supplier (`/supplier-orders`)**
-- **Tabel Restock Interaktif**: Menampilkan foto/nama produk, supplier tujuan, stok cadangan gudang, harga modal, harga jual etalase, pengatur kuantitas (Qty Stepper `+` / `-`), dan kalkulasi otomatis total bayar ke supplier.
+### 1. **Chat Komunikasi Internal Toko & Gudang (`ChatDrawer.tsx`)**
+- **Floating Chat Widget**: Akses chat serbaguna dari tombol melayang (*Floating Action Button*) di sudut kanan bawah setiap halaman tanpa mengganggu transaksi kasir.
+- **Deteksi Role & Pemilih Role (Role Switcher)**: Penjaga toko dapat beralih peran secara instan antara **🛒 Penjaga Toko Depan (Kasir)**, **📦 Staff Gudang**, dan **👑 Admin Toko** dari header widget chat dengan warna gelembung & badge role yang berbeda.
+- **Preset Pesan Cepat (Quick Templates)**: Kirim permintaan restok etalase dalam 1-klik (`📢 Minta Restok Etalase`, `✅ Stok Etalase Diisi`, `⚠️ Stok Gudang Menipis`).
+- **Filter Produk Target Low Stock**: Dropdown pemilih produk secara otomatis menyaring dan hanya menampilkan produk yang stok etalasenya menipis (**≤ 5 unit**).
+- **Auto-Sync & Real-Time Polling**: Pesan tersinkronisasi otomatis antar tab/peramban setiap 3 detik.
+
+### 2. **Order Pasokan Supplier (`/supplier-orders`)**
+- **Tabel Restock Interaktif**: Foto/nama produk, supplier tujuan, stok cadangan gudang, harga modal, harga jual etalase, pengatur kuantitas (Qty Stepper `+` / `-`), dan kalkulasi otomatis total bayar ke supplier.
 - **Interactive Edit Harga Modal**: Pengguna dapat memperbarui **Harga Modal (Beli)** produk secara langsung dari tabel aksi, tersimpan permanen di database PostgreSQL dengan kalkulator margin keuntungan real-time.
 - **1-Click WhatsApp Purchase Order (PO)**: Generasi otomatis pesan PO terstruktur dengan detail produk, SKU, kuantitas, harga modal, harga jual, dan total tagihan yang langsung membuka WhatsApp Web/Desktop.
 - **Filter Status Gudang**: Filter instant `Semua Produk`, `⚠️ Gudang Menipis (≤ 5 unit)`, dan `🚫 Gudang Kosong`.
 
-### 2. **Direktori Kontak Supplier Database Synced (`/suppliers`)**
-- **Full Database Sync**: Data distributor/supplier kini tersimpan di database PostgreSQL Serverless Cloud (bukan `localStorage`), sehingga data selalu **100% identik** baik di lokal maupun di Vercel Deploy.
+### 3. **Direktori Kontak Supplier Database Synced (`/suppliers`)**
+- **Full Database Sync**: Data distributor/supplier tersimpan di database PostgreSQL, sehingga data selalu **100% identik** baik di lokal maupun di Vercel Deploy.
 - **Dynamic Category Supply**: Kategori pasokan supplier terhubung secara dinamis dengan master data Kategori di database.
 
-### 3. **Stok Gudang & Badges Design UX (`/inventory`)**
+### 4. **Stok Gudang & Badges Design UX (`/inventory`)**
 - **Restock Etalase Kasir**: Fitur pemindahan stok dari cadangan gudang ke etalase kasir secara langsung.
 - **Ultra-Clean Pill Badges**: Visualisasi status stok etalase dan gudang dengan badge horizontal 1-baris yang elegan dan beranimasi (Emerald untuk aman, Amber pulse untuk refill, Indigo untuk gudang, Rose untuk kosong).
-- **Pembersihan Kolom Harga Modal**: Menghilangkan kolom harga modal berlebih pada tabel stok gudang untuk memfokuskan antarmuka pada ketersediaan stok fisik dan harga jual etalase.
 
-### 4. **Auto-Kompresi & Upload Gambar WebP (`src/lib/imageCompressor.ts`)**
+### 5. **Auto-Kompresi & Upload Gambar WebP (`src/lib/imageCompressor.ts`)**
 - Upload file foto produk dari perangkat lokal (JPG, PNG, WebP) dengan kompresi WebP otomatis di browser (resize & kompresi hingga **15 KB – 25 KB**), menghemat storage database hingga **95%+**.
 
 ---
@@ -111,17 +195,18 @@ bun test
 bun test v1.3.14 (0d9b296a)
 
 tests\integration.test.ts:
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [4.13ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [163.47ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [17.20ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [42.17ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [174.50ms]
-(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 6. Database & Validation Error Handling [3.63ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 1. Health Check Endpoint (/api/health) [6.22ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 2. Category API & Database Integration [146.29ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 3. Product API & Database Integration [18.44ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 4. POS Checkout Transaction & Automatic Stock Deduction [31.10ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 5. Dashboard Analytics Endpoint (/api/dashboard/stats) [154.80ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 6. Database & Validation Error Handling [1.72ms]
+(pass) Integration Tests: API / Serverless ↔ Prisma ORM ↔ Database > 7. Store & Warehouse Internal Chat API [81.00ms]
 
- 6 pass
+ 7 pass
  0 fail
- 54 expect() calls
-Ran 6 tests across 1 file. [364.00ms]
+ 71 expect() calls
+Ran 7 tests across 1 file. [664.00ms]
 ```
 
 ---
