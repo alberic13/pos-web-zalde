@@ -238,7 +238,7 @@ export default async function handler(req: any, res: any) {
         });
         return jsonResponse({ success: true, data: products });
       }
-
+      // Handle web api product add or create
       if (method === 'POST') {
         const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body;
         if (!name || price === undefined || stock === undefined || !categoryId) {
