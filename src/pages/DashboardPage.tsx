@@ -9,7 +9,6 @@ import {
   AlertTriangle,
   TrendingUp,
   ArrowUpRight,
-  Sparkles,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -106,8 +105,8 @@ export const DashboardPage: React.FC = () => {
       <div className="mac-window p-4 sm:p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-black text-xs font-black uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4 text-amber-500" /> Real-Time Store Analytics (System 7)
+            <div className="text-black text-xs font-black uppercase tracking-wider mb-1">
+              Real-Time Store Analytics (System 7)
             </div>
             <h1 className="text-lg sm:text-xl font-black text-black uppercase">
               Ringkasan Performa Toko Hari Ini
