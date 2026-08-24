@@ -86,18 +86,18 @@ export const CategoriesPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-4xl">
+    <div className="space-y-5 animate-fade-in max-w-4xl font-sans text-black">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Header Window Bar */}
+      <div className="mac-window p-3 sm:p-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Kategori Produk</h2>
-          <p className="text-xs text-slate-500">Kelola kelompok produk di katalog toko Anda</p>
+          <h2 className="text-sm font-black text-black uppercase">Kategori Produk</h2>
+          <p className="text-[11px] text-gray-800 font-semibold">Kelola kelompok produk di katalog toko Anda</p>
         </div>
         <button
           onClick={handleOpenAdd}
-          className="px-4 py-2.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-bold text-xs rounded-xl flex items-center gap-2 shadow-md shadow-[#7a35ff]/25 transition-all"
+          className="mac-btn px-3 py-1.5 text-xs font-black uppercase flex items-center gap-1.5"
         >
           <Plus className="w-4 h-4" /> Tambah Kategori
         </button>
@@ -105,25 +105,25 @@ export const CategoriesPage: React.FC = () => {
 
       {/* Categories Cards Grid */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-24 bg-white border border-slate-200 rounded-2xl animate-pulse p-4" />
+            <div key={i} className="h-24 mac-card p-4 animate-pulse" />
           ))}
         </div>
       ) : categories.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="bg-white border border-slate-200/80 hover:border-[#7a35ff]/40 hover:shadow-violet p-4 rounded-2xl flex items-center justify-between transition-all shadow-xs"
+              className="mac-card p-3.5 flex items-center justify-between"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center border border-[#d1adff]/40">
-                  <FolderTree className="w-5 h-5" />
+                <div className="w-9 h-9 rounded-full bg-white border border-black flex items-center justify-center font-bold">
+                  <FolderTree className="w-4 h-4 text-black" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-900">{cat.name}</h4>
-                  <span className="text-xs text-slate-500">
+                  <h4 className="text-xs font-extrabold text-black">{cat.name}</h4>
+                  <span className="text-[10px] text-gray-800 font-bold">
                     {cat.productCount || 0} Produk terkait
                   </span>
                 </div>
@@ -132,27 +132,29 @@ export const CategoriesPage: React.FC = () => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleOpenEdit(cat)}
-                  className="p-1.5 text-slate-400 hover:text-[#7a35ff] hover:bg-[#f3eeff] rounded-lg transition-colors"
+                  className="mac-btn px-2 py-1 text-xs"
+                  title="Edit"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => {
                     setDeletingCategory(cat);
                     setIsDeleteModalOpen(true);
                   }}
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                  className="mac-btn px-2 py-1 text-xs text-red-700"
+                  title="Hapus"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white border border-slate-200 rounded-2xl shadow-xs text-slate-500">
-          <FolderTree className="w-12 h-12 mx-auto opacity-40 mb-2" />
-          <p className="text-sm font-semibold">Belum ada kategori</p>
+        <div className="text-center py-16 mac-window p-6 text-black space-y-2">
+          <FolderTree className="w-10 h-10 mx-auto text-gray-600 mb-1" />
+          <p className="text-xs font-black uppercase">Belum ada kategori</p>
         </div>
       )}
 
@@ -164,19 +166,19 @@ export const CategoriesPage: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-slate-700 block mb-1">Nama Kategori *</label>
+            <label className="text-xs font-black text-black block mb-1 uppercase">Nama Kategori *</label>
             <input
               type="text"
               required
               placeholder="Contoh: Makanan, Minuman, Snort"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-[#7a35ff] focus:bg-white"
+              className="mac-input w-full px-3 py-2 text-xs font-extrabold text-black"
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25"
+            className="mac-btn w-full py-2.5 text-xs font-black uppercase tracking-wider"
           >
             Simpan Kategori
           </button>
@@ -189,10 +191,10 @@ export const CategoriesPage: React.FC = () => {
         onClose={() => setIsDeleteModalOpen(false)}
         title="Hapus Kategori"
       >
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 text-rose-700 bg-rose-50 p-3 rounded-xl border border-rose-200">
-            <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
-            <p className="text-xs">
+        <div className="space-y-4 font-sans text-black">
+          <div className="flex items-center gap-3 bg-red-100 p-3 border-2 border-black">
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-700" />
+            <p className="text-xs font-extrabold">
               Apakah Anda yakin ingin menghapus kategori <strong>"{deletingCategory?.name}"</strong>?
             </p>
           </div>
@@ -200,13 +202,13 @@ export const CategoriesPage: React.FC = () => {
           <div className="flex gap-3">
             <button
               onClick={() => setIsDeleteModalOpen(false)}
-              className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors"
+              className="mac-btn flex-1 py-2 text-xs font-black uppercase"
             >
               Batal
             </button>
             <button
               onClick={handleDelete}
-              className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-colors"
+              className="mac-btn flex-1 py-2 text-xs font-black uppercase mac-btn-active text-white bg-red-700"
             >
               Hapus
             </button>

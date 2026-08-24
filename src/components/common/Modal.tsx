@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -38,34 +37,41 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
         ref={modalRef}
-        className={`w-full ${maxWidth} bg-white border border-slate-200/80 rounded-2xl shadow-xl p-6 relative overflow-hidden transform transition-all duration-200 animate-scale-up`}
+        className={`w-full ${maxWidth} mac-window p-0 relative overflow-hidden transform transition-all duration-200 animate-scale-up font-sans text-black`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100">
-          <div>
-            <h3 id="modal-title" className="text-lg font-bold text-slate-900">
+        {/* Mac OS Window Header */}
+        <div className="mac-window-header flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-red-500 border border-red-700 inline-block" />
+            <span className="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-600 inline-block" />
+            <span className="w-3 h-3 rounded-full bg-green-500 border border-green-700 inline-block" />
+          </div>
+          <div className="text-center">
+            <h3 id="modal-title" className="text-xs font-black uppercase text-black">
               {title}
             </h3>
-            {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
+            {subtitle && <p className="text-[10px] text-gray-700 font-semibold">{subtitle}</p>}
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-1.5 rounded-xl transition-colors"
+            className="mac-btn px-2 py-0.5 text-xs font-bold"
             aria-label="Tutup modal"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
         </div>
-        <div className="mt-4">{children}</div>
+
+        <div className="p-4 sm:p-5 bg-[#e8e8e8]">{children}</div>
       </div>
     </div>
   );

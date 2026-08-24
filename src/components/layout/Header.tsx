@@ -31,36 +31,36 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
   });
 
   return (
-    <header className="h-16 bg-white/90 border-b border-slate-200/80 sticky top-0 z-30 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between">
+    <header className="mac-window rounded-none border-x-0 border-t-0 border-b-2 border-black sticky top-0 z-30 px-4 py-2.5 flex items-center justify-between font-sans text-black">
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileSidebar}
-          className="md:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+          className="md:hidden mac-btn px-2.5 py-1 text-xs"
           aria-label="Buka menu navigasi"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
-        <h2 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h2>
+        <h2 className="text-base font-black text-black uppercase tracking-wide">{title}</h2>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         {/* User Role Badge */}
-        <div className={`hidden md:flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border ${roleConfig.badgeBg} ${roleConfig.badgeText} ${roleConfig.badgeBorder}`}>
+        <div className="flex items-center gap-1.5 mac-badge mac-badge-indigo">
           {activeRole === 'KASIR' && <Store className="w-3.5 h-3.5" />}
           {activeRole === 'GUDANG' && <Warehouse className="w-3.5 h-3.5" />}
           {activeRole === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5" />}
-          <span>{roleConfig.shortLabel}</span>
+          <span>Role: {roleConfig.shortLabel}</span>
         </div>
 
         {/* Date & Time Widget */}
-        <div className="hidden sm:flex items-center gap-3 text-xs text-slate-600 bg-white border border-slate-200/80 shadow-xs px-3.5 py-1.5 rounded-xl">
-          <div className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5 text-[#7a35ff]" />
-            <span className="font-medium">{formattedDate}</span>
+        <div className="hidden sm:flex items-center gap-2.5 text-xs text-black mac-card px-3 py-1 font-bold">
+          <div className="flex items-center gap-1">
+            <Calendar className="w-3.5 h-3.5 text-gray-800" />
+            <span>{formattedDate}</span>
           </div>
-          <div className="w-px h-3 bg-slate-200" />
-          <div className="flex items-center gap-1.5 font-mono font-semibold text-slate-800">
-            <Clock className="w-3.5 h-3.5 text-[#7a35ff]" />
+          <span className="text-gray-400">|</span>
+          <div className="flex items-center gap-1 font-mono">
+            <Clock className="w-3.5 h-3.5 text-gray-800" />
             <span>{formattedTime}</span>
           </div>
         </div>

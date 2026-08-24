@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 export interface ToastMessage {
   id: string;
@@ -34,35 +33,25 @@ const ToastItem: React.FC<{ toast: ToastMessage; onDismiss: (id: string) => void
     return () => clearTimeout(timer);
   }, [toast.id, onDismiss]);
 
-  const icons = {
-    success: <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />,
-    error: <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />,
-    info: <Info className="w-5 h-5 text-cyan-400 shrink-0" />,
-  };
-
-  const borderColors = {
-    success: 'border-emerald-500/30 bg-emerald-950/80',
-    error: 'border-rose-500/30 bg-rose-950/80',
-    info: 'border-cyan-500/30 bg-cyan-950/80',
-  };
-
   return (
     <div
-      className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border ${borderColors[toast.type]} backdrop-blur-md shadow-2xl transition-all duration-300 animate-slide-up`}
+      className="pointer-events-auto mac-window p-3 shadow-2xl transition-all duration-300 animate-slide-up font-sans text-black"
       role="alert"
     >
-      {icons[toast.type]}
-      <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-slate-100">{toast.title}</h4>
-        {toast.message && <p className="text-xs text-slate-300 mt-0.5 leading-relaxed">{toast.message}</p>}
+      <div className="flex items-start gap-2.5">
+        <span className="text-base">{toast.type === 'success' ? '✅' : toast.type === 'error' ? '⚠️' : 'ℹ️'}</span>
+        <div className="flex-1 min-w-0">
+          <h4 className="text-xs font-black uppercase text-black">{toast.title}</h4>
+          {toast.message && <p className="text-[11px] text-gray-800 font-medium mt-0.5 leading-tight">{toast.message}</p>}
+        </div>
+        <button
+          onClick={() => onDismiss(toast.id)}
+          className="mac-btn px-1.5 py-0.5 text-[10px] font-bold"
+          aria-label="Tutup notifikasi"
+        >
+          ✕
+        </button>
       </div>
-      <button
-        onClick={() => onDismiss(toast.id)}
-        className="text-slate-400 hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-white/10"
-        aria-label="Tutup notifikasi"
-      >
-        <X className="w-4 h-4" />
-      </button>
     </div>
   );
 };

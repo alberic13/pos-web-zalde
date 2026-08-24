@@ -179,47 +179,47 @@ export const SuppliersPage: React.FC = () => {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in font-sans text-black">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
       {/* KPI Cards Header */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-[#7a35ff]/40 hover:shadow-violet transition-all shadow-2xs">
-          <div className="w-12 h-12 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center shrink-0">
-            <Building2 className="w-6 h-6" />
+        <div className="mac-card p-4 flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-full bg-white border border-black flex items-center justify-center text-black font-bold shrink-0">
+            <Building2 className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider block">
               Total Supplier Terdaftar
             </span>
-            <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">{suppliers.length} <span className="text-xs font-semibold text-slate-500">Distributor</span></h3>
+            <h3 className="text-xl font-black text-black mt-0.5">{suppliers.length} <span className="text-xs font-bold text-gray-700">Distributor</span></h3>
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200/80 p-4.5 rounded-2xl flex items-center gap-4 hover:border-blue-500/40 hover:shadow-xs transition-all shadow-2xs">
-          <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-            <Package className="w-6 h-6" />
+        <div className="mac-card p-4 flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-full bg-white border border-black flex items-center justify-center text-black font-bold shrink-0">
+            <Package className="w-5 h-5" />
           </div>
           <div>
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
+            <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider block">
               Kategori Produk (Database)
             </span>
-            <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">{categories.length} <span className="text-xs font-semibold text-slate-500">Kategori</span></h3>
+            <h3 className="text-xl font-black text-black mt-0.5">{categories.length} <span className="text-xs font-bold text-gray-700">Kategori</span></h3>
           </div>
         </div>
       </div>
 
-      {/* Main Header & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Main Header & Search Mac OS Window */}
+      <div className="mac-window p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto flex-1">
           <div className="relative flex-1 w-full sm:max-w-md">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Cari nama supplier / contact person..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 transition-all font-medium"
+              className="mac-input w-full pl-9 pr-4 py-1.5 text-xs font-semibold placeholder-gray-600 shadow-inner"
             />
           </div>
 
@@ -227,7 +227,7 @@ export const SuppliersPage: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full sm:w-auto bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 font-semibold cursor-pointer"
+            className="mac-select w-full sm:w-auto text-xs cursor-pointer font-bold"
           >
             <option value="all">Semua Kategori Pasokan</option>
             {categories.map((cat) => (
@@ -240,7 +240,7 @@ export const SuppliersPage: React.FC = () => {
 
         <button
           onClick={openCreateSupplierModal}
-          className="px-4 py-2.5 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-md shadow-[#7a35ff]/25 transition-all shrink-0 w-full sm:w-auto justify-center"
+          className="mac-btn px-3.5 py-1.5 text-xs font-black uppercase flex items-center gap-1.5 shrink-0 w-full sm:w-auto justify-center"
         >
           <Plus className="w-4 h-4" /> Tambah Supplier Baru
         </button>
@@ -248,7 +248,7 @@ export const SuppliersPage: React.FC = () => {
 
       {/* Supplier Grid Cards */}
       {loading ? (
-        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="mac-window p-6 text-black">
           <TableSkeleton rows={4} />
         </div>
       ) : filteredSuppliers.length > 0 ? (
@@ -256,17 +256,17 @@ export const SuppliersPage: React.FC = () => {
           {filteredSuppliers.map((sup) => (
             <div
               key={sup.id}
-              className="bg-white p-5 rounded-2xl border border-slate-200/80 hover:border-[#7a35ff]/40 hover:shadow-violet space-y-4 transition-all flex flex-col justify-between shadow-xs"
+              className="mac-card p-4 flex flex-col justify-between space-y-3"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#f3eeff] border border-[#d1adff]/40 flex items-center justify-center text-[#7a35ff] shrink-0">
-                      <Building2 className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-full bg-white border border-black flex items-center justify-center text-black font-bold shrink-0">
+                      <Building2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="font-extrabold text-sm text-slate-900">{sup.companyName}</h4>
-                      <span className="inline-block mt-0.5 px-2.5 py-0.5 rounded-full bg-[#f3eeff] text-[10px] font-bold text-[#7a35ff] border border-[#d1adff]/30">
+                      <h4 className="font-black text-xs text-black">{sup.companyName}</h4>
+                      <span className="mac-badge mac-badge-indigo mt-0.5">
                         {sup.categorySupply}
                       </span>
                     </div>
@@ -275,34 +275,34 @@ export const SuppliersPage: React.FC = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => openEditSupplierModal(sup)}
-                      className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="mac-btn px-2 py-1 text-xs"
                       title="Edit Supplier"
                     >
-                      <Edit3 className="w-4 h-4" />
+                      <Edit3 className="w-3.5 h-3.5" />
                     </button>
                     <button
                       onClick={() => {
                         setDeletingSupplier(sup);
                         setIsDeleteModalOpen(true);
                       }}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition-colors"
+                      className="mac-btn px-2 py-1 text-xs text-red-700"
                       title="Hapus Supplier"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-1.5 text-xs text-slate-600">
+                <div className="space-y-1 text-xs text-black font-bold">
                   <div className="flex items-center gap-2">
-                    <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                    <span className="font-semibold text-slate-800">{sup.contactPerson}</span>
+                    <User className="w-3.5 h-3.5 text-gray-700 shrink-0" />
+                    <span className="font-extrabold text-black">{sup.contactPerson}</span>
                   </div>
 
                   {sup.email && (
                     <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <a href={`mailto:${sup.email}`} className="text-slate-500 hover:text-[#7a35ff] transition-colors underline">
+                      <Mail className="w-3.5 h-3.5 text-gray-700 shrink-0" />
+                      <a href={`mailto:${sup.email}`} className="text-black underline font-semibold">
                         {sup.email}
                       </a>
                     </div>
@@ -310,12 +310,12 @@ export const SuppliersPage: React.FC = () => {
 
                   {sup.whatsapp && (
                     <div className="flex items-center gap-2">
-                      <MessageCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <MessageCircle className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
                       <a
                         href={`https://wa.me/${sup.whatsapp.replace(/\D/g, '').startsWith('0') ? '62' + sup.whatsapp.replace(/\D/g, '').slice(1) : sup.whatsapp.replace(/\D/g, '')}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="font-mono text-emerald-700 hover:underline font-semibold"
+                        className="font-mono text-emerald-800 hover:underline font-black"
                       >
                         {sup.whatsapp}
                       </a>
@@ -323,15 +323,15 @@ export const SuppliersPage: React.FC = () => {
                   )}
 
                   {sup.address && (
-                    <div className="flex items-start gap-2 pt-0.5 text-[11px] text-slate-500">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                    <div className="flex items-start gap-2 pt-0.5 text-[11px] text-gray-800 font-semibold">
+                      <MapPin className="w-3.5 h-3.5 text-gray-700 shrink-0 mt-0.5" />
                       <span>{sup.address}</span>
                     </div>
                   )}
                 </div>
 
                 {sup.notes && (
-                  <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 italic">
+                  <div className="p-2 bg-gray-100 border border-black text-[10px] font-bold text-black italic">
                     📌 {sup.notes}
                   </div>
                 )}
@@ -340,9 +340,9 @@ export const SuppliersPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white p-12 rounded-2xl border border-slate-200 text-center space-y-3 shadow-xs">
-          <Truck className="w-12 h-12 mx-auto text-slate-400" />
-          <p className="text-sm font-bold text-slate-700">Tidak ada supplier ditemukan</p>
+        <div className="mac-window p-12 text-center space-y-2 text-black">
+          <Truck className="w-10 h-10 mx-auto text-gray-600" />
+          <p className="text-xs font-black uppercase">Tidak ada supplier ditemukan</p>
         </div>
       )}
 
@@ -353,40 +353,39 @@ export const SuppliersPage: React.FC = () => {
         title={editingSupplier ? 'Edit Data Supplier' : 'Tambah Supplier Baru'}
         subtitle={editingSupplier ? `ID: ${editingSupplier.id}` : 'Isi informasi kontak distributor / supplier'}
       >
-        <form onSubmit={handleSaveSupplier} className="space-y-4 text-xs">
+        <form onSubmit={handleSaveSupplier} className="space-y-3.5 text-xs font-sans text-black">
           <div>
-            <label className="text-slate-700 font-semibold block mb-1">Nama Perusahaan / Distributor *</label>
+            <label className="text-black font-black block mb-1 uppercase">Nama Perusahaan / Distributor *</label>
             <input
               type="text"
               required
               placeholder="Contoh: PT Fantech Indonesia Distribution"
               value={supplierForm.companyName}
               onChange={(e) => setSupplierForm({ ...supplierForm, companyName: e.target.value })}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#7a35ff]"
+              className="mac-input w-full px-3 py-2 text-xs text-black font-extrabold"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-slate-700 font-semibold block mb-1">Nama Contact Person (Sales / PIC) *</label>
+              <label className="text-black font-black block mb-1 uppercase">Contact Person *</label>
               <input
                 type="text"
                 required
                 placeholder="Contoh: Bpk. Hendra Setyawan"
                 value={supplierForm.contactPerson}
                 onChange={(e) => setSupplierForm({ ...supplierForm, contactPerson: e.target.value })}
-                className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#7a35ff]"
+                className="mac-input w-full px-3 py-2 text-xs text-black font-extrabold"
               />
             </div>
 
-            {/* DYNAMIC CATEGORY DROPDOWN FROM DATABASE (KATEGORI SIDEBAR) */}
             <div>
-              <label className="text-slate-700 font-semibold block mb-1">Kategori Pasokan (Kategori Sidebar) *</label>
+              <label className="text-black font-black block mb-1 uppercase">Kategori Pasokan *</label>
               <select
                 required
                 value={supplierForm.categorySupply}
                 onChange={(e) => setSupplierForm({ ...supplierForm, categorySupply: e.target.value })}
-                className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#7a35ff] font-medium"
+                className="mac-select w-full text-xs font-bold"
               >
                 {categories.length > 0 ? (
                   categories.map((cat) => (
@@ -402,52 +401,52 @@ export const SuppliersPage: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-slate-700 font-semibold block mb-1">Nomor WhatsApp (Direct Chat / PO)</label>
+            <label className="text-black font-black block mb-1 uppercase">Nomor WhatsApp</label>
             <input
               type="tel"
               placeholder="081234567890 atau 6281234567890"
               value={supplierForm.whatsapp}
               onChange={(e) => setSupplierForm({ ...supplierForm, whatsapp: e.target.value })}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs font-mono text-[#7a35ff] font-bold focus:outline-none focus:border-[#7a35ff]"
+              className="mac-input w-full px-3 py-2 text-xs font-mono text-black font-black"
             />
           </div>
 
           <div>
-            <label className="text-slate-700 font-semibold block mb-1">Alamat Email (Opsional)</label>
+            <label className="text-black font-black block mb-1 uppercase">Alamat Email (Opsional)</label>
             <input
               type="email"
               placeholder="sales@supplier.co.id"
               value={supplierForm.email}
               onChange={(e) => setSupplierForm({ ...supplierForm, email: e.target.value })}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#7a35ff]"
+              className="mac-input w-full px-3 py-2 text-xs text-black font-bold"
             />
           </div>
 
           <div>
-            <label className="text-slate-700 font-semibold block mb-1">Alamat Kantor / Gudang Supplier</label>
+            <label className="text-black font-black block mb-1 uppercase">Alamat Kantor / Gudang</label>
             <textarea
               rows={2}
               placeholder="Alamat lengkap distributor..."
               value={supplierForm.address}
               onChange={(e) => setSupplierForm({ ...supplierForm, address: e.target.value })}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 focus:outline-none focus:border-[#7a35ff]"
+              className="mac-input w-full px-3 py-2 text-xs text-black font-semibold"
             />
           </div>
 
           <div>
-            <label className="text-slate-700 font-semibold block mb-1">Catatan Khusus / Ketentuan Order</label>
+            <label className="text-black font-black block mb-1 uppercase">Catatan Khusus / Ketentuan Order</label>
             <input
               type="text"
               placeholder="Contoh: Min order 10 unit, Diskon 5% untuk grosir..."
               value={supplierForm.notes}
               onChange={(e) => setSupplierForm({ ...supplierForm, notes: e.target.value })}
-              className="w-full bg-[#f0f2f5] border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 focus:outline-none focus:border-[#7a35ff]"
+              className="mac-input w-full px-3 py-2 text-xs text-black font-semibold"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 bg-[#7a35ff] hover:bg-[#6825e6] text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#7a35ff]/25 flex items-center justify-center gap-2"
+            className="mac-btn w-full py-2.5 text-xs font-black uppercase flex items-center justify-center gap-2"
           >
             <Building2 className="w-4 h-4" /> {editingSupplier ? 'Simpan Perubahan' : 'Tambah Supplier Sekarang'}
           </button>
@@ -459,12 +458,11 @@ export const SuppliersPage: React.FC = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         title="Hapus Supplier"
-        subtitle="Konfirmasi penghapusan data supplier"
       >
         {deletingSupplier && (
-          <div className="space-y-4 text-xs">
-            <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3 text-rose-700">
-              <AlertTriangle className="w-5 h-5 shrink-0 text-rose-600" />
+          <div className="space-y-4 text-xs font-sans text-black">
+            <div className="p-3 bg-red-100 border-2 border-black flex items-center gap-3 font-extrabold">
+              <AlertTriangle className="w-5 h-5 shrink-0 text-red-700" />
               <span>
                 Apakah Anda yakin ingin menghapus <strong>"{deletingSupplier.companyName}"</strong> dari kontak supplier?
               </span>
@@ -474,14 +472,14 @@ export const SuppliersPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(false)}
-                className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-colors"
+                className="mac-btn flex-1 py-2 text-xs font-black uppercase"
               >
                 Batal
               </button>
               <button
                 type="button"
                 onClick={handleDeleteSupplier}
-                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-colors"
+                className="mac-btn flex-1 py-2 text-xs font-black uppercase mac-btn-active text-white bg-red-700"
               >
                 Ya, Hapus Supplier
               </button>

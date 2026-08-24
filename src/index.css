@@ -94,3 +94,210 @@
   animation: fadeInFillArea 4s ease-in-out forwards;
 }
 
+/* ==========================================
+   VINTAGE CLASSIC MACINTOSH (SYSTEM 7) STYLES
+   ========================================== */
+
+/* Pinstripe Groove Latar Belakang Klasik */
+.mac-pinstripe-bg {
+  background-color: #dedede;
+  background-image: repeating-linear-gradient(
+    90deg,
+    #dedede,
+    #dedede 1px,
+    #eee 1px,
+    #eee 2px
+  );
+}
+
+/* 3D Beveled Button Mac OS */
+.mac-btn {
+  background: linear-gradient(180deg, #ffffff 0%, #d6d6d6 100%);
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 2px solid #777777;
+  border-bottom: 2px solid #666666;
+  outline: 1px solid #000000;
+  color: #000000;
+  font-weight: 700;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+  transition: all 0.05s ease;
+}
+
+.mac-btn:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #e6e6e6 100%);
+}
+
+.mac-btn:active,
+.mac-btn-active {
+  background: #a5a5a5 !important;
+  border-top: 2px solid #555555 !important;
+  border-left: 2px solid #555555 !important;
+  border-right: 1px solid #ffffff !important;
+  border-bottom: 1px solid #ffffff !important;
+  color: #ffffff !important;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Bingkai Jendela Mac OS Klasik */
+.mac-window {
+  background: #e8e8e8;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #444444;
+  border-bottom: 2px solid #333333;
+  outline: 2px solid #000000;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.25);
+}
+
+.mac-window-header {
+  background: linear-gradient(180deg, #dddddd 0%, #c5c5c5 100%);
+  border-bottom: 2px solid #000000;
+  padding: 6px 10px;
+}
+
+/* Inset Input Field */
+.mac-input {
+  background: #ffffff;
+  border-top: 2px solid #666666;
+  border-left: 2px solid #666666;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  outline: 1px solid #000000;
+  color: #000000;
+  font-family: inherit;
+}
+
+.mac-input:focus {
+  outline: 2px solid #000000;
+  border-top-color: #333333;
+  border-left-color: #333333;
+}
+
+/* 3D Product Card Frame */
+.mac-card {
+  background: #e4e4e4;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #777777;
+  border-bottom: 2px solid #666666;
+  outline: 1px solid #000000;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.mac-card:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.25);
+  background: #eeeeee;
+}
+
+.mac-card:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.15);
+}
+
+/* Retro Apple Rainbow Arrow Gradient */
+.rainbow-arrow-badge {
+  background: linear-gradient(
+    90deg,
+    #61bb46 0%,
+    #fdb827 20%,
+    #f58220 40%,
+    #e03a3e 60%,
+    #963d97 80%,
+    #009ddc 100%
+  );
+}
+
+/* 3D Bevel Retro Table */
+.mac-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-top: 2px solid #666666;
+  border-left: 2px solid #666666;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  outline: 1px solid #000000;
+}
+
+.mac-th {
+  background: linear-gradient(180deg, #eeeeee 0%, #cccccc 100%);
+  border-bottom: 2px solid #000000;
+  border-right: 1px solid #999999;
+  color: #000000;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.mac-td {
+  border-bottom: 1px solid #dddddd;
+  border-right: 1px solid #eeeeee;
+  color: #000000;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+.mac-tr:hover {
+  background: #f0f0f0;
+}
+
+/* Status Badges System 7 */
+.mac-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  border: 1px solid #000000;
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+}
+
+.mac-badge-emerald {
+  background: #c8e6c9;
+  color: #1b5e20;
+}
+
+.mac-badge-amber {
+  background: #ffe0b2;
+  color: #e65100;
+}
+
+.mac-badge-rose {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+.mac-badge-indigo {
+  background: #c5cae9;
+  color: #1a237e;
+}
+
+/* Retro Select Input */
+.mac-select {
+  background: linear-gradient(180deg, #ffffff 0%, #e0e0e0 100%);
+  border-top: 1px solid #ffffff;
+  border-left: 1px solid #ffffff;
+  border-right: 2px solid #666666;
+  border-bottom: 2px solid #666666;
+  outline: 1px solid #000000;
+  color: #000000;
+  font-weight: 700;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.mac-select:focus {
+  outline: 2px solid #000000;
+}
+
+
+

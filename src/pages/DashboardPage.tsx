@@ -76,47 +76,47 @@ export const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#7a35ff]/10 via-white to-white border border-[#7a35ff]/20 p-6 shadow-xs">
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-5 animate-fade-in font-sans text-black">
+      {/* Welcome Banner Mac OS Window */}
+      <div className="mac-window p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-[#7a35ff] text-xs font-bold uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4" /> Real-time Store Analytics
+            <div className="flex items-center gap-2 text-black text-xs font-black uppercase tracking-wider mb-1">
+              <Sparkles className="w-4 h-4 text-amber-500" /> Real-Time Store Analytics (System 7)
             </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900">
+            <h1 className="text-lg sm:text-xl font-black text-black uppercase">
               Ringkasan Performa Toko Hari Ini
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">
+            <p className="text-xs text-gray-800 font-semibold mt-1">
               Pantau arus penjualan, inventaris stok, dan statistik produk terlaris dalam satu tempat.
             </p>
           </div>
           <button
             onClick={loadDashboardData}
-            className="px-4 py-2 text-xs font-semibold bg-[#7a35ff] text-white hover:bg-[#6825e6] rounded-xl shadow-xs transition-all self-start sm:self-auto"
+            className="mac-btn px-4 py-2 text-xs font-black uppercase tracking-wider self-start sm:self-auto"
           >
-            Refres Data
+            🔄 Refres Data
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Cards (System 7 3D Bevel Cards) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Omset Hari Ini */}
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs hover:shadow-violet hover:border-[#7a35ff]/40 transition-all">
+        <div className="mac-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-black text-gray-800 uppercase tracking-wider">
               Pendapatan Hari Ini
             </span>
-            <div className="w-10 h-10 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center">
-              <DollarSign className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-full bg-white border border-black flex items-center justify-center font-bold">
+              <DollarSign className="w-4 h-4 text-black" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 mt-3">
+          <p className="text-xl sm:text-2xl font-black text-black mt-3">
             {formatCurrency(stats?.todayRevenue || 0)}
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-[#7a35ff] font-semibold mt-2">
-            <span className="bg-[#f3eeff] px-2.5 py-0.5 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-1.5 text-xs text-black font-extrabold mt-2">
+            <span className="mac-badge mac-badge-emerald">
               <TrendingUp className="w-3 h-3" />
               <span>{stats?.todayOrdersCount || 0} Transaksi</span>
             </span>
@@ -124,185 +124,190 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Omset Bulan Ini */}
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs hover:shadow-violet hover:border-cyan-500/40 transition-all">
+        <div className="mac-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-black text-gray-800 uppercase tracking-wider">
               Omset Bulan Ini
             </span>
-            <div className="w-10 h-10 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-full bg-white border border-black flex items-center justify-center font-bold">
+              <ShoppingBag className="w-4 h-4 text-black" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 mt-3">
+          <p className="text-xl sm:text-2xl font-black text-black mt-3">
             {formatCurrency(stats?.monthRevenue || 0)}
           </p>
-          <div className="flex items-center gap-1.5 text-xs text-cyan-700 font-semibold mt-2">
-            <span className="bg-cyan-100 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+          <div className="flex items-center gap-1.5 text-xs text-black font-extrabold mt-2">
+            <span className="mac-badge mac-badge-indigo">
               <ArrowUpRight className="w-3 h-3" />
-              <span>{stats?.monthOrdersCount || 0} Transaksi Bulan Ini</span>
+              <span>{stats?.monthOrdersCount || 0} Transaksi</span>
             </span>
           </div>
         </div>
 
         {/* Total Produk */}
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs hover:shadow-violet hover:border-[#7a35ff]/40 transition-all">
+        <div className="mac-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-black text-gray-800 uppercase tracking-wider">
               Katalog Produk
             </span>
-            <div className="w-10 h-10 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center">
-              <Package className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-full bg-white border border-black flex items-center justify-center font-bold">
+              <Package className="w-4 h-4 text-black" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-slate-900 mt-3">
-            {stats?.totalProductsCount || 0} <span className="text-sm font-normal text-slate-500">Item</span>
+          <p className="text-xl sm:text-2xl font-black text-black mt-3">
+            {stats?.totalProductsCount || 0} <span className="text-xs font-bold text-gray-700">Item</span>
           </p>
-          <p className="text-xs text-slate-500 mt-2">Tersedia dalam katalog</p>
+          <p className="text-[11px] font-semibold text-gray-700 mt-2">Tersedia dalam katalog</p>
         </div>
 
         {/* Stok Menipis */}
-        <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs hover:shadow-violet hover:border-amber-500/40 transition-all">
+        <div className="mac-card p-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            <span className="text-xs font-black text-gray-800 uppercase tracking-wider">
               Peringatan Stok
             </span>
-            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-full bg-white border border-black flex items-center justify-center font-bold">
+              <AlertTriangle className="w-4 h-4 text-red-700" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-amber-600 mt-3">
-            {stats?.lowStockCount || 0} <span className="text-sm font-normal text-slate-500">Produk</span>
+          <p className="text-xl sm:text-2xl font-black text-red-700 mt-3">
+            {stats?.lowStockCount || 0} <span className="text-xs font-bold text-gray-700">Produk</span>
           </p>
-          <p className="text-xs text-amber-700/80 font-medium mt-2">Stok ≤ 5 unit (perlu restock)</p>
+          <span className="mac-badge mac-badge-rose mt-2">
+            Stok ≤ 5 unit (perlu restock)
+          </span>
         </div>
       </div>
 
       {/* Analytics Chart & Top Selling Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Sales Chart (2 cols) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-base font-bold text-slate-900">Grafik Penjualan 7 Hari Terakhir</h3>
-              <p className="text-xs text-slate-500">Total omset penjualan per hari</p>
-            </div>
+        <div className="lg:col-span-2 mac-window p-0 flex flex-col justify-between">
+          <div className="mac-window-header">
+            <h3 className="text-xs font-black uppercase text-black">
+              Grafik Penjualan 7 Hari Terakhir
+            </h3>
           </div>
 
-          <div className="h-72 w-full animate-chart-draw">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart
-                key={stats?.salesChart ? stats.salesChart.length : 0}
-                data={stats?.salesChart || []}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#7a35ff" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#7a35ff" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
-                <XAxis dataKey="date" stroke="#64748b" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={11} tickLine={false} tickFormatter={(v) => `Rp${v / 1000}k`} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    borderColor: '#e2e8f0',
-                    borderRadius: '12px',
-                    color: '#0f172a',
-                    boxShadow: '0 4px 12px rgba(122,53,255,0.12)',
-                  }}
-                  formatter={(value: any) => [formatCurrency(Number(value)), 'Omset']}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#7a35ff"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#colorRevenue)"
-                  isAnimationActive={true}
-                  animationBegin={200}
-                  animationDuration={3800}
-                  animationEasing="ease-in-out"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+          <div className="p-4 bg-white">
+            <div className="h-72 w-full animate-chart-draw">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  key={stats?.salesChart ? stats.salesChart.length : 0}
+                  data={stats?.salesChart || []}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#000000" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#000000" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#cccccc" vertical={false} />
+                  <XAxis dataKey="date" stroke="#000000" fontSize={10} tickLine={false} />
+                  <YAxis stroke="#000000" fontSize={10} tickLine={false} tickFormatter={(v) => `Rp${v / 1000}k`} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#e8e8e8',
+                      borderColor: '#000000',
+                      borderWidth: '2px',
+                      color: '#000000',
+                      fontWeight: 'bold',
+                      fontSize: '12px',
+                    }}
+                    formatter={(value: any) => [formatCurrency(Number(value)), 'Omset']}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="revenue"
+                    stroke="#000000"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#colorRevenue)"
+                    isAnimationActive={true}
+                    animationBegin={200}
+                    animationDuration={3800}
+                    animationEasing="ease-in-out"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
 
         {/* Top Products (1 col) */}
-        <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs flex flex-col justify-between">
-          <div>
-            <h3 className="text-base font-bold text-slate-900 mb-1">5 Produk Terlaris</h3>
-            <p className="text-xs text-slate-500 mb-4">Berdasarkan total unit terjual</p>
+        <div className="mac-window p-0 flex flex-col justify-between">
+          <div className="mac-window-header">
+            <h3 className="text-xs font-black uppercase text-black">
+              5 Produk Terlaris
+            </h3>
+          </div>
 
-            <div className="space-y-3.5">
-              {stats?.topProducts && stats.topProducts.length > 0 ? (
-                stats.topProducts.map((prod, idx) => (
-                  <div key={prod.id || idx} className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden shrink-0 border border-slate-200">
-                      {prod.imageUrl ? (
-                        <img
-                          src={prod.imageUrl}
-                          alt={prod.name}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-xs font-bold text-slate-500">
-                          #{idx + 1}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-slate-800 truncate">{prod.name}</p>
-                      <p className="text-[11px] text-slate-500">{prod.category}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-extrabold text-[#7a35ff] bg-[#f3eeff] px-2.5 py-0.5 rounded-full">
-                        {prod.soldCount} terjual
-                      </span>
-                    </div>
+          <div className="p-3 bg-white flex-1 space-y-3">
+            {stats?.topProducts && stats.topProducts.length > 0 ? (
+              stats.topProducts.map((prod, idx) => (
+                <div key={prod.id || idx} className="mac-card p-2 flex items-center gap-2.5">
+                  <div className="w-9 h-9 bg-gray-200 border border-black overflow-hidden shrink-0 flex items-center justify-center">
+                    {prod.imageUrl ? (
+                      <img
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <span className="text-xs font-black text-black">#{idx + 1}</span>
+                    )}
                   </div>
-                ))
-              ) : (
-                <p className="text-xs text-slate-500 py-4 text-center">Belum ada data penjualan</p>
-              )}
-            </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-black truncate">{prod.name}</p>
+                    <p className="text-[10px] text-gray-700 font-medium">{prod.category}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="mac-badge mac-badge-emerald">
+                      {prod.soldCount} terjual
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-xs font-bold text-gray-700 py-6 text-center uppercase">
+                Belum ada data penjualan
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Low Stock Warning Table */}
       {stats?.lowStockProducts && stats.lowStockProducts.length > 0 && (
-        <div className="bg-white border border-amber-200 p-6 rounded-2xl shadow-xs">
-          <div className="flex items-center gap-2 mb-4">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-            <h3 className="text-base font-bold text-slate-900">Peringatan: Stok Produk Menipis</h3>
+        <div className="mac-window p-0">
+          <div className="mac-window-header flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-700" />
+            <h3 className="text-xs font-black uppercase text-black">Peringatan: Stok Produk Menipis</h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
+          <div className="p-3 bg-white overflow-x-auto">
+            <table className="mac-table">
+              <thead>
                 <tr>
-                  <th className="p-3">SKU</th>
-                  <th className="p-3">Nama Produk</th>
-                  <th className="p-3">Kategori</th>
-                  <th className="p-3">Harga Jual</th>
-                  <th className="p-3">Sisa Stok</th>
+                  <th className="mac-th">SKU</th>
+                  <th className="mac-th">Nama Produk</th>
+                  <th className="mac-th">Kategori</th>
+                  <th className="mac-th">Harga Jual</th>
+                  <th className="mac-th">Sisa Stok</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody>
                 {stats.lowStockProducts.map((prod) => (
-                  <tr key={prod.id} className="hover:bg-amber-50/50 transition-colors">
-                    <td className="p-3 font-mono text-slate-500">{prod.sku}</td>
-                    <td className="p-3 font-semibold text-slate-800">{prod.name}</td>
-                    <td className="p-3 text-slate-500">{prod.category?.name}</td>
-                    <td className="p-3 font-medium text-slate-800">{formatCurrency(prod.price)}</td>
-                    <td className="p-3">
-                      <span className="px-2.5 py-1 bg-amber-100 text-amber-800 border border-amber-200 rounded-full font-bold">
+                  <tr key={prod.id} className="mac-tr">
+                    <td className="mac-td font-mono font-bold">{prod.sku}</td>
+                    <td className="mac-td font-extrabold">{prod.name}</td>
+                    <td className="mac-td text-gray-700">{prod.category?.name}</td>
+                    <td className="mac-td font-bold">{formatCurrency(prod.price)}</td>
+                    <td className="mac-td">
+                      <span className="mac-badge mac-badge-rose">
                         Sisa {prod.stock} unit
                       </span>
                     </td>

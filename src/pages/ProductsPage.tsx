@@ -72,19 +72,19 @@ export const ProductsPage: React.FC = () => {
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-5 animate-fade-in font-sans text-black">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Header Actions Mac OS Window */}
+      <div className="mac-window p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative flex-1 w-full sm:max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Cari berdasarkan nama atau SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white border border-slate-300 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 placeholder-slate-400 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 transition-all font-medium"
+            className="mac-input w-full pl-9 pr-4 py-1.5 text-xs font-semibold placeholder-gray-600 shadow-inner"
           />
         </div>
 
@@ -92,7 +92,7 @@ export const ProductsPage: React.FC = () => {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="w-full sm:w-auto bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 shadow-2xs focus:outline-none focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 font-semibold cursor-pointer"
+          className="mac-select w-full sm:w-auto text-xs cursor-pointer"
         >
           <option value="all">Semua Kategori</option>
           {categories.map((cat) => (
@@ -103,74 +103,80 @@ export const ProductsPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs">
-        {loading ? (
-          <div className="p-6">
-            <TableSkeleton rows={5} />
-          </div>
-        ) : products.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider border-b border-slate-200 text-[11px] font-bold">
-                <tr>
-                  <th className="p-4">Produk</th>
-                  <th className="p-4">SKU</th>
-                  <th className="p-4">Kategori</th>
-                  <th className="p-4">Harga Jual</th>
-                  <th className="p-4">Stok Etalase</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-slate-50/80 transition-colors">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 overflow-hidden border border-slate-200 shrink-0">
-                          <ProductImage src={product.imageUrl} alt={product.name} />
-                        </div>
-                        <div>
-                          <span className="font-bold text-slate-900 block text-xs">{product.name}</span>
-                          <span className="text-[10px] text-slate-500">Kasir Etalase</span>
-                        </div>
-                      </div>
-                    </td>
+      {/* Table Container Mac OS Window */}
+      <div className="mac-window p-0 overflow-hidden">
+        <div className="mac-window-header">
+          <h3 className="text-xs font-black uppercase text-black">
+            Katalog Produk Etalase Kasir
+          </h3>
+        </div>
 
-                    <td className="p-4 font-mono text-slate-500 text-xs">{product.sku}</td>
-
-                    <td className="p-4">
-                      <span className="inline-block px-2.5 py-1 rounded-full bg-[#f3eeff] text-[#7a35ff] text-[10px] font-semibold border border-[#d1adff]/40">
-                        {product.category?.name || 'Uncategorized'}
-                      </span>
-                    </td>
-
-                    <td className="p-4 font-extrabold text-[#7a35ff] font-mono text-xs">
-                      {formatCurrency(product.price)}
-                    </td>
-
-                    <td className="p-4">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
-                          product.stock <= 5
-                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                            : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                        }`}
-                      >
-                        {product.stock} unit
-                      </span>
-                    </td>
+        <div className="p-3 bg-white">
+          {loading ? (
+            <div className="p-6">
+              <TableSkeleton rows={5} />
+            </div>
+          ) : products.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="mac-table">
+                <thead>
+                  <tr>
+                    <th className="mac-th">Produk</th>
+                    <th className="mac-th">SKU</th>
+                    <th className="mac-th">Kategori</th>
+                    <th className="mac-th">Harga Jual</th>
+                    <th className="mac-th">Stok Etalase</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-16 text-slate-500 space-y-2">
-            <Package className="w-12 h-12 mx-auto opacity-40" />
-            <p className="text-sm font-semibold">Tidak ada produk ditemukan</p>
-            <p className="text-xs text-slate-400">Coba ubah kata kunci pencarian atau kategori filter.</p>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {products.map((product) => (
+                    <tr key={product.id} className="mac-tr">
+                      <td className="mac-td">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gray-200 border border-black overflow-hidden shrink-0 flex items-center justify-center">
+                            <ProductImage src={product.imageUrl} alt={product.name} />
+                          </div>
+                          <div>
+                            <span className="font-extrabold text-black block text-xs">{product.name}</span>
+                            <span className="text-[10px] text-gray-700 font-semibold">Kasir Etalase</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="mac-td font-mono font-bold text-xs">{product.sku}</td>
+
+                      <td className="mac-td">
+                        <span className="mac-badge mac-badge-indigo">
+                          {product.category?.name || 'Uncategorized'}
+                        </span>
+                      </td>
+
+                      <td className="mac-td font-black text-black text-xs">
+                        {formatCurrency(product.price)}
+                      </td>
+
+                      <td className="mac-td">
+                        <span
+                          className={`mac-badge ${
+                            product.stock <= 5 ? 'mac-badge-amber' : 'mac-badge-emerald'
+                          }`}
+                        >
+                          {product.stock} unit
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-16 text-black space-y-2">
+              <Package className="w-10 h-10 mx-auto text-gray-600" />
+              <p className="text-xs font-black uppercase">Tidak ada produk ditemukan</p>
+              <p className="text-[11px] text-gray-700 font-semibold">Coba ubah kata kunci pencarian atau kategori filter.</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

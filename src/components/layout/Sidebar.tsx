@@ -11,7 +11,6 @@ import {
   Building2,
   History,
   Store,
-  X,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -38,29 +37,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-xs md:hidden"
           onClick={onCloseMobile}
         />
       )}
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-40 w-64 bg-white border-r border-slate-200/80 flex flex-col transition-transform duration-300 md:translate-x-0 ${
+        className={`fixed top-0 left-0 bottom-0 z-40 w-64 mac-window rounded-none border-r-2 border-black flex flex-col transition-transform duration-300 md:translate-x-0 font-sans text-black ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Logo Header */}
-        <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#7a35ff] to-[#a855f7] flex items-center justify-center shadow-md shadow-[#7a35ff]/25">
-              <Store className="w-5 h-5 text-white font-bold" />
+        <div className="h-16 px-4 flex items-center justify-between border-b-2 border-black bg-gradient-to-b from-[#e0e0e0] to-[#cccccc]">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full rainbow-arrow-badge flex items-center justify-center border border-black shadow-xs">
+              <Store className="w-4 h-4 text-white drop-shadow-md" />
             </div>
             <div>
-              <h1 className="font-extrabold text-base tracking-wide text-slate-900">
-                POS ZALDE
+              <h1 className="font-black text-sm tracking-tight text-black">
+                POS KASIR ZALDE
               </h1>
-              <span className="text-[10px] text-[#7a35ff] font-bold tracking-wider uppercase block">
-                Store Dashboard
+              <span className="text-[10px] text-gray-800 font-extrabold uppercase block -mt-0.5">
+                System
               </span>
             </div>
           </div>
@@ -69,16 +68,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
           {onCloseMobile && (
             <button
               onClick={onCloseMobile}
-              className="md:hidden text-slate-400 hover:text-slate-700 p-1"
+              className="md:hidden mac-btn px-2 py-0.5 text-xs font-bold"
             >
-              <X className="w-5 h-5" />
+              ✕
             </button>
           )}
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-          <p className="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+        <nav className="flex-1 px-2.5 py-4 space-y-1.5 overflow-y-auto bg-[#e8e8e8]">
+          <p className="px-2 text-[10px] font-black text-gray-700 uppercase tracking-widest mb-1.5">
             Menu Utama
           </p>
           {navItems.map((item) => {
@@ -89,18 +88,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
                 to={item.path}
                 onClick={onCloseMobile}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? 'bg-[#7a35ff] text-white font-semibold shadow-md shadow-[#7a35ff]/20'
-                      : 'text-slate-600 hover:text-[#7a35ff] hover:bg-[#f3eeff]'
+                  `mac-btn flex items-center gap-2.5 px-3 py-2 text-xs font-extrabold uppercase transition-all ${
+                    isActive ? 'mac-btn-active' : ''
                   }`
                 }
               >
-                <Icon className="w-4.5 h-4.5 shrink-0" />
-                <span>{item.label}</span>
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
                 {item.highlight && (
-                  <span className="ml-auto text-[10px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full uppercase">
-                    Kasir
+                  <span className="ml-auto text-[9px] bg-yellow-300 text-black border border-black font-black px-1.5 py-0.2 uppercase">
+                    POS
                   </span>
                 )}
               </NavLink>
@@ -109,16 +106,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
         </nav>
 
         {/* Footer Info */}
-        <div className="p-4 border-t border-slate-100">
-          <div className="bg-[#f0f2f5] border border-slate-200/60 rounded-xl p-3 flex items-center gap-3">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${roleConfig.avatarBg}`}>
+        <div className="p-3 border-t-2 border-black bg-gray-300">
+          <div className="mac-card p-2 flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-full bg-white border border-black flex items-center justify-center text-xs font-black shadow-xs">
               {activeRole === 'KASIR' ? 'KT' : activeRole === 'GUDANG' ? 'SG' : 'AZ'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-semibold text-slate-900 truncate">{activeName}</p>
-              <p className="text-[10px] text-slate-500 truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#7a35ff]" />
-                <span>{roleConfig.shortLabel}</span>
+              <p className="text-xs font-black text-black truncate">{activeName}</p>
+              <p className="text-[10px] text-gray-800 font-bold truncate">
+                Role: {roleConfig.shortLabel}
               </p>
             </div>
           </div>

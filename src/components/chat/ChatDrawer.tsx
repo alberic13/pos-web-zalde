@@ -3,7 +3,6 @@ import { useRole, UserRole, ROLE_CONFIGS } from '../../context/RoleContext';
 import {
   MessageSquare,
   Send,
-  X,
   Store,
   Warehouse,
   ShieldAlert,
@@ -179,66 +178,67 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm transition-opacity">
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/50 backdrop-blur-xs transition-opacity font-sans text-black">
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-96 bg-white border-l border-slate-200 shadow-2xl flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 bottom-0 z-50 w-full sm:w-96 mac-window rounded-none border-l-2 border-black flex flex-col transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-slate-100 bg-white space-y-3">
+        {/* Mac OS Window Header */}
+        <div className="mac-window-header space-y-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#f3eeff] text-[#7a35ff] flex items-center justify-center font-bold">
-                <MessageSquare className="w-4 h-4" />
+              <div className="flex items-center gap-1">
+                <span className="w-3 h-3 rounded-full bg-red-500 border border-red-700 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-yellow-400 border border-yellow-600 inline-block" />
+                <span className="w-3 h-3 rounded-full bg-green-500 border border-green-700 inline-block" />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Chat Toko & Gudang</h3>
-                <p className="text-[10px] text-slate-500">Komunikasi internal real-time</p>
-              </div>
+              <h3 className="text-xs font-black uppercase text-black">
+                Chat Toko & Gudang (Mac OS)
+              </h3>
             </div>
 
             <div className="flex items-center gap-1">
               {activeRole === 'ADMIN' && (
                 <button
                   onClick={handleClearHistory}
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-lg transition-colors"
+                  className="mac-btn px-2 py-0.5 text-xs text-red-700 font-bold"
                   title="Hapus Riwayat Chat (Admin Only)"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               )}
               <button
                 onClick={onClose}
-                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                className="mac-btn px-2 py-0.5 text-xs font-bold"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
           </div>
 
           {/* Role Switcher Bar */}
-          <div className="bg-[#f0f2f5] border border-slate-200 rounded-xl p-2.5 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-[#7a35ff]" />
-              <span className="text-xs text-slate-600 font-medium">Role Aktif Saya:</span>
+          <div className="mac-card p-2 flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-black">
+              <UserCheck className="w-3.5 h-3.5 text-black" />
+              <span>Role Saya:</span>
             </div>
 
             <div className="relative">
               <button
                 onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold border ${roleConfig.badgeBg} ${roleConfig.badgeText} ${roleConfig.badgeBorder} transition-all`}
+                className="mac-btn px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1"
               >
                 {activeRole === 'KASIR' && <Store className="w-3.5 h-3.5" />}
                 {activeRole === 'GUDANG' && <Warehouse className="w-3.5 h-3.5" />}
                 {activeRole === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5" />}
                 <span>{roleConfig.shortLabel}</span>
-                <ChevronDown className="w-3.5 h-3.5 ml-0.5" />
+                <ChevronDown className="w-3.5 h-3.5" />
               </button>
 
               {showRoleDropdown && (
-                <div className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1 overflow-hidden">
-                  <p className="px-3 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-100">
+                <div className="absolute right-0 mt-1 w-52 mac-window p-1 z-50 shadow-2xl">
+                  <p className="px-2 py-1 text-[9px] uppercase font-black text-gray-700 border-b border-black">
                     Pilih Peran Pengguna
                   </p>
                   {(Object.keys(ROLE_CONFIGS) as UserRole[]).map((r) => {
@@ -250,13 +250,10 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
                           setActiveRole(r);
                           setShowRoleDropdown(false);
                         }}
-                        className={`w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-left transition-colors ${
-                          activeRole === r ? 'bg-[#f3eeff] text-[#7a35ff] font-bold' : 'text-slate-600 hover:bg-slate-50'
+                        className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs font-extrabold text-left transition-colors uppercase ${
+                          activeRole === r ? 'mac-btn-active' : 'hover:bg-gray-300'
                         }`}
                       >
-                        {r === 'KASIR' && <Store className="w-3.5 h-3.5 text-[#7a35ff]" />}
-                        {r === 'GUDANG' && <Warehouse className="w-3.5 h-3.5 text-amber-600" />}
-                        {r === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5 text-purple-600" />}
                         <span>{cfg.label}</span>
                       </button>
                     );
@@ -268,24 +265,23 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Message Area */}
-        <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-[#f0f2f5]/60">
+        <div className="flex-1 p-3 overflow-y-auto space-y-3 mac-pinstripe-bg">
           {loading ? (
-            <div className="flex items-center justify-center h-full text-slate-400 gap-2 text-xs">
-              <RefreshCw className="w-4 h-4 animate-spin text-[#7a35ff]" />
+            <div className="flex items-center justify-center h-full text-black font-bold gap-2 text-xs">
+              <RefreshCw className="w-4 h-4 animate-spin text-black" />
               <span>Memuat riwayat chat...</span>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-slate-400 text-center p-6 space-y-2">
-              <MessageSquare className="w-10 h-10 text-slate-300" />
-              <p className="text-xs font-semibold text-slate-700">Belum ada percakapan</p>
-              <p className="text-[11px] text-slate-500">
+            <div className="flex flex-col items-center justify-center h-full text-black text-center p-6 space-y-2">
+              <MessageSquare className="w-10 h-10 text-gray-600" />
+              <p className="text-xs font-black uppercase">Belum ada percakapan</p>
+              <p className="text-[10px] text-gray-700 font-semibold">
                 Gunakan template cepat di bawah atau ketik pesan untuk berkomunikasi.
               </p>
             </div>
           ) : (
             messages.map((msg) => {
               const isMine = msg.senderRole === activeRole;
-              const senderCfg = ROLE_CONFIGS[msg.senderRole] || ROLE_CONFIGS.KASIR;
               const formattedTime = new Date(msg.createdAt).toLocaleTimeString('id-ID', {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -297,22 +293,22 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
                   className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} gap-1`}
                 >
                   {/* Sender Header */}
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-500 px-1">
-                    <span className={`px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${senderCfg.badgeBg} ${senderCfg.badgeText}`}>
+                  <div className="flex items-center gap-1.5 text-[9px] text-black font-bold px-1 uppercase">
+                    <span className="mac-badge mac-badge-indigo">
                       {msg.senderRole === 'KASIR' ? 'Toko Depan' : msg.senderRole === 'GUDANG' ? 'Gudang' : 'Admin'}
                     </span>
-                    <span className="font-semibold text-slate-700">{msg.senderName}</span>
+                    <span>{msg.senderName}</span>
                     <span>•</span>
-                    <span className="text-slate-400">{formattedTime}</span>
+                    <span className="text-gray-700">{formattedTime}</span>
                   </div>
 
                   {/* Message Bubble */}
                   <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
+                    className={`max-w-[85%] mac-card p-2.5 text-xs font-semibold leading-snug ${
                       isMine
-                        ? 'bg-gradient-to-r from-[#7a35ff] to-[#9333ea] text-white rounded-br-none shadow-sm'
-                        : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none shadow-2xs'
-                    } ${msg.isQuickMsg ? 'border-l-4 border-l-amber-500' : ''}`}
+                        ? 'bg-gradient-to-b from-[#ffffff] to-[#d0d0d0] text-black border-2 border-black'
+                        : 'bg-white text-black border-2 border-gray-600'
+                    } ${msg.isQuickMsg ? 'border-l-4 border-l-yellow-500' : ''}`}
                   >
                     {msg.message}
                   </div>
@@ -324,34 +320,34 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Quick Action Templates Section */}
-        <div className="p-3 border-t border-slate-100 bg-white space-y-2">
-          <div className="flex items-center justify-between text-[11px] text-slate-500">
-            <span className="flex items-center gap-1 font-semibold text-amber-600">
-              <Zap className="w-3.5 h-3.5 text-amber-500" /> Template Pesan Cepat
+        <div className="p-3 border-t-2 border-black bg-gray-300 space-y-2">
+          <div className="flex items-center justify-between text-[10px] text-black font-extrabold uppercase">
+            <span className="flex items-center gap-1 text-black">
+              <Zap className="w-3.5 h-3.5 text-yellow-600" /> Template Cepat
             </span>
             {products.length > 0 && (
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className="bg-slate-50 border border-slate-200 text-slate-700 rounded px-2 py-0.5 text-[10px] outline-none max-w-[170px] truncate"
+                className="mac-select text-[10px] max-w-[160px] truncate"
               >
-                <option value="">-- Pilih Produk Low Stock --</option>
+                <option value="">-- Pilih Low Stock --</option>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} (Etalase: {p.stock} | Gudang: {p.warehouseStock})
+                    {p.name} ({p.stock} unit)
                   </option>
                 ))}
               </select>
             )}
           </div>
 
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {activeRole === 'KASIR' || activeRole === 'ADMIN' ? (
               <button
                 onClick={() => handleQuickTemplate('RESTOCK_REQ')}
-                className="px-2.5 py-1 bg-[#f3eeff] hover:bg-[#e6d6ff] text-[#7a35ff] border border-[#d1adff] rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
+                className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
               >
-                📢 Minta Restok Etalase
+                📢 Minta Restok
               </button>
             ) : null}
 
@@ -359,15 +355,15 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               <>
                 <button
                   onClick={() => handleQuickTemplate('RESTOCK_DONE')}
-                  className="px-2.5 py-1 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
+                  className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
                 >
-                  ✅ Stok Etalase Diisi
+                  ✅ Restok Selesai
                 </button>
                 <button
                   onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
-                  className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-all"
+                  className="mac-btn px-2 py-1 text-[10px] font-black uppercase text-red-700"
                 >
-                  ⚠️ Stok Gudang Menipis
+                  ⚠️ Stok Menipis
                 </button>
               </>
             ) : null}
@@ -385,15 +381,15 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={`Ketik pesan sebagai ${roleConfig.shortLabel}...`}
-              className="flex-1 bg-white border border-slate-300 focus:border-[#7a35ff] focus:ring-2 focus:ring-[#7a35ff]/20 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none transition-all shadow-2xs font-medium"
+              placeholder={`Pesan ${roleConfig.shortLabel}...`}
+              className="mac-input flex-1 px-3 py-1.5 text-xs font-semibold placeholder-gray-600"
             />
             <button
               type="submit"
               disabled={!inputText.trim() || sending}
-              className="w-9 h-9 bg-[#7a35ff] hover:bg-[#6825e6] disabled:opacity-50 text-white font-bold rounded-xl flex items-center justify-center shadow-sm transition-all shrink-0"
+              className="mac-btn px-3 py-1.5 text-xs font-black uppercase disabled:opacity-40 shrink-0"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5" />
             </button>
           </form>
         </div>
