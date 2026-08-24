@@ -33,15 +33,15 @@ export const OrdersHistoryPage: React.FC = () => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const loadOrders = async () => {
+  const loadOrders = async (isSilent = false) => {
     try {
-      setLoading(true);
+      if (!isSilent && orders.length === 0) setLoading(true);
       const data = await api.getOrders();
       setOrders(data);
     } catch (err: any) {
-      addToast('error', 'Gagal memuat riwayat transaksi', err.message);
+      if (!isSilent) addToast('error', 'Gagal memuat riwayat transaksi', err.message);
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
@@ -50,16 +50,16 @@ export const OrdersHistoryPage: React.FC = () => {
 
     let lastDateStr = new Date().toDateString();
 
-    const checkAndSync = () => {
+    const checkMidnight = () => {
       const currentDateStr = new Date().toDateString();
       if (currentDateStr !== lastDateStr) {
         lastDateStr = currentDateStr;
-        loadOrders();
+        loadOrders(true);
       }
     };
 
-    // Auto-check midnight date change & sync every 10 seconds
-    const interval = setInterval(checkAndSync, 10000);
+    // Auto-check midnight date change silently every 5 seconds
+    const interval = setInterval(checkMidnight, 5000);
     return () => clearInterval(interval);
   }, []);
 

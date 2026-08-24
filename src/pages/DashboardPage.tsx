@@ -26,16 +26,16 @@ export const DashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (isSilent = false) => {
     try {
-      setLoading(true);
+      if (!isSilent && !stats) setLoading(true);
       setError(null);
       const data = await api.getDashboardStats();
       setStats(data);
     } catch (err: any) {
-      setError(err.message || 'Gagal memuat statistik dashboard');
+      if (!isSilent) setError(err.message || 'Gagal memuat statistik dashboard');
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
@@ -44,7 +44,7 @@ export const DashboardPage: React.FC = () => {
 
     let lastDateStr = new Date().toDateString();
 
-    const checkAndSync = () => {
+    const checkMidnight = () => {
       const currentDateStr = new Date().toDateString();
       if (currentDateStr !== lastDateStr) {
         lastDateStr = currentDateStr;
@@ -59,12 +59,12 @@ export const DashboardPage: React.FC = () => {
               }
             : null
         );
+        loadDashboardData(true);
       }
-      loadDashboardData();
     };
 
-    // Auto-check midnight date change & sync every 10 seconds
-    const interval = setInterval(checkAndSync, 10000);
+    // Check date change silently every 5 seconds (without screen flickering / skeleton refresh)
+    const interval = setInterval(checkMidnight, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -91,7 +91,7 @@ export const DashboardPage: React.FC = () => {
         <h3 className="text-base font-bold text-rose-900">Gagal Memuat Dashboard</h3>
         <p className="text-sm text-slate-600 mt-1">{error}</p>
         <button
-          onClick={loadDashboardData}
+          onClick={() => loadDashboardData()}
           className="mt-4 px-4 py-2 bg-[#7a35ff] hover:bg-[#6825e6] text-sm font-bold rounded-xl text-white transition-all shadow-md shadow-[#7a35ff]/25"
         >
           Coba Lagi
@@ -117,7 +117,7 @@ export const DashboardPage: React.FC = () => {
             </p>
           </div>
           <button
-            onClick={loadDashboardData}
+            onClick={() => loadDashboardData()}
             className="mac-btn px-4 py-2 text-xs font-black uppercase tracking-wider self-start sm:self-auto"
           >
             🔄 Refres Data
