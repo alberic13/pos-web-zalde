@@ -232,8 +232,8 @@ export const InventoryPage: React.FC = () => {
       name: formData.name.trim(),
       price: Number(formData.price),
       costPrice: formData.costPrice ? Number(formData.costPrice) : undefined,
-      stock: Number(formData.stock || 0),
-      warehouseStock: Number(formData.warehouseStock || 0),
+      stock: editingProduct ? editingProduct.stock : Number(formData.stock || 0),
+      warehouseStock: editingProduct ? editingProduct.warehouseStock : Number(formData.warehouseStock || 0),
       categoryId: formData.categoryId,
       imageUrl: formData.imageUrl.trim() || undefined,
     };
@@ -513,10 +513,10 @@ export const InventoryPage: React.FC = () => {
                                 setIsTransferModalOpen(true);
                               }}
                               disabled={isWarehouseOut}
-                              className="mac-btn px-2.5 py-1 text-[10px] font-black uppercase flex items-center gap-1 disabled:opacity-40"
-                              title="Pindahkan stok dari Gudang ke Etalase Kasir"
+                              className="mac-btn px-1.5 py-1 text-xs disabled:opacity-40"
+                              title="Restock Etalase (Pindahkan stok dari Gudang ke Etalase Kasir)"
                             >
-                              <ArrowRightLeft className="w-3 h-3" /> Restock Etalase
+                              <ArrowRightLeft className="w-3.5 h-3.5" />
                             </button>
 
                             {/* SECONDARY TOOLBAR GROUP */}
@@ -734,34 +734,6 @@ export const InventoryPage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               className="mac-input w-full px-3 py-2 text-xs font-mono text-black font-extrabold"
             />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-black text-black block mb-1 uppercase">Stok Etalase</label>
-              <input
-                type="number"
-                required
-                min="0"
-                placeholder="0"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="mac-input w-full px-3 py-2 text-xs font-mono text-black font-extrabold"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-black text-black block mb-1 uppercase">Stok Gudang</label>
-              <input
-                type="number"
-                required
-                min="0"
-                placeholder="0"
-                value={formData.warehouseStock}
-                onChange={(e) => setFormData({ ...formData, warehouseStock: e.target.value })}
-                className="mac-input w-full px-3 py-2 text-xs font-mono text-black font-extrabold"
-              />
-            </div>
           </div>
 
           <div>
