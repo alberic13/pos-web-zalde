@@ -274,16 +274,15 @@ export const InventoryPage: React.FC = () => {
     }
   };
 
-  // Filter products by status & search
+  // Filter & Search Logic
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
-      !search.trim() ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.sku.toLowerCase().includes(search.toLowerCase());
 
     if (!matchesSearch) return false;
 
-    if (statusFilter === 'low_display') return p.stock <= 5;
+    if (statusFilter === 'low_display') return p.stock <= 5 || p.warehouseStock <= 5;
     if (statusFilter === 'out_warehouse') return p.warehouseStock <= 0;
     if (statusFilter === 'safe') return p.stock > 5 && p.warehouseStock > 5;
     return true; // 'all'
@@ -292,7 +291,7 @@ export const InventoryPage: React.FC = () => {
   // Calculate Metrics
   const totalDisplayStock = products.reduce((sum, p) => sum + p.stock, 0);
   const totalWarehouseStock = products.reduce((sum, p) => sum + p.warehouseStock, 0);
-  const lowDisplayCount = products.filter((p) => p.stock <= 5).length;
+  const lowStockCount = products.filter((p) => p.stock <= 5 || p.warehouseStock <= 5).length;
   const totalAssetValue = products.reduce(
     (sum, p) => sum + p.price * (p.stock + p.warehouseStock),
     0
@@ -342,7 +341,7 @@ export const InventoryPage: React.FC = () => {
             <span className="text-[10px] font-black text-gray-800 uppercase tracking-wider block">
               Etalase Menipis (≤ 5 Unit)
             </span>
-            <h3 className="text-xl font-black text-red-700 mt-0.5">{lowDisplayCount} <span className="text-xs font-bold text-gray-700">Produk</span></h3>
+            <h3 className="text-xl font-black text-red-700 mt-0.5">{lowStockCount} <span className="text-xs font-bold text-gray-700">Produk</span></h3>
           </div>
         </div>
 
@@ -391,7 +390,7 @@ export const InventoryPage: React.FC = () => {
                 statusFilter === 'low_display' ? 'mac-btn-active' : ''
               }`}
             >
-              ⚠️ Perlu Restock ({lowDisplayCount})
+              ⚠️ Perlu Restock ({lowStockCount})
             </button>
             <button
               onClick={() => setStatusFilter('out_warehouse')}
@@ -442,6 +441,7 @@ export const InventoryPage: React.FC = () => {
                   {filteredProducts.map((prod) => {
                     const isDisplayLow = prod.stock <= 5;
                     const isWarehouseOut = prod.warehouseStock <= 0;
+                    const isWarehouseLow = prod.warehouseStock <= 5;
 
                     return (
                       <tr key={prod.id} className="mac-tr">
@@ -481,11 +481,19 @@ export const InventoryPage: React.FC = () => {
                         <td className="mac-td whitespace-nowrap">
                           <span
                             className={`mac-badge ${
-                              isWarehouseOut ? 'mac-badge-rose' : 'mac-badge-indigo'
+                              isWarehouseOut
+                                ? 'mac-badge-rose'
+                                : isWarehouseLow
+                                ? 'mac-badge-amber'
+                                : 'mac-badge-indigo'
                             }`}
                           >
                             <span>{prod.warehouseStock} Unit</span>
-                            {isWarehouseOut && <span className="ml-1">(Kosong)</span>}
+                            {isWarehouseOut ? (
+                              <span className="ml-1">(Kosong)</span>
+                            ) : isWarehouseLow ? (
+                              <span className="ml-1">(Refill Supplier)</span>
+                            ) : null}
                           </span>
                         </td>
 

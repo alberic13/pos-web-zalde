@@ -65,7 +65,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Fetch Products for Quick Template insertion (Low Stock Products: stock <= 5)
+  // Fetch Products for Quick Template insertion (Low Stock Products: stock <= 5 OR warehouseStock <= 5)
   const fetchProducts = async () => {
     try {
       const res = await fetch('/api/products');
@@ -73,7 +73,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         const lowStockList = data.data
-          .filter((p: any) => p.stock <= 5)
+          .filter((p: any) => p.stock <= 5 || (p.warehouseStock ?? 0) <= 5)
           .map((p: any) => ({
             id: p.id,
             name: p.name,
@@ -329,12 +329,12 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
-                className="mac-select text-[10px] max-w-[160px] truncate"
+                className="mac-select text-[10px] max-w-[180px] truncate"
               >
-                <option value="">-- Pilih Low Stock --</option>
+                <option value="">-- Pilih Produk Low Stock --</option>
                 {products.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.name} ({p.stock} unit)
+                    {p.name} (Etalase:{p.stock} | Gd:{p.warehouseStock})
                   </option>
                 ))}
               </select>
@@ -342,30 +342,25 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex flex-wrap gap-1">
-            {activeRole === 'KASIR' || activeRole === 'ADMIN' ? (
+            <button
+              onClick={() => handleQuickTemplate('RESTOCK_REQ')}
+              className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
+            >
+              📢 Minta Restok
+            </button>
+            <button
+              onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
+              className="mac-btn px-2 py-1 text-[10px] font-black uppercase text-red-700"
+            >
+              ⚠️ Stok Gudang Menipis
+            </button>
+            {activeRole === 'GUDANG' || activeRole === 'ADMIN' ? (
               <button
-                onClick={() => handleQuickTemplate('RESTOCK_REQ')}
+                onClick={() => handleQuickTemplate('RESTOCK_DONE')}
                 className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
               >
-                📢 Minta Restok
+                ✅ Restok Selesai
               </button>
-            ) : null}
-
-            {activeRole === 'GUDANG' || activeRole === 'ADMIN' ? (
-              <>
-                <button
-                  onClick={() => handleQuickTemplate('RESTOCK_DONE')}
-                  className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
-                >
-                  ✅ Restok Selesai
-                </button>
-                <button
-                  onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
-                  className="mac-btn px-2 py-1 text-[10px] font-black uppercase text-red-700"
-                >
-                  ⚠️ Stok Menipis
-                </button>
-              </>
             ) : null}
           </div>
 
