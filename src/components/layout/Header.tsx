@@ -5,7 +5,6 @@ import { useRole } from '../../context/RoleContext';
 
 interface HeaderProps {
   onOpenMobileSidebar: () => void;
-  onToggleChatDrawer?: () => void;
   title: string;
 }
 

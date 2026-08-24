@@ -24,7 +24,6 @@ export const Layout: React.FC<LayoutProps> = ({ children, title }) => {
         <Header
           title={title}
           onOpenMobileSidebar={() => setMobileSidebarOpen(true)}
-          onToggleChatDrawer={() => setChatDrawerOpen(!chatDrawerOpen)}
         />
         <main className="flex-1 p-3 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto">
           {children}

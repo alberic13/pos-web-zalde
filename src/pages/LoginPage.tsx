@@ -100,7 +100,7 @@ export const LoginPage: React.FC = () => {
               <span className="w-3 h-3 rounded-full bg-green-500 border border-green-700 inline-block" />
             </div>
             <h2 className="text-xs font-black uppercase tracking-wide text-black">
-              Welcome to  POS Zalde
+              Welcome to POS Zalde
             </h2>
           </div>
           <span className="text-[10px] font-extrabold text-gray-700 uppercase">System 7.5.3</span>
@@ -226,7 +226,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Footer Window */}
         <div className="p-2.5 border-t-2 border-black bg-gray-300 flex items-center justify-between text-[10px] font-black text-gray-800 uppercase">
-          <span>© 1991-2026  Zalde POS</span>
+          <span>© 1991-2026 Zalde POS</span>
           <span>System 7.0</span>
         </div>
       </div>
