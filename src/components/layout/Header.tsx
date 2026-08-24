@@ -1,5 +1,6 @@
 import React from 'react';
-import { Menu, Clock, Calendar, Store, Warehouse, ShieldAlert } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, Clock, Calendar, Store, Warehouse, ShieldAlert, LogOut } from 'lucide-react';
 import { useRole } from '../../context/RoleContext';
 
 interface HeaderProps {
@@ -9,13 +10,21 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) => {
-  const { activeRole, roleConfig } = useRole();
+  const { activeRole, activeName, roleConfig, logout } = useRole();
+  const navigate = useNavigate();
   const [time, setTime] = React.useState(new Date());
 
   React.useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleLogout = () => {
+    if (confirm(`Apakah Anda yakin ingin keluar dari sesi ${activeName} (${roleConfig.shortLabel})?`)) {
+      logout();
+      navigate('/login');
+    }
+  };
 
   const formattedDate = time.toLocaleDateString('id-ID', {
     weekday: 'long',
@@ -64,6 +73,16 @@ export const Header: React.FC<HeaderProps> = ({ onOpenMobileSidebar, title }) =>
             <span>{formattedTime}</span>
           </div>
         </div>
+
+        {/* System 7 Logout / Shutdown Button */}
+        <button
+          onClick={handleLogout}
+          className="mac-btn px-2.5 py-1 text-xs font-black uppercase text-red-800 flex items-center gap-1"
+          title="Keluar / Shutdown Sesi System 7"
+        >
+          <LogOut className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Keluar</span>
+        </button>
       </div>
     </header>
   );

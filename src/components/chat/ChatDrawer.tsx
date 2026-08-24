@@ -11,6 +11,7 @@ import {
   RefreshCw,
   UserCheck,
   ChevronDown,
+  Lock,
 } from 'lucide-react';
 
 export interface ChatMessage {
@@ -226,17 +227,29 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
 
             <div className="relative">
               <button
-                onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-                className="mac-btn px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1"
+                onClick={() => {
+                  if (activeRole === 'ADMIN') {
+                    setShowRoleDropdown(!showRoleDropdown);
+                  }
+                }}
+                disabled={activeRole !== 'ADMIN'}
+                className={`mac-btn px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1 ${
+                  activeRole !== 'ADMIN' ? 'opacity-90 cursor-not-allowed' : 'cursor-pointer'
+                }`}
+                title={activeRole !== 'ADMIN' ? 'Hanya Admin yang dapat mengganti role' : 'Ganti Peran Pengguna'}
               >
                 {activeRole === 'KASIR' && <Store className="w-3.5 h-3.5" />}
                 {activeRole === 'GUDANG' && <Warehouse className="w-3.5 h-3.5" />}
                 {activeRole === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5" />}
                 <span>{roleConfig.shortLabel}</span>
-                <ChevronDown className="w-3.5 h-3.5" />
+                {activeRole === 'ADMIN' ? (
+                  <ChevronDown className="w-3.5 h-3.5" />
+                ) : (
+                  <Lock className="w-3 h-3 text-gray-800 ml-0.5" />
+                )}
               </button>
 
-              {showRoleDropdown && (
+              {activeRole === 'ADMIN' && showRoleDropdown && (
                 <div className="absolute right-0 mt-1 w-52 mac-window p-1 z-50 shadow-2xl">
                   <p className="px-2 py-1 text-[9px] uppercase font-black text-gray-700 border-b border-black">
                     Pilih Peran Pengguna

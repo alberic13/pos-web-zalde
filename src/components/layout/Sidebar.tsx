@@ -19,9 +19,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
-  const { activeRole, activeName, roleConfig } = useRole();
+  const { activeRole, activeName, roleConfig, hasAccessToRoute } = useRole();
 
-  const navItems = [
+  const allNavItems = [
     { label: 'Dashboard', path: '/', icon: LayoutDashboard },
     { label: 'POS Kasir', path: '/pos', icon: ShoppingBag, highlight: true },
     { label: 'Produk Etalase', path: '/products', icon: Package },
@@ -31,6 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onCloseMobile }) => {
     { label: 'Kontak Supplier', path: '/suppliers', icon: Building2 },
     { label: 'Riwayat Transaksi', path: '/orders', icon: History },
   ];
+
+  const navItems = allNavItems.filter((item) => hasAccessToRoute(item.path));
 
   return (
     <>

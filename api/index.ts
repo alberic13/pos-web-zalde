@@ -36,8 +36,8 @@ export default async function handler(req: any, res: any) {
   try {
     const rawUrl = req.url || '/';
     const parsedUrl = new URL(rawUrl, `http://${req.headers?.host || 'localhost'}`);
-    const pathname = parsedUrl.pathname;
-    const method = req.method;
+    const pathname = parsedUrl.pathname.replace(/\/$/, '') || '/';
+    const method = (req.method || 'GET').toUpperCase();
 
     // Parse JSON body for POST/PUT
     let body: any = {};
@@ -63,6 +63,80 @@ export default async function handler(req: any, res: any) {
     // Health check
     if (pathname === '/api/health' || pathname === '/health') {
       return jsonResponse({ status: 'ok', timestamp: new Date().toISOString() });
+    }
+
+    // Auth Endpoints
+    if ((pathname === '/api/auth/login' || pathname === '/auth/login') && method === 'POST') {
+      const { username, password, role } = body;
+
+      // Allow 1-click login if role is directly supplied
+      if (role && ['ADMIN', 'KASIR', 'GUDANG'].includes(role.toUpperCase())) {
+        const selectedRole = role.toUpperCase();
+        const nameMap: Record<string, string> = {
+          ADMIN: 'Admin Zalde',
+          KASIR: 'Kasir Toko Depan',
+          GUDANG: 'Staff Gudang',
+        };
+        return jsonResponse({
+          success: true,
+          data: {
+            user: {
+              username: selectedRole.toLowerCase(),
+              name: nameMap[selectedRole] || selectedRole,
+              role: selectedRole,
+            },
+            token: `token-${selectedRole.toLowerCase()}-${Date.now()}`,
+            permissions: selectedRole === 'ADMIN' ? ['*'] : selectedRole === 'KASIR' ? ['pos', 'products', 'orders', 'chat'] : ['inventory', 'categories', 'products', 'chat'],
+          },
+          message: `Login berhasil sebagai ${selectedRole}`,
+        });
+      }
+
+      // Username / Password verification
+      const cleanUser = (username || '').trim().toLowerCase();
+      const cleanPass = (password || '').trim();
+
+      if (!cleanUser || !cleanPass) {
+        return jsonResponse({ success: false, error: 'Username dan password wajib diisi' }, 400);
+      }
+
+      let matchedRole: string | null = null;
+      let displayName = '';
+
+      if (cleanUser === 'admin' && cleanPass === 'admin123') {
+        matchedRole = 'ADMIN';
+        displayName = 'Admin Zalde';
+      } else if (cleanUser === 'kasir' && cleanPass === 'kasir123') {
+        matchedRole = 'KASIR';
+        displayName = 'Kasir Toko Depan';
+      } else if (cleanUser === 'gudang' && cleanPass === 'gudang123') {
+        matchedRole = 'GUDANG';
+        displayName = 'Staff Gudang';
+      }
+
+      if (!matchedRole) {
+        return jsonResponse(
+          {
+            success: false,
+            error: 'Username atau password System 7 tidak valid. (Kredensial Admin: admin / admin123)',
+          },
+          401
+        );
+      }
+
+      return jsonResponse({
+        success: true,
+        data: {
+          user: {
+            username: cleanUser,
+            name: displayName,
+            role: matchedRole,
+          },
+          token: `token-${cleanUser}-${Date.now()}`,
+          permissions: matchedRole === 'ADMIN' ? ['*'] : matchedRole === 'KASIR' ? ['pos', 'products', 'orders', 'chat'] : ['inventory', 'categories', 'products', 'chat'],
+        },
+        message: `Login berhasil sebagai ${matchedRole}`,
+      });
     }
 
     // Dashboard Stats
