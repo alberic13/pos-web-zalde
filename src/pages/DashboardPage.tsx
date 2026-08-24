@@ -41,6 +41,31 @@ export const DashboardPage: React.FC = () => {
 
   useEffect(() => {
     loadDashboardData();
+
+    let lastDateStr = new Date().toDateString();
+
+    const checkAndSync = () => {
+      const currentDateStr = new Date().toDateString();
+      if (currentDateStr !== lastDateStr) {
+        lastDateStr = currentDateStr;
+        // Instant visual reset at 12:00 malam / 00:00 (pergantian hari)
+        setStats((prev) =>
+          prev
+            ? {
+                ...prev,
+                todayRevenue: 0,
+                todayOrdersCount: 0,
+                recentOrders: [],
+              }
+            : null
+        );
+      }
+      loadDashboardData();
+    };
+
+    // Auto-check midnight date change & sync every 10 seconds
+    const interval = setInterval(checkAndSync, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const formatCurrency = (val: number) =>

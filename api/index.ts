@@ -68,8 +68,8 @@ export default async function handler(req: any, res: any) {
     // Dashboard Stats
     if (pathname === '/api/dashboard/stats') {
       const now = new Date();
-      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
 
       const [todayOrders, monthOrders, totalProducts, lowStockProducts] = await Promise.all([
         prisma.order.findMany({
