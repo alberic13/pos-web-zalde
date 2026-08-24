@@ -7,7 +7,6 @@ import {
   Warehouse,
   ShieldAlert,
   Trash2,
-  Zap,
   RefreshCw,
   UserCheck,
   ChevronDown,
@@ -195,7 +194,7 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
                 <span className="w-3 h-3 rounded-full bg-green-500 border border-green-700 inline-block" />
               </div>
               <h3 className="text-xs font-black uppercase text-black">
-                Chat Toko & Gudang (Mac OS)
+                Chat Toko & Gudang
               </h3>
             </div>
 
@@ -335,8 +334,8 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
         {/* Quick Action Templates Section */}
         <div className="p-3 border-t-2 border-black bg-gray-300 space-y-2">
           <div className="flex items-center justify-between text-[10px] text-black font-extrabold uppercase">
-            <span className="flex items-center gap-1 text-black">
-              <Zap className="w-3.5 h-3.5 text-yellow-600" /> Template Cepat
+            <span className="text-black">
+              Template Cepat
             </span>
             {products.length > 0 && (
               <select
