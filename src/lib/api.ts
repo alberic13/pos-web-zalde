@@ -118,7 +118,6 @@ export const api = {
     const query = search ? `?search=${encodeURIComponent(search)}` : '';
     return fetchApi<any>(`/orders${query}`);
   },
-  getOrderById: (id: string) => fetchApi<any>(`/orders/${id}`),
 
   // Suppliers
   getSuppliers: () => fetchApi<any>('/suppliers'),

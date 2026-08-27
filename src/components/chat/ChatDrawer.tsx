@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useRole, UserRole, ROLE_CONFIGS } from '../../context/RoleContext';
+import { useRole, UserRole } from '../../context/RoleContext';
 import {
   MessageSquare,
   Send,
@@ -9,7 +9,6 @@ import {
   Trash2,
   RefreshCw,
   UserCheck,
-  ChevronDown,
   Lock,
 } from 'lucide-react';
 
@@ -35,7 +34,7 @@ interface ChatDrawerProps {
 }
 
 export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
-  const { activeRole, activeName, roleConfig, setActiveRole } = useRole();
+  const { activeRole, activeName, roleConfig } = useRole();
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -43,7 +42,6 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
   const [sending, setSending] = useState(false);
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>('');
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -243,52 +241,16 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
 
             <div className="relative">
               <button
-                onClick={() => {
-                  if (activeRole === 'ADMIN') {
-                    setShowRoleDropdown(!showRoleDropdown);
-                  }
-                }}
-                disabled={activeRole !== 'ADMIN'}
-                className={`mac-btn px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1 ${
-                  activeRole !== 'ADMIN' ? 'opacity-90 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-                title={activeRole !== 'ADMIN' ? 'Hanya Admin yang dapat mengganti role' : 'Ganti Peran Pengguna'}
+                disabled
+                className="mac-btn px-2.5 py-1 text-xs font-black uppercase flex items-center gap-1 opacity-90 cursor-not-allowed"
+                title="Peran dikunci sesuai akun login"
               >
                 {activeRole === 'KASIR' && <Store className="w-3.5 h-3.5" />}
                 {activeRole === 'GUDANG' && <Warehouse className="w-3.5 h-3.5" />}
                 {activeRole === 'ADMIN' && <ShieldAlert className="w-3.5 h-3.5" />}
                 <span>{roleConfig.shortLabel}</span>
-                {activeRole === 'ADMIN' ? (
-                  <ChevronDown className="w-3.5 h-3.5" />
-                ) : (
-                  <Lock className="w-3 h-3 text-gray-800 ml-0.5" />
-                )}
+                <Lock className="w-3 h-3 text-gray-800 ml-0.5" />
               </button>
-
-              {activeRole === 'ADMIN' && showRoleDropdown && (
-                <div className="absolute right-0 mt-1 w-52 mac-window p-1 z-50 shadow-2xl">
-                  <p className="px-2 py-1 text-[9px] uppercase font-black text-gray-700 border-b border-black">
-                    Pilih Peran Pengguna
-                  </p>
-                  {(Object.keys(ROLE_CONFIGS) as UserRole[]).map((r) => {
-                    const cfg = ROLE_CONFIGS[r];
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => {
-                          setActiveRole(r);
-                          setShowRoleDropdown(false);
-                        }}
-                        className={`w-full flex items-center gap-2 px-2 py-1.5 text-xs font-extrabold text-left transition-colors uppercase ${
-                          activeRole === r ? 'mac-btn-active' : 'hover:bg-gray-300'
-                        }`}
-                      >
-                        <span>{cfg.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         </div>
