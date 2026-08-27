@@ -87,6 +87,23 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  // Filter products for dropdown based on activeRole
+  const displayedProducts = products.filter((p) => {
+    if (activeRole === 'KASIR') {
+      return p.stock <= 5;
+    }
+    if (activeRole === 'GUDANG') {
+      return (p.warehouseStock ?? 0) <= 5;
+    }
+    return p.stock <= 5 || (p.warehouseStock ?? 0) <= 5;
+  });
+
+  useEffect(() => {
+    if (selectedProduct && !displayedProducts.some((p) => p.id === selectedProduct)) {
+      setSelectedProduct('');
+    }
+  }, [activeRole, displayedProducts, selectedProduct]);
+
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
@@ -337,18 +354,26 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
             <span className="text-black">
               Template Cepat
             </span>
-            {products.length > 0 && (
+            {displayedProducts.length > 0 && (
               <select
                 value={selectedProduct}
                 onChange={(e) => setSelectedProduct(e.target.value)}
                 className="mac-select text-[10px] max-w-[180px] truncate"
               >
                 <option value="">-- Pilih Produk Low Stock --</option>
-                {products.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} (Etalase:{p.stock} | Gd:{p.warehouseStock})
-                  </option>
-                ))}
+                {displayedProducts.map((p) => {
+                  const label =
+                    activeRole === 'KASIR'
+                      ? `${p.name} (Etalase: ${p.stock})`
+                      : activeRole === 'GUDANG'
+                      ? `${p.name} (Stok Gd: ${p.warehouseStock})`
+                      : `${p.name} (Etalase: ${p.stock} | Gd: ${p.warehouseStock})`;
+                  return (
+                    <option key={p.id} value={p.id}>
+                      {label}
+                    </option>
+                  );
+                })}
               </select>
             )}
           </div>
