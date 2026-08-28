@@ -341,26 +341,30 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex flex-wrap gap-1">
-            <button
-              onClick={() => handleQuickTemplate('RESTOCK_REQ')}
-              className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
-            >
-              📢 Minta Restok
-            </button>
-            <button
-              onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
-              className="mac-btn px-2 py-1 text-[10px] font-black uppercase text-red-700"
-            >
-              ⚠️ Stok Gudang Menipis
-            </button>
-            {activeRole === 'GUDANG' || activeRole === 'ADMIN' ? (
+            {activeRole !== 'GUDANG' && (
+              <button
+                onClick={() => handleQuickTemplate('RESTOCK_REQ')}
+                className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
+              >
+                📢 Minta Restok
+              </button>
+            )}
+            {activeRole !== 'KASIR' && (
+              <button
+                onClick={() => handleQuickTemplate('LOW_STOCK_WARN')}
+                className="mac-btn px-2 py-1 text-[10px] font-black uppercase text-red-700"
+              >
+                ⚠️ Stok Gudang Menipis
+              </button>
+            )}
+            {(activeRole === 'GUDANG' || activeRole === 'ADMIN') && (
               <button
                 onClick={() => handleQuickTemplate('RESTOCK_DONE')}
                 className="mac-btn px-2 py-1 text-[10px] font-black uppercase"
               >
                 ✅ Restok Selesai
               </button>
-            ) : null}
+            )}
           </div>
 
           {/* Input Box */}
