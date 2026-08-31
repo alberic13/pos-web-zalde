@@ -1,0 +1,59 @@
+name: CI / Quality Gate
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  quality-gate:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: pos_zalde_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ⚡ Setup Bun Runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 📦 Install Dependencies
+        run: bun install
+
+      - name: 🔍 Type-Check (TypeScript Linter)
+        run: bun run lint
+
+      - name: 🗄️ Setup Test Database & Generate Prisma
+        env:
+          DATABASE_URL: "postgresql://postgres:password@localhost:5432/pos_zalde_test?schema=public"
+        run: |
+          bunx prisma generate
+          bunx prisma db push
+
+      - name: 🧪 Run Automated Integration Tests (7 Suites / 71 Assertions)
+        env:
+          DATABASE_URL: "postgresql://postgres:password@localhost:5432/pos_zalde_test?schema=public"
+        run: bun test
+
+      - name: 🏗️ Verify Production Frontend Build
+        env:
+          DATABASE_URL: "postgresql://postgres:password@localhost:5432/pos_zalde_test?schema=public"
+        run: bunx vite build

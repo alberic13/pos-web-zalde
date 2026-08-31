@@ -1,6 +1,7 @@
 # 🛒 POS Web Zalde
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-pos--web--zalde.vercel.app-2ea44f?style=for-the-badge&logo=vercel&logoColor=white)](https://pos-web-zalde.vercel.app)
+[![CI Quality Gate](https://github.com/alberic13/pos-web-zalde/actions/workflows/ci.yml/badge.svg)](https://github.com/alberic13/pos-web-zalde/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React%2018-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Prisma](https://img.shields.io/badge/Prisma%20ORM-2D3748?style=for-the-badge&logo=prisma&logoColor=white)](https://www.prisma.io/)
