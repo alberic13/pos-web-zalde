@@ -317,8 +317,8 @@ Ran 7 tests across 1 file. [411.00ms]
    ```
 
 5. **Jalankan server pengembangan (Development Server)**:
-   * **Terminal 1** (API Server): `npx tsx api/index.ts`
-   * **Terminal 2** (Vite Frontend): `npm run dev`
+   * **Terminal 1** (API Server): `npx tsx api/index.ts / bun api/index.ts`
+   * **Terminal 2** (Vite Frontend): `npm run dev / bun run dev`
 
    Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
 
