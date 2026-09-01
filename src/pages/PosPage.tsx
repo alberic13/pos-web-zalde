@@ -298,9 +298,9 @@ export const PosPage: React.FC = () => {
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div className="flex flex-col lg:flex-row gap-5">
+      <div className="flex flex-col lg:flex-row gap-5 items-start">
         {/* LEFT AREA: Product Catalog & Category Selection (65%) */}
-        <div className="flex-1 flex flex-col space-y-4">
+        <div className="flex-1 min-w-0 w-full flex flex-col space-y-4">
           {/* Category Tabs Section */}
           <div className="mac-window p-3 space-y-2">
             <h3 className="text-xs font-extrabold text-black tracking-wide uppercase">
@@ -409,8 +409,8 @@ export const PosPage: React.FC = () => {
           </div>
         </div>
 
-        {/* RIGHT AREA: Ringkasan Pesanan (Mac OS Window) (35%) */}
-        <div className="w-full lg:w-96 mac-window p-0 flex flex-col justify-between">
+        {/* RIGHT AREA: Ringkasan Pesanan (Mac OS Window) (Fixed 380px on Desktop) */}
+        <div className="w-full lg:w-[380px] lg:min-w-[380px] lg:max-w-[380px] shrink-0 mac-window p-0 flex flex-col justify-between sticky top-4">
           {/* Mac OS Window Titlebar Header */}
           <div>
             <div className="mac-window-header flex items-center justify-between">
@@ -436,7 +436,7 @@ export const PosPage: React.FC = () => {
             <div className="p-3 divide-y divide-gray-400 max-h-80 overflow-y-auto">
               {cart.length > 0 ? (
                 cart.map((item) => (
-                  <div key={item.product.id} className="py-2.5 flex items-center gap-2.5">
+                  <div key={item.product.id} className="py-2.5 flex items-center gap-2 min-w-0">
                     {/* Item Thumbnail */}
                     <div className="w-10 h-10 bg-white border border-black overflow-hidden shrink-0">
                       <ProductImage src={item.product.imageUrl} alt={item.product.name} />
@@ -451,7 +451,7 @@ export const PosPage: React.FC = () => {
                     </div>
 
                     {/* 3D Quantity Stepper */}
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => updateQuantity(item.product.id, -1)}
                         className="mac-btn w-6 h-6 flex items-center justify-center text-xs font-black"
@@ -474,7 +474,7 @@ export const PosPage: React.FC = () => {
                     {/* Delete Item */}
                     <button
                       onClick={() => removeFromCart(item.product.id)}
-                      className="text-red-700 hover:text-black font-bold text-xs p-1"
+                      className="text-red-700 hover:text-black font-bold text-xs p-1 shrink-0"
                       title="Hapus"
                     >
                       ✕
