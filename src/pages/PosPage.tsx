@@ -301,31 +301,28 @@ export const PosPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-5 items-start">
         {/* LEFT AREA: Product Catalog & Category Selection (65%) */}
         <div className="flex-1 min-w-0 w-full flex flex-col space-y-4">
-          {/* Category Tabs Section */}
-          <div className="mac-window p-3 space-y-2">
-            <h3 className="text-xs font-extrabold text-black tracking-wide uppercase">
-              Kategori
-            </h3>
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className={`mac-btn px-4 py-1.5 text-xs whitespace-nowrap ${
-                  selectedCategory === 'all' ? 'mac-btn-active' : ''
-                }`}
+          {/* Category Dropdown Filter Bar */}
+          <div className="mac-window p-2 sm:p-2.5 flex flex-wrap items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2">
+              <label htmlFor="pos-category-select" className="text-xs font-extrabold text-black uppercase tracking-wide whitespace-nowrap">
+                Kategori:
+              </label>
+              <select
+                id="pos-category-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="mac-select text-xs py-1 px-2.5 min-w-[180px] sm:min-w-[220px] font-bold cursor-pointer"
               >
-                Semua
-              </button>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`mac-btn px-4 py-1.5 text-xs whitespace-nowrap ${
-                    selectedCategory === cat.id ? 'mac-btn-active' : ''
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
+                <option value="all">Semua Kategori ({products.length})</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="text-[11px] font-bold text-gray-700">
+              Total: <span className="text-black font-extrabold">{filteredProducts.length}</span> produk
             </div>
           </div>
 
