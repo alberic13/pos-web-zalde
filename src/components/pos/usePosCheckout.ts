@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { CartItem } from '../../types';
+import { formatCurrency } from '../../utils/format';
+import { getErrorMessage } from '../../utils/error';
 
 interface UsePosCheckoutProps {
   cart: CartItem[];
@@ -34,7 +36,7 @@ export function usePosCheckout({
     if (cart.length === 0) return;
 
     if (numericPayment < total) {
-      onError('Pembayaran Kurang', `Nominal kurang Rp ${Math.abs(change).toLocaleString('id-ID')}`);
+      onError('Pembayaran Kurang', `Nominal kurang ${formatCurrency(Math.abs(change))}`);
       return;
     }
 
@@ -53,8 +55,8 @@ export function usePosCheckout({
       setPaymentAmount('');
       onSuccess(res);
       onRefreshProducts();
-    } catch (err: any) {
-      onError('Gagal Memproses Transaksi', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Memproses Transaksi', getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }

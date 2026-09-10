@@ -1,18 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { CartItem } from '../../types';
-import { ShoppingCart, PackageX } from 'lucide-react';
-
-const CartItemImage: React.FC<{ src?: string | null; alt: string }> = ({ src, alt }) => {
-  const [error, setError] = useState(false);
-  if (!src || error) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-        <PackageX className="w-4 h-4 opacity-60" />
-      </div>
-    );
-  }
-  return <img src={src} alt={alt} className="w-full h-full object-cover" onError={() => setError(true)} />;
-};
+import { ShoppingCart } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
+import { ProductImage } from '../common/ProductImage';
 
 interface CartPanelProps {
   cart: CartItem[];
@@ -33,12 +23,6 @@ export const CartPanel: React.FC<CartPanelProps> = ({
   total,
   onOpenCheckout,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <div className="w-full lg:w-[380px] lg:min-w-[380px] lg:max-w-[380px] shrink-0 mac-window p-0 flex flex-col justify-between sticky top-4">
@@ -67,7 +51,7 @@ export const CartPanel: React.FC<CartPanelProps> = ({
             cart.map((item) => (
               <div key={item.product.id} className="py-2.5 flex items-center gap-2 min-w-0">
                 <div className="w-10 h-10 bg-white border border-black overflow-hidden shrink-0">
-                  <CartItemImage src={item.product.imageUrl} alt={item.product.name} />
+                  <ProductImage src={item.product.imageUrl} alt={item.product.name} />
                 </div>
 
                 <div className="flex-1 min-w-0">

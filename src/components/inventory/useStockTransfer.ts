@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { Product } from '../../types';
+import { getErrorMessage } from '../../utils/error';
 
 interface UseStockTransferProps {
   onSuccess: (title: string, message: string) => void;
@@ -47,8 +48,8 @@ export function useStockTransfer({
       onSuccess('Restock Etalase Berhasil!', `${amount} unit "${transferProduct.name}" berhasil dipindahkan dari Gudang ke Etalase Kasir.`);
       setIsTransferModalOpen(false);
       await refreshData();
-    } catch (err: any) {
-      onError('Gagal Memindahkan Stok', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Memindahkan Stok', getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
@@ -91,8 +92,8 @@ export function useStockTransfer({
       onSuccess('Pasokan Gudang Bertambah!', `Stok cadangan gudang "${restockProduct.name}" bertambah +${qty} unit.`);
       setIsWarehouseRestockOpen(false);
       await refreshData();
-    } catch (err: any) {
-      onError('Gagal Menambah Pasokan Gudang', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Menambah Pasokan Gudang', getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { DashboardStats } from '../../types';
+import { formatCurrency } from '../../utils/format';
+import { getErrorMessage } from '../../utils/error';
 
 export function useDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -13,8 +15,8 @@ export function useDashboard() {
       setError(null);
       const data = await api.getDashboardStats();
       setStats(data);
-    } catch (err: any) {
-      if (!isSilent) setError(err.message || 'Gagal memuat statistik dashboard');
+    } catch (err: unknown) {
+      if (!isSilent) setError(getErrorMessage(err) || 'Gagal memuat statistik dashboard');
     } finally {
       if (!isSilent) setLoading(false);
     }
@@ -45,9 +47,6 @@ export function useDashboard() {
     const interval = setInterval(checkMidnight, 5000);
     return () => clearInterval(interval);
   }, []);
-
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
   return {
     stats,

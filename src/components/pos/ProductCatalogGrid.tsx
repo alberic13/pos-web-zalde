@@ -1,22 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Product, Category, CartItem } from '../../types';
 import { PackageX } from 'lucide-react';
-
-const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
-  src,
-  alt,
-  className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300',
-}) => {
-  const [error, setError] = useState(false);
-  if (!src || error) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-        <PackageX className="w-6 h-6 opacity-60" />
-      </div>
-    );
-  }
-  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
-};
+import { ProductImage } from '../common/ProductImage';
+import { formatCurrency } from '../../utils/format';
 
 interface ProductCatalogGridProps {
   categories: Category[];
@@ -39,12 +25,6 @@ export const ProductCatalogGrid: React.FC<ProductCatalogGridProps> = ({
   loading,
   onAddToCart,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <div className="flex-1 min-w-0 w-full flex flex-col space-y-4">

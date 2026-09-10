@@ -2,6 +2,7 @@ import React from 'react';
 import { Supplier } from '../../pages/SuppliersPage';
 import { TableSkeleton } from '../common/Skeleton';
 import { Building2, Edit3, Trash2, User, Mail, MessageCircle, MapPin, Truck } from 'lucide-react';
+import { cleanWhatsAppNumber } from '../../utils/format';
 
 interface SupplierCardGridProps {
   loading: boolean;
@@ -36,7 +37,7 @@ export const SupplierCardGrid: React.FC<SupplierCardGridProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {suppliers.map((sup) => {
-        const cleanWa = sup.whatsapp.replace(/\D/g, '').replace(/^0/, '62');
+        const cleanWa = cleanWhatsAppNumber(sup.whatsapp);
         return (
           <div key={sup.id} className="mac-card p-4 flex flex-col justify-between space-y-3">
             <div className="space-y-3">

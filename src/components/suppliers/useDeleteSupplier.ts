@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { Supplier } from '../../pages/SuppliersPage';
+import { getErrorMessage } from '../../utils/error';
 
 interface UseDeleteSupplierProps {
   onSuccess: (msg: string) => void;
@@ -29,8 +30,8 @@ export function useDeleteSupplier({ onSuccess, onError, onRefresh }: UseDeleteSu
       onSuccess(`Supplier "${deletingSupplier.companyName}" telah dihapus.`);
       close();
       onRefresh();
-    } catch (err: any) {
-      onError('Gagal Menghapus Supplier', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Menghapus Supplier', getErrorMessage(err));
     }
   };
 

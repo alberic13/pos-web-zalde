@@ -4,6 +4,8 @@ import { Product } from '../../types';
 import { Supplier } from '../../pages/SuppliersPage';
 import { ToastMessage } from '../common/Toast';
 import { useEditCostPrice } from './useEditCostPrice';
+import { formatCurrency, cleanWhatsAppNumber } from '../../utils/format';
+import { getErrorMessage } from '../../utils/error';
 
 export function useSupplierOrders() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,8 +45,8 @@ export function useSupplierOrders() {
       });
       setSelectedSupplierMap(initSupplierMap);
       setOrderQtyMap(initQtyMap);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat data stok', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat data stok', getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -74,10 +76,9 @@ export function useSupplierOrders() {
     const qty = orderQtyMap[prod.id] || 10;
     const costPrice = getCostPrice(prod);
     const totalAmount = costPrice * qty;
-    const cleanWa = supplier.whatsapp.replace(/\D/g, '').replace(/^0/, '62');
+    const cleanWa = cleanWhatsAppNumber(supplier.whatsapp);
 
-    const fmt = (n: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(n);
-    const text = `*ORDER STOK BARANG (PURCHASE ORDER)* 📦\n-----------------------------------------\nKepada: *${supplier.companyName}*\nAttn: *${supplier.contactPerson}*\n\nHalo, POS ZALDE STORE ingin order:\n🔹 *Produk:* ${prod.name} (${prod.sku})\n🔹 *Jumlah:* ${qty} Unit\n🔹 *Harga Modal:* ${fmt(costPrice)} / unit\n💰 *Total:* ${fmt(totalAmount)}\n\nMohon konfirmasi ketersediaan stok & rekening. Terima kasih! 🙏`;
+    const text = `*ORDER STOK BARANG (PURCHASE ORDER)* 📦\n-----------------------------------------\nKepada: *${supplier.companyName}*\nAttn: *${supplier.contactPerson}*\n\nHalo, POS ZALDE STORE ingin order:\n🔹 *Produk:* ${prod.name} (${prod.sku})\n🔹 *Jumlah:* ${qty} Unit\n🔹 *Harga Modal:* ${formatCurrency(costPrice)} / unit\n💰 *Total:* ${formatCurrency(totalAmount)}\n\nMohon konfirmasi ketersediaan stok & rekening. Terima kasih! 🙏`;
 
     window.open(`https://wa.me/${cleanWa}?text=${encodeURIComponent(text)}`, '_blank');
     addToast('success', 'Membuka WhatsApp...', `Order ${qty} unit "${prod.name}" disiapkan.`);

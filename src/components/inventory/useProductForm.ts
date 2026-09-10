@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { Product, Category } from '../../types';
+import { getErrorMessage } from '../../utils/error';
 
 interface UseProductFormProps {
   categories: Category[];
@@ -93,8 +94,8 @@ export function useProductForm({
       }
       setIsProductModalOpen(false);
       await refreshData();
-    } catch (err: any) {
-      onError('Gagal Menyimpan Produk', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Menyimpan Produk', getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }

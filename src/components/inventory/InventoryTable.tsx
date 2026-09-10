@@ -3,6 +3,7 @@ import { Product } from '../../types';
 import { TableSkeleton } from '../common/Skeleton';
 import { InventoryTableRow } from './InventoryTableRow';
 import { Warehouse } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 interface InventoryTableProps {
   loading: boolean;
@@ -23,12 +24,6 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <div className="mac-window p-0 overflow-hidden">

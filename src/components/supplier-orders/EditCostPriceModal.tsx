@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal } from '../common/Modal';
 import { Product } from '../../types';
 import { Save } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 interface EditCostPriceModalProps {
   isOpen: boolean;
@@ -22,8 +23,6 @@ export const EditCostPriceModal: React.FC<EditCostPriceModalProps> = ({
   onSubmit,
   submitting,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
   return (
     <Modal

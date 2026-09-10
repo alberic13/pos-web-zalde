@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { Category } from '../../types';
 import { ToastMessage } from '../common/Toast';
+import { getErrorMessage } from '../../utils/error';
 
 export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -23,8 +24,8 @@ export function useCategories() {
       setLoading(true);
       const data = await api.getCategories();
       setCategories(data);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat kategori', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat kategori', getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -59,8 +60,8 @@ export function useCategories() {
       }
       setIsFormModalOpen(false);
       loadCategories();
-    } catch (err: any) {
-      addToast('error', 'Gagal Menyimpan Kategori', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal Menyimpan Kategori', getErrorMessage(err));
     }
   };
 
@@ -71,8 +72,8 @@ export function useCategories() {
       addToast('success', 'Kategori Dihapus', `Kategori "${deletingCategory.name}" telah dihapus.`);
       setIsDeleteModalOpen(false);
       loadCategories();
-    } catch (err: any) {
-      addToast('error', 'Gagal Menghapus Kategori', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal Menghapus Kategori', getErrorMessage(err));
     }
   };
 

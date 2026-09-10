@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal } from '../common/Modal';
+import { formatCurrency } from '../../utils/format';
 
 interface CheckoutPaymentModalProps {
   isOpen: boolean;
@@ -26,13 +27,6 @@ export const CheckoutPaymentModal: React.FC<CheckoutPaymentModalProps> = ({
   submitting,
   onSubmit,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
-
   const numericPayment = typeof paymentAmount === 'number' ? paymentAmount : 0;
 
   return (

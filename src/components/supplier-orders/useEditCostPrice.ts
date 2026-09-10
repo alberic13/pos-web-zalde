@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { Product } from '../../types';
+import { getErrorMessage } from '../../utils/error';
 
 interface UseEditCostPriceProps {
   onSuccess: (msg: string) => void;
@@ -52,8 +53,8 @@ export function useEditCostPrice({ onSuccess, onError, onRefresh, getCostPrice }
       onSuccess(`Harga modal untuk "${costProduct.name}" berhasil diperbarui.`);
       closeEditCostModal();
       onRefresh();
-    } catch (err: any) {
-      onError('Gagal Memperbarui Harga Modal', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Memperbarui Harga Modal', getErrorMessage(err));
     } finally {
       setSubmittingCost(false);
     }

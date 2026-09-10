@@ -4,6 +4,7 @@ import { Product, Category } from '../../types';
 import { ToastMessage } from '../common/Toast';
 import { useProductForm } from './useProductForm';
 import { useStockTransfer } from './useStockTransfer';
+import { getErrorMessage } from '../../utils/error';
 
 export function useInventory() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,8 +41,8 @@ export function useInventory() {
       ]);
       setProducts(prods);
       setCategories(cats);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat data gudang', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat data gudang', getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -87,8 +88,8 @@ export function useInventory() {
       setIsDeleteModalOpen(false);
       setDeletingProduct(null);
       await loadData();
-    } catch (err: any) {
-      addToast('error', 'Gagal Menghapus Produk', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal Menghapus Produk', getErrorMessage(err));
     } finally {
       setDeletingSubmitting(false);
     }

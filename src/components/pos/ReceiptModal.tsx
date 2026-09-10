@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal } from '../common/Modal';
+import { formatCurrency } from '../../utils/format';
 
 interface ReceiptModalProps {
   isOpen: boolean;
@@ -13,13 +14,6 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
   order,
 }) => {
   if (!order) return null;
-
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <Modal

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Building2, Boxes, AlertTriangle, Banknote } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 interface SupplierOrderKpisProps {
   supplierCount: number;
@@ -14,8 +15,6 @@ export const SupplierOrderKpis: React.FC<SupplierOrderKpisProps> = ({
   lowWarehouseCount,
   totalOrderValue,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">

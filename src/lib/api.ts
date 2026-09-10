@@ -13,7 +13,7 @@ export async function fetchApi<T>(endpoint: string, options?: RequestInit): Prom
   let json: any;
   try {
     json = JSON.parse(text);
-  } catch (err) {
+  } catch (_err: unknown) {
     throw new Error(`Gagal memuat data dari server (Status ${res.status}): ${text.slice(0, 100) || res.statusText}`);
   }
 
@@ -29,9 +29,10 @@ export const api = {
   login: async (credentials: { username?: string; password?: string; role?: string }) => {
     try {
       return await fetchApi<any>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
       // Fallback for local development if server process is running older build without restart
-      if (err.message && (err.message.includes('not found') || err.message.includes('404'))) {
+      if (errMsg.includes('not found') || errMsg.includes('404')) {
         const { username, password, role } = credentials;
 
         if (role && ['ADMIN', 'KASIR', 'GUDANG'].includes(role.toUpperCase())) {

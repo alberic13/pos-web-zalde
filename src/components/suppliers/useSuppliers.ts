@@ -5,6 +5,7 @@ import { Supplier } from '../../pages/SuppliersPage';
 import { ToastMessage } from '../common/Toast';
 import { useSupplierModal } from './useSupplierModal';
 import { useDeleteSupplier } from './useDeleteSupplier';
+import { getErrorMessage } from '../../utils/error';
 
 export function useSuppliers() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
@@ -25,8 +26,8 @@ export function useSuppliers() {
       const [sups, cats] = await Promise.all([api.getSuppliers(), api.getCategories()]);
       setSuppliers(sups);
       setCategories(cats);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat data supplier', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat data supplier', getErrorMessage(err));
     } finally {
       setLoading(false);
     }

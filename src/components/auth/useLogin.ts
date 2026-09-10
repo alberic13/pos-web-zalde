@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useRole, UserRole } from '../../context/RoleContext';
 import { api } from '../../lib/api';
+import { getErrorMessage } from '../../utils/error';
 
 export function useLogin() {
   const { loginSuccess } = useRole();
@@ -37,8 +38,8 @@ export function useLogin() {
         loginSuccess(res.user.role as UserRole, res.user.name, res.token);
         navigate(redirectByRole(res.user.role));
       }
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Login gagal. Pastikan username & password benar.');
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'Login gagal. Pastikan username & password benar.');
     } finally {
       setLoading(false);
     }

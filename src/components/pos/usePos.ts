@@ -4,6 +4,7 @@ import { Product, Category } from '../../types';
 import { ToastMessage } from '../common/Toast';
 import { useCart } from './useCart';
 import { usePosCheckout } from './usePosCheckout';
+import { getErrorMessage } from '../../utils/error';
 
 export function usePos() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -32,8 +33,8 @@ export function usePos() {
       if (showSkeleton) setLoading(true);
       const prodsData = await api.getProducts(search, selectedCategory);
       setProducts(prodsData);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat data produk', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat data produk', getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -49,7 +50,7 @@ export function usePos() {
   });
 
   useEffect(() => {
-    api.getCategories().then(setCategories).catch((err: any) => addToast('error', 'Gagal memuat kategori', err.message));
+    api.getCategories().then(setCategories).catch((err: unknown) => addToast('error', 'Gagal memuat kategori', getErrorMessage(err)));
   }, []);
 
   useEffect(() => {

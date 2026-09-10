@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRole, UserRole } from '../../context/RoleContext';
+import { getErrorMessage } from '../../utils/error';
 
 export interface ChatMessage {
   id: string;
@@ -37,8 +38,8 @@ export function useChat(isOpen: boolean) {
       if (!res.ok) return;
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) setMessages(data.data);
-    } catch (err) {
-      console.error('Failed to fetch chat messages:', err);
+    } catch (err: unknown) {
+      console.error('Failed to fetch chat messages:', getErrorMessage(err));
     }
   };
 
@@ -58,8 +59,8 @@ export function useChat(isOpen: boolean) {
           }));
         setProducts(low);
       }
-    } catch (err) {
-      console.error('Failed to fetch products for chat:', err);
+    } catch (err: unknown) {
+      console.error('Failed to fetch products for chat:', getErrorMessage(err));
     }
   };
 
@@ -109,8 +110,8 @@ export function useChat(isOpen: boolean) {
         if (!msgContent) setInputText('');
         setTimeout(scrollToBottom, 100);
       }
-    } catch (err) {
-      console.error('Failed to send message:', err);
+    } catch (err: unknown) {
+      console.error('Failed to send message:', getErrorMessage(err));
     } finally {
       setSending(false);
     }
@@ -122,8 +123,8 @@ export function useChat(isOpen: boolean) {
       const res = await fetch('/api/chat/messages', { method: 'DELETE' });
       const data = await res.json();
       if (data.success) setMessages([]);
-    } catch (err) {
-      console.error('Failed to clear chat:', err);
+    } catch (err: unknown) {
+      console.error('Failed to clear chat:', getErrorMessage(err));
     }
   };
 

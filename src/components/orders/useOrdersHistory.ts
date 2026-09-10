@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { api } from '../../lib/api';
 import { Order } from '../../types';
 import { ToastMessage } from '../common/Toast';
+import { formatCurrency, formatDate } from '../../utils/format';
+import { getErrorMessage } from '../../utils/error';
 
 export function useOrdersHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -20,8 +22,8 @@ export function useOrdersHistory() {
       if (!isSilent && orders.length === 0) setLoading(true);
       const data = await api.getOrders();
       setOrders(data);
-    } catch (err: any) {
-      if (!isSilent) addToast('error', 'Gagal memuat riwayat transaksi', err.message);
+    } catch (err: unknown) {
+      if (!isSilent) addToast('error', 'Gagal memuat riwayat transaksi', getErrorMessage(err));
     } finally {
       if (!isSilent) setLoading(false);
     }
@@ -54,18 +56,6 @@ export function useOrdersHistory() {
   const totalCount = filteredOrders.length;
   const avgOrderValue = totalCount > 0 ? Math.round(totalRevenue / totalCount) : 0;
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleString('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
   const handleExportExcel = () => {
     if (filteredOrders.length === 0) {
       return addToast('info', 'Tidak Ada Data', 'Belum ada data transaksi harian untuk diexport.');
@@ -80,7 +70,7 @@ export function useOrdersHistory() {
 
     filteredOrders.forEach((ord, idx) => {
       const itemCount = ord.items?.reduce((sum, i) => sum + i.quantity, 0) || 0;
-      const fDate = new Date(ord.createdAt).toLocaleString('id-ID').replace(/,/g, '');
+      const fDate = formatDate(ord.createdAt);
       csv += `${idx + 1},"${ord.orderNumber}","${fDate}","${ord.paymentMethod}",${itemCount},${ord.totalAmount}\n`;
     });
 

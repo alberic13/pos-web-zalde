@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { api } from '../../lib/api';
 import { Supplier } from '../../pages/SuppliersPage';
+import { cleanWhatsAppNumber } from '../../utils/format';
+import { getErrorMessage } from '../../utils/error';
 
 interface UseSupplierModalProps {
   defaultCategory: string;
@@ -61,10 +63,7 @@ export function useSupplierModal({ defaultCategory, onSuccess, onError, onRefres
       return onError('Form Tidak Lengkap', 'Harap isi Nama Perusahaan dan Contact Person.');
     }
 
-    let wa = form.whatsapp.replace(/\D/g, '');
-    if (wa.startsWith('0')) wa = '62' + wa.slice(1);
-    else if (!wa.startsWith('62') && wa.length > 0) wa = '62' + wa;
-    const finalWa = wa || '6281234567890';
+    const finalWa = form.whatsapp.trim() ? cleanWhatsAppNumber(form.whatsapp) : '6281234567890';
 
     const payload = {
       companyName: form.companyName.trim(),
@@ -87,8 +86,8 @@ export function useSupplierModal({ defaultCategory, onSuccess, onError, onRefres
       }
       close();
       onRefresh();
-    } catch (err: any) {
-      onError('Gagal Menyimpan Supplier', err.message);
+    } catch (err: unknown) {
+      onError('Gagal Menyimpan Supplier', getErrorMessage(err));
     }
   };
 

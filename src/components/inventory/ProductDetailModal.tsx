@@ -1,8 +1,9 @@
 import React from 'react';
 import { Product } from '../../types';
 import { Modal } from '../common/Modal';
-import { ProductImage } from './ProductImage';
+import { ProductImage } from '../common/ProductImage';
 import { Edit3 } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 interface ProductDetailModalProps {
   isOpen: boolean;
@@ -18,13 +19,6 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   onEdit,
 }) => {
   if (!product) return null;
-
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      maximumFractionDigits: 0,
-    }).format(val);
 
   return (
     <Modal

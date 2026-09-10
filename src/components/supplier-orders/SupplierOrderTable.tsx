@@ -1,9 +1,10 @@
 import React from 'react';
 import { Product } from '../../types';
 import { Supplier } from '../../pages/SuppliersPage';
-import { ProductImage } from '../inventory/ProductImage';
+import { ProductImage } from '../common/ProductImage';
 import { TableSkeleton } from '../common/Skeleton';
 import { MessageCircle, Boxes, Minus, Plus, Edit3 } from 'lucide-react';
+import { formatCurrency } from '../../utils/format';
 
 interface SupplierOrderTableProps {
   loading: boolean;
@@ -32,8 +33,6 @@ export const SupplierOrderTable: React.FC<SupplierOrderTableProps> = ({
   onDirectWhatsApp,
   getCostPrice,
 }) => {
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
 
   return (
     <div className="mac-window p-0 overflow-hidden">

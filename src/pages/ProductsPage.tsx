@@ -3,32 +3,10 @@ import { api } from '../lib/api';
 import { Product, Category } from '../types';
 import { TableSkeleton } from '../components/common/Skeleton';
 import { ToastContainer, ToastMessage } from '../components/common/Toast';
-import {
-  Search,
-  Package,
-  Image as ImageIcon,
-} from 'lucide-react';
-
-const ProductImage: React.FC<{ src?: string | null; alt: string; className?: string }> = ({
-  src,
-  alt,
-  className = 'w-full h-full object-cover',
-}) => {
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    setError(false);
-  }, [src]);
-
-  if (!src || error) {
-    return (
-      <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400">
-        <ImageIcon className="w-4 h-4" />
-      </div>
-    );
-  }
-  return <img src={src} alt={alt} className={className} onError={() => setError(true)} />;
-};
+import { ProductImage } from '../components/inventory/ProductImage';
+import { formatCurrency } from '../utils/format';
+import { getErrorMessage } from '../utils/error';
+import { Search, Package } from 'lucide-react';
 
 export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -36,7 +14,6 @@ export const ProductsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (type: 'success' | 'error' | 'info', title: string, message?: string) => {
@@ -57,8 +34,8 @@ export const ProductsPage: React.FC = () => {
       ]);
       setProducts(prods);
       setCategories(cats);
-    } catch (err: any) {
-      addToast('error', 'Gagal memuat produk', err.message);
+    } catch (err: unknown) {
+      addToast('error', 'Gagal memuat produk', getErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -68,14 +45,10 @@ export const ProductsPage: React.FC = () => {
     loadProducts();
   }, [search, selectedCategory]);
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
-
   return (
     <div className="space-y-5 animate-fade-in font-sans text-black">
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
-      {/* Header Actions Mac OS Window */}
       <div className="mac-window p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative flex-1 w-full sm:max-w-md">
           <Search className="w-4 h-4 text-gray-600 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -88,7 +61,6 @@ export const ProductsPage: React.FC = () => {
           />
         </div>
 
-        {/* Filter Category */}
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
@@ -103,12 +75,9 @@ export const ProductsPage: React.FC = () => {
         </select>
       </div>
 
-      {/* Table Container Mac OS Window */}
       <div className="mac-window p-0 overflow-hidden">
         <div className="mac-window-header">
-          <h3 className="text-xs font-black uppercase text-black">
-            Katalog Produk Etalase Kasir
-          </h3>
+          <h3 className="text-xs font-black uppercase text-black">Katalog Produk Etalase Kasir</h3>
         </div>
 
         <div className="p-3 bg-white">
