@@ -63,8 +63,11 @@ flowchart LR
 
 ### **Frontend Framework & UI**
 - **React 18** (TypeScript): High-performance Single Page Application (SPA).
-- **Vite**: Ultra-fast build tool and local development server.
-- **Tailwind CSS**: Modern custom color palette (Slate & Emerald retail theme).
+- **Vite**: Ultra-fast build tool and local development server with chunk splitting (`vendor`, `recharts`, `icons`).
+- **Retro-Modern System 7 Mac OS Design System**: Custom nostalgic Mac OS Classic theme (window titlebars, traffic light controls, beveled mac-buttons, mac-tables, dan rainbow badge).
+- **Modular & Anti-Monolith Architecture**: 100% file mematuhi batas SRP (Single Responsibility Principle) & hard ceiling < 200 baris per file.
+- **Custom Hooks Separation**: Seluruh state management dan interaksi API dipisahkan dari layer view (`usePos`, `useInventory`, `useSupplierOrders`, `useDashboard`, `useChat`, dll).
+- **Centralized Shared Utilities**: Standardisasi helper format (`format.ts`) dan penanganan error bertipe ketat (`error.ts`).
 - **Recharts**: Interactive sales analytics graphs & financial charts.
 - **Lucide React**: Clean & modern iconography.
 - **React Router DOM**: SPA client-side routing (`/`, `/pos`, `/products`, `/categories`, `/inventory`, `/supplier-orders`, `/suppliers`, `/orders`).
@@ -81,6 +84,7 @@ flowchart LR
 
 ### **Testing & Deployment**
 - **Bun Test Suite**: High-speed integration test runner (`tests/integration.test.ts`) running all 7 test suites against PostgreSQL.
+- **TypeScript Typecheck**: Strict `tsc --noEmit` dengan 0 compile error.
 - **Vercel Deployment**: Serverless Functions hosting (`/api/*`) + SPA Client static hosting.
 ---
 
@@ -158,7 +162,12 @@ erDiagram
 
 ---
 
-## 📂 Code Structure & Directory Architecture
+## 📂 Code Structure & Modular Architecture
+
+Struktur direktori menerapkan prinsip **One-Shot Modular** & **Colocation**:
+- Komponen UI dipisah berdasarkan domain fungsional (`pos`, `inventory`, `orders`, `suppliers`, `supplier-orders`, `categories`, `dashboard`, `chat`, `auth`).
+- State logic dipisahkan ke dedicated **Custom Hooks** (`use*.ts`).
+- Semua file berada di bawah batas keras **< 200 baris** (Pages rata-rata < 85 baris).
 
 ```text
 pos-web-zalde/
@@ -173,28 +182,45 @@ pos-web-zalde/
 │   └── seed.ts                # Script seeding data sampel (Kategori, Produk, Supplier, & Transaksi)
 ├── src/
 │   ├── components/
-│   │   ├── chat/
-│   │   │   └── ChatDrawer.tsx # Floating Chat Widget Komunikasi Toko & Gudang (Short Polling + Quick Templates)
-│   │   ├── common/            # Modal, Toast notifications, & Skeleton loaders
-│   │   └── layout/            # Header, Sidebar (7 Nav Menu Utama), & Layout wrapper + Floating FAB Chat
+│   │   ├── auth/              # System7LoginWindow, System7TopMenuBar, useLogin
+│   │   ├── categories/        # CategoryCardGrid, CategoryFormModal, useCategories
+│   │   ├── chat/              # ChatDrawer, useChat (Internal Store & Warehouse Messaging)
+│   │   ├── common/            # Modal, Toast, Skeleton, ProductImage (Shared Reusable UI)
+│   │   ├── dashboard/         # DashboardKpiCards, SalesAreaChart, LowStockAlertTable, useDashboard
+│   │   ├── inventory/         # InventoryTable, InventoryTableRow, InventoryMetricsHeader,
+│   │   │                      # ProductDetailModal, ProductFormModal, TransferStockModal,
+│   │   │                      # WarehouseRestockModal, DeleteConfirmModal, useInventory,
+│   │   │                      # useProductForm, useStockTransfer
+│   │   ├── layout/            # System7TopMenuBar, Layout wrapper, FAB Chat button
+│   │   ├── orders/            # OrdersTable, OrderDetailReceiptModal, OrdersKpis, useOrdersHistory
+│   │   ├── pos/               # CartPanel, ProductCatalogGrid, CheckoutPaymentModal,
+│   │   │                      # ReceiptModal, PosHeaderBar, usePos, usePosCheckout, useCart
+│   │   ├── supplier-orders/   # SupplierOrderTable, SupplierOrderKpis, EditCostPriceModal,
+│   │   │                      # useSupplierOrders, useEditCostPrice
+│   │   └── suppliers/         # SupplierCardGrid, SupplierFormModal, useSuppliers,
+│   │                          # useSupplierModal, useDeleteSupplier
 │   ├── context/
 │   │   └── RoleContext.tsx    # State Management & Role Switcher (Kasir, Staff Gudang, Admin Toko)
 │   ├── lib/
-│   │   ├── api.ts             # Client API fetch wrapper dengan error handling (CRUD lengkap)
+│   │   ├── api.ts             # Client API fetch wrapper dengan error handling & fallback login
 │   │   └── imageCompressor.ts # Browser WebP auto-compressor module (Resize + WebP 75%)
-│   ├── pages/
-│   │   ├── DashboardPage.tsx     # Dashboard analytics, KPI cards, & grafik omset 7 hari
-│   │   ├── PosPage.tsx           # Terminal Kasir POS 
+│   ├── pages/                 # Orchestrator Container tipis (< 85 baris)
+│   │   ├── DashboardPage.tsx     # Dashboard analytics & grafik omset harian
+│   │   ├── PosPage.tsx           # Terminal Kasir POS
 │   │   ├── ProductsPage.tsx      # Katalog Produk Etalase & File Upload WebP
 │   │   ├── CategoriesPage.tsx    # CRUD Kategori Produk
-│   │   ├── InventoryPage.tsx     # Stok Gudang & Restock Etalase Kasir (Pill Badges UX)
-│   │   ├── SupplierOrdersPage.tsx# Order Pasokan Supplier (Qty Stepper, Cost Price Modal, 1-Click WA PO)
-│   │   ├── SuppliersPage.tsx     # Direktori Kontak Supplier & Kategori Pasokan Dinamis
-│   │   └── OrdersHistoryPage.tsx # Riwayat Transaksi Penjualan & Struk Pembayaran
+│   │   ├── InventoryPage.tsx     # Stok Gudang & Restock Etalase Kasir
+│   │   ├── SupplierOrdersPage.tsx# Order Pasokan Supplier (Qty Stepper, Cost Price Modal, WA PO)
+│   │   ├── SuppliersPage.tsx     # Direktori Kontak Supplier & WhatsApp Quick Chat
+│   │   ├── OrdersHistoryPage.tsx # Riwayat Transaksi Penjualan, Struk, & Export Excel
+│   │   └── LoginPage.tsx         # Classic System 7 Login Page
 │   ├── types/                 # Interface TypeScript (Product, Category, Order, Supplier, CartItem, ChatMessage)
+│   ├── utils/
+│   │   ├── format.ts          # Centralized Formatters (Currency IDR, Date, Time, WhatsApp Sanitizer)
+│   │   └── error.ts           # Strict Unknown Error Parser (getErrorMessage)
 │   ├── App.tsx                # Client Routing (React Router DOM) & RoleProvider Wrapper
 │   ├── main.tsx               # Entrypoint React Vite
-│   └── index.css              # Custom Tailwind CSS & Design System
+│   └── index.css              # Custom System 7 Retro Theme & Tailwind CSS Design Tokens
 ├── tests/
 │   └── integration.test.ts    # Integration Test Suite (API ↔ Prisma ORM ↔ PostgreSQL - 7 Test Cases)
 ├── .env                       # Variabel lingkungan lokal (Local Postgres / Neon Cloud)
@@ -208,28 +234,54 @@ pos-web-zalde/
 
 ## 🌟 Fitur Utama & Pembaruan Terkini (Recent Updates)
 
-### 1. **Chat Komunikasi Internal Toko & Gudang (`ChatDrawer.tsx`)**
+### 1. **Penyempurnaan Arsitektur & Clean Code (Zero-Monolith Refactor)**
+- **Sentralisasi Format Helpers (`src/utils/format.ts`)**:
+  - Standarisasi `formatCurrency` (IDR), `formatDate`, `formatTime`, dan `cleanWhatsAppNumber`.
+  - Mengeliminasi deklarasi `Intl.NumberFormat` berulang di belasan komponen.
+- **Sentralisasi Error Handling (`src/utils/error.ts`)**:
+  - Fungsi `getErrorMessage(error: unknown)` yang aman dari runtime crash (menangani instance `Error`, objek API respons, dan fallback string).
+  - 100% bebas dari `catch (err: any)` liar pada seluruh 25 blok catch di frontend hooks & API client.
+- **Deduplikasi Komponen Gambar (`src/components/common/ProductImage.tsx`)**:
+  - Komponen tunggal dengan fallback placeholder aman jika gambar rusak atau tidak tersedia.
+  - Dipakai seragam di katalog POS, keranjang, purchase order supplier, etalase produk, dan inventaris gudang.
+- **Single Responsibility Principle (SRP)**:
+  - Seluruh file `< 200 baris` (file halaman rata-rata hanya `50 - 85 baris`).
+  - Pemisahan total antara rendering UI dan logika bisnis/state.
+
+### 2. **Chat Komunikasi Internal Toko & Gudang (`ChatDrawer.tsx`)**
 - **Floating Chat Widget**: Akses chat serbaguna dari tombol melayang (*Floating Action Button*) di sudut kanan bawah setiap halaman tanpa mengganggu transaksi kasir.
 - **Deteksi Role & Pemilih Role (Role Switcher)**: Penjaga toko dapat beralih peran secara instan antara **🛒 Penjaga Toko Depan (Kasir)**, **📦 Staff Gudang**, dan **👑 Admin Toko** dari header widget chat dengan warna gelembung & badge role yang berbeda.
 - **Preset Pesan Cepat (Quick Templates)**: Kirim permintaan restok etalase dalam 1-klik (`📢 Minta Restok Etalase`, `✅ Stok Etalase Diisi`, `⚠️ Stok Gudang Menipis`).
 - **Filter Produk Target Low Stock**: Dropdown pemilih produk secara otomatis menyaring dan hanya menampilkan produk yang stok etalasenya menipis (**≤ 5 unit**).
 - **Auto-Sync & Real-Time Polling**: Pesan tersinkronisasi otomatis antar tab/peramban setiap 3 detik.
 
-### 2. **Order Pasokan Supplier (`/supplier-orders`)**
+### 3. **Order Pasokan Supplier (`/supplier-orders`)**
 - **Tabel Restock Interaktif**: Foto/nama produk, supplier tujuan, stok cadangan gudang, harga modal, harga jual etalase, pengatur kuantitas (Qty Stepper `+` / `-`), dan kalkulasi otomatis total bayar ke supplier.
 - **Interactive Edit Harga Modal**: Pengguna dapat memperbarui **Harga Modal (Beli)** produk secara langsung dari tabel aksi, tersimpan permanen di database PostgreSQL dengan kalkulator margin keuntungan real-time.
 - **1-Click WhatsApp Purchase Order (PO)**: Generasi otomatis pesan PO terstruktur dengan detail produk, SKU, kuantitas, harga modal, harga jual, dan total tagihan yang langsung membuka WhatsApp Web/Desktop.
 - **Filter Status Gudang**: Filter instant `Semua Produk`, `⚠️ Gudang Menipis (≤ 5 unit)`, dan `🚫 Gudang Kosong`.
 
-### 3. **Direktori Kontak Supplier Database Synced (`/suppliers`)**
+### 4. **Direktori Kontak Supplier Database Synced (`/suppliers`)**
 - **Full Database Sync**: Data distributor/supplier tersimpan di database PostgreSQL, sehingga data selalu **100% identik** baik di lokal maupun di Vercel Deploy.
 - **Dynamic Category Supply**: Kategori pasokan supplier terhubung secara dinamis dengan master data Kategori di database.
+- **One-Click WhatsApp Chat**: Tombol cepat untuk membuka chat WhatsApp langsung ke nomor supplier dengan sanitasi format nomor otomatis (`cleanWhatsAppNumber`).
 
-### 4. **Stok Gudang & Badges Design UX (`/inventory`)**
-- **Restock Etalase Kasir**: Fitur pemindahan stok dari cadangan gudang ke etalase kasir secara langsung.
+### 5. **Stok Gudang & Badges Design UX (`/inventory`)**
+- **Restock Etalase Kasir**: Fitur pemindahan stok dari cadangan gudang ke etalase kasir secara langsung via modal transfer.
+- **Penambahan Pasokan Gudang**: Form cepat untuk menambah stok cadangan gudang saat barang baru tiba dari supplier.
 - **Ultra-Clean Pill Badges**: Visualisasi status stok etalase dan gudang dengan badge horizontal 1-baris yang elegan dan beranimasi (Emerald untuk aman, Amber pulse untuk refill, Indigo untuk gudang, Rose untuk kosong).
 
-### 5. **Auto-Kompresi & Upload Gambar WebP (`src/lib/imageCompressor.ts`)**
+### 6. **Terminal Kasir POS & Struk Transaksi (`/pos`)**
+- **Katalog & Filter Cepat**: Filter kategori instan, pencarian nama/SKU, dan indikator stok habis.
+- **Keranjang & Kalkulasi Pajak**: Penyesuaian kuantitas fleksibel, validasi batas stok, perhitungan subtotal, dan PPN 11%.
+- **Modal Pembayaran & Kembalian**: Pilihan metode Cash / QRIS, tombol uang pas dan pecahan cepat (20k, 50k, 100k, 200k), serta kalkulasi kembalian otomatis.
+- **Cetak Struk Transaksi**: Struk monospaced bergaya retro kasir dengan rincian per item dan tombol cetak struk (`window.print()`).
+
+### 7. **Laporan & Penutupan Harian (`/orders`)**
+- **Daily Closing Summary**: Rangkuman transaksi hari berjalan (omset harian, total transaksi, rata-rata transaksi).
+- **Export Laporan Excel (CSV)**: Unduh rekapitulasi penjualan harian lengkap dalam format CSV yang kompatibel dengan Microsoft Excel dan Google Sheets.
+
+### 8. **Auto-Kompresi & Upload Gambar WebP (`src/lib/imageCompressor.ts`)**
 - Upload file foto produk dari perangkat lokal (JPG, PNG, WebP) dengan kompresi WebP otomatis di browser (resize & kompresi hingga **15 KB – 25 KB**), menghemat storage database hingga **95%+**.
 
 ---
@@ -283,6 +335,37 @@ Ran 7 tests across 1 file. [411.00ms]
 
 ---
 
+### 3. **Production Bundle Build (Vite)**
+```bash
+npx vite build
+```
+
+**Hasil Build:**
+```text
+✓ 2455 modules transformed.
+dist/index.html                     1.10 kB │ gzip:   0.56 kB
+dist/assets/index-I8ILNd_M.css     32.71 kB │ gzip:   6.78 kB
+dist/assets/icons-agdkO0XV.js      21.59 kB │ gzip:   4.66 kB
+dist/assets/index-DV5qnxV_.js     133.35 kB │ gzip:  29.04 kB
+dist/assets/vendor-9jdMLHbg.js    163.73 kB │ gzip:  53.42 kB
+dist/assets/recharts-BHGE68XP.js  383.11 kB │ gzip: 105.64 kB
+✓ built in 6.99s
+```
+
+---
+
+### 4. **SRP & Code Complexity Audit (Hard Ceiling < 200 Baris)**
+Seluruh berkas kode TypeScript & TSX dipindai secara otomatis:
+```powershell
+Get-ChildItem -Path src -Recurse -Include *.ts,*.tsx | ForEach-Object {
+  $lines = (Get-Content $_.FullName | Measure-Object -Line).Lines
+  if ($lines -gt 200) { "$($_.FullName): $lines lines" }
+}
+```
+**Hasil:** `0 files found` (100% file mematuhi batas keras < 200 baris, arsitektur anti-monolitik).
+
+---
+
 ## 📦 Cara Memulai (Getting Started)
 
 ### **Prasyarat**
@@ -329,7 +412,38 @@ Ran 7 tests across 1 file. [411.00ms]
    * **Terminal 1** (API Server): `npx tsx api/index.ts / bun api/index.ts`
    * **Terminal 2** (Vite Frontend): `npm run dev / bun run dev`
 
-   Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
+    Buka [http://localhost:5173](http://localhost:5173) di browser Anda.
+
+---
+
+## 🔑 Kredensial Akun Demo (Default Logins)
+
+Untuk mencoba 3 role dengan hak akses berbeda, gunakan akun berikut pada halaman login (`/login`):
+
+| Role | Username | Password | Hak Akses Utama |
+|---|---|---|---|
+| **Admin Toko** | `admin` | `admin123` | Akses penuh (Dashboard, POS, Produk, Stok, Supplier, Chat, Reports) |
+| **Kasir (Toko Depan)** | `kasir` | `kasir123` | POS Kasir, Produk Etalase, Riwayat Transaksi, Chat Toko & Gudang |
+| **Staff Gudang** | `gudang` | `gudang123` | Stok Gudang, Transfer Etalase, Kategori, Produk, Chat Toko & Gudang |
+
+---
+
+## 🔌 Dokumentasi REST API Serverless (`/api/*`)
+
+| Endpoint | Method | Deskripsi |
+|---|---|---|
+| `/api/health` | `GET` | Health check endpoint serverless & konektivitas DB |
+| `/api/auth/login` | `POST` | Autentikasi pengguna & pembuatan token role |
+| `/api/products` | `GET`, `POST` | List katalog produk & pembuatan produk baru |
+| `/api/products/:id` | `PUT`, `DELETE` | Update detail/harga produk & hapus produk |
+| `/api/products/:id/transfer-to-display` | `POST` | Transfer stok fisik dari gudang ke etalase toko |
+| `/api/categories` | `GET`, `POST` | List & tambah kategori produk |
+| `/api/categories/:id` | `PUT`, `DELETE` | Update nama kategori & hapus kategori |
+| `/api/orders` | `GET`, `POST` | List riwayat order & checkout transaksi POS baru |
+| `/api/suppliers` | `GET`, `POST` | List & tambah data distributor/supplier |
+| `/api/suppliers/:id` | `PUT`, `DELETE` | Update informasi supplier & hapus supplier |
+| `/api/chat/messages` | `GET`, `POST`, `DELETE` | Polling chat internal, kirim pesan, & bersihkan riwayat chat |
+| `/api/dashboard/stats` | `GET` | Agregasi analitik KPI, tren omset 7 hari, & low stock alert |
 
 ---
 
