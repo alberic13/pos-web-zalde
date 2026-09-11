@@ -45,7 +45,17 @@ export const LoginPage: React.FC = () => {
         />
 
         <div className="p-2.5 border-t-2 border-black bg-gray-300 flex items-center justify-between text-[10px] font-black text-gray-800 uppercase">
-          <span>© 1991-2026 Zalde POS</span>
+          <span>
+            © 1991-2026 Developed by{' '}
+            <a
+              href="https://github.com/alberic13"
+              target="_blank"
+              rel="nofollow author noopener noreferrer"
+              className="text-stone-800 hover:text-black underline font-medium transition-colors"
+            >
+              Muchammad Zalde Zahwa Putra
+            </a>
+          </span>
           <span>System 7.0</span>
         </div>
       </div>
