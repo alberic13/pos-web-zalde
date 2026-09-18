@@ -51,10 +51,28 @@ export const app = new Elysia()
     return { success: false, error: errorMsg || 'Internal Server Error' };
   });
 
+function handleWebRequest(req: Request): Promise<Response> {
+  const matchedPath = req.headers.get('x-matched-path') || req.headers.get('x-vercel-matched-path');
+  if (matchedPath && matchedPath.startsWith('/') && !req.url.includes(matchedPath)) {
+    const url = new URL(req.url);
+    url.pathname = matchedPath;
+    const newReq = new Request(url.toString(), req);
+    return app.handle(newReq);
+  }
+  return app.handle(req);
+}
+
+export const GET = (req: Request) => handleWebRequest(req);
+export const POST = (req: Request) => handleWebRequest(req);
+export const PUT = (req: Request) => handleWebRequest(req);
+export const DELETE = (req: Request) => handleWebRequest(req);
+export const PATCH = (req: Request) => handleWebRequest(req);
+export const OPTIONS = (req: Request) => handleWebRequest(req);
+
 export default async function handler(req: any, res?: any) {
   // Web Standard / Vercel Edge / Fetch context
   if (req instanceof Request) {
-    return app.handle(req);
+    return handleWebRequest(req);
   }
 
   // Node.js (req, res) context (Vercel Serverless Node, Local http server, & Bun Test runner)
