@@ -1,5 +1,7 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect, beforeAll } from 'bun:test';
 import { app } from '../api/index';
+import { prisma } from '../api/db';
+import bcrypt from 'bcryptjs';
 
 async function testFetch(path: string, options: { method?: string; body?: any; token?: string } = {}) {
   const headers: Record<string, string> = {
@@ -29,6 +31,24 @@ async function testFetch(path: string, options: { method?: string; body?: any; t
 describe('Security & RBAC Enforcement Tests', () => {
   let adminToken = '';
   let kasirToken = '';
+
+  beforeAll(async () => {
+    try {
+      const passwordHash = await bcrypt.hash('admin123', 10);
+      await prisma.user.upsert({
+        where: { username: 'admin' },
+        update: { passwordHash, role: 'ADMIN', name: 'Admin Zalde' },
+        create: {
+          username: 'admin',
+          passwordHash,
+          role: 'ADMIN',
+          name: 'Admin Zalde',
+        },
+      });
+    } catch (_err) {
+      // Graceful fallback if database connection issue
+    }
+  });
 
   test('Reject login with invalid credentials', async () => {
     const res = await testFetch('/api/auth/login', {
