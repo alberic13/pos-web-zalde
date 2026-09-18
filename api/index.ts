@@ -59,7 +59,11 @@ export default async function handler(req: any, res?: any) {
 
   // Node.js (req, res) context (Vercel Serverless Node, Local http server, & Bun Test runner)
   try {
-    const rawUrl = req.url || '/';
+    const matchedPath = (req.headers && (req.headers['x-matched-path'] || req.headers['x-vercel-matched-path'])) || '';
+    let rawUrl = req.url || '/';
+    if (typeof matchedPath === 'string' && matchedPath.startsWith('/') && (rawUrl === '/api' || rawUrl === '/api/')) {
+      rawUrl = matchedPath;
+    }
     const parsedUrl = new URL(rawUrl, `http://${req.headers?.host || 'localhost'}`);
     const method = (req.method || 'GET').toUpperCase();
 
@@ -103,8 +107,9 @@ export default async function handler(req: any, res?: any) {
     });
 
     const resText = await webRes.text();
-    if (typeof res.end === 'function') {
+    if (typeof res?.end === 'function') {
       res.end(resText);
+      return;
     }
     return webRes;
   } catch (err: any) {
@@ -114,6 +119,7 @@ export default async function handler(req: any, res?: any) {
         res.setHeader('Content-Type', 'application/json');
       }
       res.end(JSON.stringify({ success: false, error: err.message || 'Internal Server Error' }));
+      return;
     }
   }
 }

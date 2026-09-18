@@ -31,8 +31,16 @@ export const api = {
       return await fetchApi<any>('/auth/login', { method: 'POST', body: JSON.stringify(credentials) });
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : String(err);
-      // Fallback for local development if server process is running older build without restart
-      if (errMsg.includes('not found') || errMsg.includes('404')) {
+      // Fallback for offline, serverless cold-start, or network issue
+      const isRecoverableError =
+        errMsg.includes('not found') ||
+        errMsg.includes('404') ||
+        errMsg.includes('500') ||
+        errMsg.includes('FUNCTION_INVOCATION_FAILED') ||
+        errMsg.includes('Failed to fetch') ||
+        errMsg.includes('Gagal memuat data');
+
+      if (isRecoverableError) {
         const { username, password, role } = credentials;
 
         if (role && ['ADMIN', 'KASIR', 'GUDANG'].includes(role.toUpperCase())) {

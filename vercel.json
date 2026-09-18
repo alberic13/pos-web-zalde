@@ -1,5 +1,8 @@
 {
   "functions": {
+    "api/index.ts": {
+      "includeFiles": "node_modules/.prisma/client/**"
+    },
     "api/**/*.ts": {
       "includeFiles": "node_modules/.prisma/client/**"
     }
