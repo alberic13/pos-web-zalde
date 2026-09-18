@@ -1,5 +1,9 @@
 import { Elysia } from 'elysia';
 import { prisma } from '../db';
+import { requireRole } from '../middleware/auth';
+
+const guardInventory = requireRole(['ADMIN', 'GUDANG']);
+const guardAdmin = requireRole(['ADMIN']);
 
 const defaultSuppliers = [
   {
@@ -69,50 +73,62 @@ export const supplierRoutes = new Elysia({ prefix: '/api/suppliers' })
 
     return { success: true, data: suppliers };
   })
-  .post('/', async ({ body, set }: { body: any; set: any }) => {
-    const { companyName, contactPerson, phone, whatsapp, email, address, categorySupply, notes } = body || {};
+  .post(
+    '/',
+    async ({ body, set }: { body: any; set: any }) => {
+      const { companyName, contactPerson, phone, whatsapp, email, address, categorySupply, notes } = body || {};
 
-    if (!companyName || !contactPerson || !phone || !whatsapp || !categorySupply) {
-      set.status = 400;
-      return { success: false, error: 'Mandatory fields missing' };
-    }
+      if (!companyName || !contactPerson || !phone || !whatsapp || !categorySupply) {
+        set.status = 400;
+        return { success: false, error: 'Mandatory fields missing' };
+      }
 
-    const newSupplier = await prisma.supplier.create({
-      data: {
-        companyName,
-        contactPerson,
-        phone,
-        whatsapp,
-        email: email || null,
-        address: address || null,
-        categorySupply,
-        notes: notes || null,
-      },
-    });
+      const newSupplier = await prisma.supplier.create({
+        data: {
+          companyName,
+          contactPerson,
+          phone,
+          whatsapp,
+          email: email || null,
+          address: address || null,
+          categorySupply,
+          notes: notes || null,
+        },
+      });
 
-    set.status = 201;
-    return { success: true, data: newSupplier, message: 'Supplier berhasil ditambahkan' };
-  })
-  .put('/:id', async ({ params: { id }, body }: { params: { id: string }; body: any }) => {
-    const { companyName, contactPerson, phone, whatsapp, email, address, categorySupply, notes } = body || {};
+      set.status = 201;
+      return { success: true, data: newSupplier, message: 'Supplier berhasil ditambahkan' };
+    },
+    { beforeHandle: guardInventory }
+  )
+  .put(
+    '/:id',
+    async ({ params: { id }, body }: { params: { id: string }; body: any }) => {
+      const { companyName, contactPerson, phone, whatsapp, email, address, categorySupply, notes } = body || {};
 
-    const updatedSupplier = await prisma.supplier.update({
-      where: { id },
-      data: {
-        companyName,
-        contactPerson,
-        phone,
-        whatsapp,
-        email: email || null,
-        address: address || null,
-        categorySupply,
-        notes: notes || null,
-      },
-    });
+      const updatedSupplier = await prisma.supplier.update({
+        where: { id },
+        data: {
+          companyName,
+          contactPerson,
+          phone,
+          whatsapp,
+          email: email || null,
+          address: address || null,
+          categorySupply,
+          notes: notes || null,
+        },
+      });
 
-    return { success: true, data: updatedSupplier, message: 'Supplier berhasil diperbarui' };
-  })
-  .delete('/:id', async ({ params: { id } }: { params: { id: string } }) => {
-    await prisma.supplier.delete({ where: { id } });
-    return { success: true, message: 'Supplier berhasil dihapus' };
-  });
+      return { success: true, data: updatedSupplier, message: 'Supplier berhasil diperbarui' };
+    },
+    { beforeHandle: guardInventory }
+  )
+  .delete(
+    '/:id',
+    async ({ params: { id } }: { params: { id: string } }) => {
+      await prisma.supplier.delete({ where: { id } });
+      return { success: true, message: 'Supplier berhasil dihapus' };
+    },
+    { beforeHandle: guardAdmin }
+  );

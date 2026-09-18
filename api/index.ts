@@ -13,10 +13,20 @@ import { chatRoutes } from './routes/chat';
 export const app = new Elysia()
   .use(
     cors({
-      origin: true,
+      origin: (request: Request): boolean => {
+        const origin = request.headers.get('origin');
+        if (!origin) return true;
+        return (
+          origin.includes('localhost') ||
+          origin.includes('127.0.0.1') ||
+          origin.endsWith('.vercel.app') ||
+          origin === 'https://pos-web-zalde.vercel.app'
+        );
+      },
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: [
+        'Authorization',
         'X-CSRF-Token',
         'X-Requested-With',
         'Accept',

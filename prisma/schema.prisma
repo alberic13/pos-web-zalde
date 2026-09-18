@@ -75,3 +75,13 @@ model ChatMessage {
   createdAt  DateTime @default(now())
 }
 
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  name         String
+  role         String   // "ADMIN" | "KASIR" | "GUDANG"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+

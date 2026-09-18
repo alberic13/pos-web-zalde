@@ -1,5 +1,8 @@
 import { Elysia } from 'elysia';
 import { prisma } from '../db';
+import { requireAuth, requireRole } from '../middleware/auth';
+
+const guardAdmin = requireRole(['ADMIN']);
 
 const defaultChatMessages = [
   {
@@ -75,8 +78,13 @@ export const chatRoutes = new Elysia({ prefix: '/api/chat/messages' })
       data: newMessage,
       message: 'Pesan berhasil terkirim',
     };
-  })
-  .delete('/', async () => {
-    await prisma.chatMessage.deleteMany();
-    return { success: true, message: 'Riwayat percakapan berhasil dibersihkan' };
-  });
+  },
+  { beforeHandle: requireAuth })
+  .delete(
+    '/',
+    async () => {
+      await prisma.chatMessage.deleteMany();
+      return { success: true, message: 'Riwayat percakapan berhasil dibersihkan' };
+    },
+    { beforeHandle: guardAdmin }
+  );

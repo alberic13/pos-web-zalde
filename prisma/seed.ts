@@ -1,11 +1,34 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting electronic & tech accessories database seed...');
 
-  // Clean database
+  // Seed Demo Users with bcrypt hashed passwords
+  const defaultUsers = [
+    { username: 'admin', rawPass: 'admin123', name: 'Admin Zalde', role: 'ADMIN' },
+    { username: 'kasir', rawPass: 'kasir123', name: 'Kasir Toko Depan', role: 'KASIR' },
+    { username: 'gudang', rawPass: 'gudang123', name: 'Staff Gudang', role: 'GUDANG' },
+  ];
+
+  for (const u of defaultUsers) {
+    const passwordHash = await bcrypt.hash(u.rawPass, 10);
+    await prisma.user.upsert({
+      where: { username: u.username },
+      update: { passwordHash, name: u.name, role: u.role },
+      create: {
+        username: u.username,
+        passwordHash,
+        name: u.name,
+        role: u.role,
+      },
+    });
+  }
+  console.log('✅ Demo users seeded with secure hashed passwords');
+
+  // Clean database products/categories/orders if needed
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
   await prisma.product.deleteMany();

@@ -1,5 +1,8 @@
 import { Elysia } from 'elysia';
 import { prisma } from '../db';
+import { requireRole } from '../middleware/auth';
+
+const guardCashier = requireRole(['ADMIN', 'KASIR']);
 
 export const orderRoutes = new Elysia({ prefix: '/api/orders' })
   .get('/', async () => {
@@ -9,7 +12,9 @@ export const orderRoutes = new Elysia({ prefix: '/api/orders' })
     });
     return { success: true, data: orders };
   })
-  .post('/', async ({ body, set }: { body: any; set: any }) => {
+  .post(
+    '/',
+    async ({ body, set }: { body: any; set: any }) => {
     const { items, paymentMethod, paymentAmount } = body || {};
     if (!items || !Array.isArray(items) || items.length === 0) {
       set.status = 400;
@@ -62,4 +67,5 @@ export const orderRoutes = new Elysia({ prefix: '/api/orders' })
       data: result,
       message: 'Transaksi berhasil diselesaikan',
     };
-  });
+  },
+  { beforeHandle: guardCashier });

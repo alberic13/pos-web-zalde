@@ -1,5 +1,9 @@
 import { Elysia } from 'elysia';
 import { prisma } from '../db';
+import { requireRole } from '../middleware/auth';
+
+const guardInventory = requireRole(['ADMIN', 'GUDANG']);
+const guardAdmin = requireRole(['ADMIN']);
 
 export const productRoutes = new Elysia({ prefix: '/api/products' })
   .get('/', async ({ query }) => {
@@ -32,64 +36,72 @@ export const productRoutes = new Elysia({ prefix: '/api/products' })
     });
     return { success: true, data: products };
   })
-  .post('/', async ({ body, set }: { body: any; set: any }) => {
-    const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body || {};
-    if (!name || price === undefined || stock === undefined || !categoryId) {
-      set.status = 400;
-      return { success: false, error: 'Missing required fields' };
-    }
-    const finalSku = sku && sku.trim() !== '' ? sku : `PRD-${Date.now().toString().slice(-6)}`;
-    const product = await prisma.product.create({
-      data: {
-        sku: finalSku,
-        name,
-        price: Number(price),
-        costPrice: costPrice ? Number(costPrice) : null,
-        stock: Number(stock),
-        warehouseStock: warehouseStock !== undefined ? Number(warehouseStock) : 20,
-        categoryId,
-        imageUrl: imageUrl || null,
-      },
-      include: { category: true },
-    });
-    return { success: true, data: product };
-  })
-  .post('/:id/transfer-to-display', async ({ params: { id }, body, set }: { params: { id: string }; body: any; set: any }) => {
-    const transferQty = Number(body?.amount);
-    if (isNaN(transferQty) || transferQty <= 0) {
-      set.status = 400;
-      return { success: false, error: 'Jumlah transfer harus berupa angka positif' };
-    }
+  .post(
+    '/',
+    async ({ body, set }: { body: any; set: any }) => {
+      const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body || {};
+      if (!name || price === undefined || stock === undefined || !categoryId) {
+        set.status = 400;
+        return { success: false, error: 'Missing required fields' };
+      }
+      const finalSku = sku && sku.trim() !== '' ? sku : `PRD-${Date.now().toString().slice(-6)}`;
+      const product = await prisma.product.create({
+        data: {
+          sku: finalSku,
+          name,
+          price: Number(price),
+          costPrice: costPrice ? Number(costPrice) : null,
+          stock: Number(stock),
+          warehouseStock: warehouseStock !== undefined ? Number(warehouseStock) : 20,
+          categoryId,
+          imageUrl: imageUrl || null,
+        },
+        include: { category: true },
+      });
+      return { success: true, data: product };
+    },
+    { beforeHandle: guardInventory }
+  )
+  .post(
+    '/:id/transfer-to-display',
+    async ({ params: { id }, body, set }: { params: { id: string }; body: any; set: any }) => {
+      const transferQty = Number(body?.amount);
+      if (isNaN(transferQty) || transferQty <= 0) {
+        set.status = 400;
+        return { success: false, error: 'Jumlah transfer harus berupa angka positif' };
+      }
 
-    const product = await prisma.product.findUnique({ where: { id } });
-    if (!product) {
-      set.status = 404;
-      return { success: false, error: 'Produk tidak ditemukan' };
-    }
+      const product = await prisma.product.findUnique({ where: { id } });
+      if (!product) {
+        set.status = 404;
+        return { success: false, error: 'Produk tidak ditemukan' };
+      }
 
-    if (product.warehouseStock < transferQty) {
-      set.status = 400;
+      if (product.warehouseStock < transferQty) {
+        set.status = 400;
+        return {
+          success: false,
+          error: `Stok gudang tidak mencukupi. Sisa stok gudang: ${product.warehouseStock} unit.`,
+        };
+      }
+
+      const updated = await prisma.product.update({
+        where: { id },
+        data: {
+          warehouseStock: { decrement: transferQty },
+          stock: { increment: transferQty },
+        },
+        include: { category: true },
+      });
+
       return {
-        success: false,
-        error: `Stok gudang tidak mencukupi. Sisa stok gudang: ${product.warehouseStock} unit.`,
+        success: true,
+        message: `Berhasil memindahkan ${transferQty} unit dari Gudang ke Etalase Kasir.`,
+        data: updated,
       };
-    }
-
-    const updated = await prisma.product.update({
-      where: { id },
-      data: {
-        warehouseStock: { decrement: transferQty },
-        stock: { increment: transferQty },
-      },
-      include: { category: true },
-    });
-
-    return {
-      success: true,
-      message: `Berhasil memindahkan ${transferQty} unit dari Gudang ke Etalase Kasir.`,
-      data: updated,
-    };
-  })
+    },
+    { beforeHandle: guardInventory }
+  )
   .get('/:id', async ({ params: { id }, set }: { params: { id: string }; set: any }) => {
     const product = await prisma.product.findUnique({
       where: { id },
@@ -101,29 +113,37 @@ export const productRoutes = new Elysia({ prefix: '/api/products' })
     }
     return { success: true, data: product };
   })
-  .put('/:id', async ({ params: { id }, body }: { params: { id: string }; body: any }) => {
-    const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body || {};
-    const updateData: any = {
-      sku,
-      name,
-      price: Number(price),
-      costPrice: costPrice ? Number(costPrice) : null,
-      stock: Number(stock),
-      categoryId,
-      imageUrl: imageUrl || null,
-    };
-    if (warehouseStock !== undefined) {
-      updateData.warehouseStock = Number(warehouseStock);
-    }
+  .put(
+    '/:id',
+    async ({ params: { id }, body }: { params: { id: string }; body: any }) => {
+      const { sku, name, price, costPrice, stock, warehouseStock, categoryId, imageUrl } = body || {};
+      const updateData: any = {
+        sku,
+        name,
+        price: Number(price),
+        costPrice: costPrice ? Number(costPrice) : null,
+        stock: Number(stock),
+        categoryId,
+        imageUrl: imageUrl || null,
+      };
+      if (warehouseStock !== undefined) {
+        updateData.warehouseStock = Number(warehouseStock);
+      }
 
-    const product = await prisma.product.update({
-      where: { id },
-      data: updateData,
-      include: { category: true },
-    });
-    return { success: true, data: product };
-  })
-  .delete('/:id', async ({ params: { id } }: { params: { id: string } }) => {
-    await prisma.product.delete({ where: { id } });
-    return { success: true, message: 'Product deleted successfully' };
-  });
+      const product = await prisma.product.update({
+        where: { id },
+        data: updateData,
+        include: { category: true },
+      });
+      return { success: true, data: product };
+    },
+    { beforeHandle: guardInventory }
+  )
+  .delete(
+    '/:id',
+    async ({ params: { id } }: { params: { id: string } }) => {
+      await prisma.product.delete({ where: { id } });
+      return { success: true, message: 'Product deleted successfully' };
+    },
+    { beforeHandle: guardAdmin }
+  );
