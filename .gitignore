@@ -19,6 +19,7 @@ prisma/*.db-journal
 .DS_Store
 Thumbs.db
 
-# Graphify
+# Graphify & Antigravity
 graphify-out/
+.agents/
 
