@@ -18,3 +18,7 @@ prisma/*.db-journal
 *.log
 .DS_Store
 Thumbs.db
+
+# Graphify
+graphify-out/
+
