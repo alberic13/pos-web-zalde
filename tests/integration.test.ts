@@ -1,21 +1,32 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
 import handler from '../api/index';
 import { PrismaClient } from '@prisma/client';
+import { signToken } from '../api/lib/jwt';
 
 const prisma = new PrismaClient();
+
+const adminAuthToken = signToken({
+  id: 'test-admin',
+  username: 'admin',
+  role: 'ADMIN',
+  name: 'Admin Test Suite',
+});
 
 const TEST_TIMEOUT = 15000; // 15 seconds for database network roundtrips
 
 // Helper function to send HTTP requests to our API handler
-async function request(path: string, options: { method?: string; body?: any } = {}) {
+async function request(path: string, options: { method?: string; body?: any; token?: string } = {}) {
   const method = options.method || 'GET';
+  const reqHeaders: Record<string, string> = {
+    host: 'localhost',
+    'content-type': 'application/json',
+    authorization: options.token ? `Bearer ${options.token}` : `Bearer ${adminAuthToken}`,
+  };
+
   const req = {
     url: `http://localhost${path}`,
     method,
-    headers: {
-      host: 'localhost',
-      'content-type': 'application/json',
-    },
+    headers: reqHeaders,
     body: options.body ? JSON.stringify(options.body) : undefined,
   };
 

@@ -388,24 +388,21 @@ Get-ChildItem -Path src -Recurse -Include *.ts,*.tsx | ForEach-Object {
 3. **Konfigurasi Environment Variable (`.env`)**:
    Buat file `.env` di root proyek:
    ```env
-   # Untuk Development Lokal (PostgreSQL Server):
-   DATABASE_URL="postgresql://postgres:1234@localhost:5432/pos_zalde_dev?schema=public"
+   # Database PostgreSQL (Lokal / Cloud Provider Anda):
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/pos_zalde_dev?schema=public"
    PORT=3000
 
-   # Untuk Cloud / Production (Neon Serverless PostgreSQL):
-   NEON_DATABASE_URL="postgresql://username:password@ep-xxxx.neon.tech/neondb?sslmode=require"
+   # Kunci Rahasia JWT (Minimal 32 Karakter / 256-Bit):
+   JWT_SECRET="your-super-secret-jwt-token-key-256bit"
    ```
 
 4. **Sinkronkan skema database & data**:
    ```bash
-   # Push skema Prisma ke PostgreSQL lokal:
+   # Push skema Prisma ke database:
    npx prisma db push
 
-   # Sinkronkan data lokal ➔ Neon Cloud PostgreSQL:
-   npm run db:sync:to-cloud
-
-   # Atau sinkronkan data live Neon Cloud ➔ PostgreSQL lokal:
-   npm run db:sync:from-cloud
+   # Seed data produk & akun demo:
+   npm run db:seed
    ```
 
 5. **Jalankan server pengembangan (Development Server)**:
@@ -416,34 +413,67 @@ Get-ChildItem -Path src -Recurse -Include *.ts,*.tsx | ForEach-Object {
 
 ---
 
+## 🛡️ Arsitektur Keamanan & Otorisasi (Security & RBAC)
+
+Aplikasi POS Web Zalde menerapkan standar keamanan berlapis (*Defense-in-Depth*) untuk menjamin integritas data transaksi:
+
+1. **Password Hashing (`bcryptjs`)**:
+   - Seluruh password akun tersimpan di tabel `User` dalam bentuk hash searah menggunakan algoritma **Bcrypt** (*salt rounds* = 10).
+   - Sistem menolak penyimpanan password dalam bentuk plaintext.
+
+2. **JSON Web Token (JWT) Kriptografis**:
+   - Setiap sesi login menghasilkan token **JWT (HMAC-SHA256)** resmi berdurasi 24 jam.
+   - Token memuat klaim identitas (`id`, `username`, `role`, `name`) dan divalidasi pada setiap request mutasi data melalui header `Authorization: Bearer <token>`.
+
+3. **Role-Based Access Control (RBAC) di Backend**:
+   - Middleware otorisasi di level serverless API memverifikasi hak akses per role secara ketat:
+     - **401 Unauthorized**: Menolak request tanpa token atau token kadaluarsa.
+     - **403 Forbidden**: Menolak request jika role akun tidak berwenang (misal: Kasir mencoba menghapus produk master).
+
+4. **Whitelist Domain CORS & Header Aman**:
+   - Konfigurasi CORS hanya mengizinkan request dari domain produksi (`pos-web-zalde.vercel.app`) dan `localhost:5173`, serta mem-whitelist header `Authorization`.
+
+5. **SQL Injection Immunity**:
+   - Semua interaksi basis data menggunakan **Prisma ORM** dengan *parameterized queries* otomatis, kebal terhadap manipulasi query SQL mentah.
+
+---
+
 ## 🔑 Kredensial Akun Demo (Default Logins)
 
-Untuk mencoba 3 role dengan hak akses berbeda, gunakan akun berikut pada halaman login (`/login`):
+Untuk mencoba 3 role dengan hak akses berbeda, gunakan akun berikut pada halaman login (`/login`) atau gunakan tombol **1-Click Demo Login**:
 
-| Role | Username | Password | Hak Akses Utama |
-|---|---|---|---|
-| **Admin Toko** | `admin` | `admin123` | Akses penuh (Dashboard, POS, Produk, Stok, Supplier, Chat, Reports) |
-| **Kasir (Toko Depan)** | `kasir` | `kasir123` | POS Kasir, Produk Etalase, Riwayat Transaksi, Chat Toko & Gudang |
-| **Staff Gudang** | `gudang` | `gudang123` | Stok Gudang, Transfer Etalase, Kategori, Produk, Chat Toko & Gudang |
+| Role | Username | Password | Enkripsi Database | Hak Akses Utama |
+|---|---|---|---|---|
+| **Admin Toko** | `admin` | `admin123` | Bcrypt Hash | Akses penuh (Dashboard KPI, POS, Produk, Stok, Supplier, Chat, Reports) |
+| **Kasir (Toko Depan)** | `kasir` | `kasir123` | Bcrypt Hash | POS Kasir, Produk Etalase, Riwayat Transaksi, Chat Toko & Gudang |
+| **Staff Gudang** | `gudang` | `gudang123` | Bcrypt Hash | Stok Gudang, Transfer Etalase, Kategori, Produk, Chat Toko & Gudang |
 
 ---
 
 ## 🔌 Dokumentasi REST API Serverless (`/api/*`)
 
-| Endpoint | Method | Deskripsi |
-|---|---|---|
-| `/api/health` | `GET` | Health check endpoint serverless & konektivitas DB |
-| `/api/auth/login` | `POST` | Autentikasi pengguna & pembuatan token role |
-| `/api/products` | `GET`, `POST` | List katalog produk & pembuatan produk baru |
-| `/api/products/:id` | `PUT`, `DELETE` | Update detail/harga produk & hapus produk |
-| `/api/products/:id/transfer-to-display` | `POST` | Transfer stok fisik dari gudang ke etalase toko |
-| `/api/categories` | `GET`, `POST` | List & tambah kategori produk |
-| `/api/categories/:id` | `PUT`, `DELETE` | Update nama kategori & hapus kategori |
-| `/api/orders` | `GET`, `POST` | List riwayat order & checkout transaksi POS baru |
-| `/api/suppliers` | `GET`, `POST` | List & tambah data distributor/supplier |
-| `/api/suppliers/:id` | `PUT`, `DELETE` | Update informasi supplier & hapus supplier |
-| `/api/chat/messages` | `GET`, `POST`, `DELETE` | Polling chat internal, kirim pesan, & bersihkan riwayat chat |
-| `/api/dashboard/stats` | `GET` | Agregasi analitik KPI, tren omset 7 hari, & low stock alert |
+| Endpoint | Method | Autentikasi / Izin | Deskripsi |
+|---|---|---|---|
+| `/api/health` | `GET` | Publik | Health check endpoint serverless & status konektivitas DB |
+| `/api/auth/login` | `POST` | Publik | Verifikasi kredensial & penerbitan token JWT resmi |
+| `/api/auth/me` | `GET` | Bearer Token | Verifikasi validitas token sesi & ambil data profil user |
+| `/api/products` | `GET` | Publik | List katalog produk etalase & filter pencarian |
+| `/api/products` | `POST` | `ADMIN`, `GUDANG` | Tambah data produk baru ke katalog |
+| `/api/products/:id` | `PUT` | `ADMIN`, `GUDANG` | Update informasi dan harga produk |
+| `/api/products/:id` | `DELETE` | `ADMIN` | Hapus produk dari katalog master |
+| `/api/products/:id/transfer-to-display` | `POST` | `ADMIN`, `GUDANG` | Transfer kuantitas stok dari gudang ke etalase kasir |
+| `/api/categories` | `GET` | Publik | List seluruh kategori produk beserta jumlah item |
+| `/api/categories` | `POST`, `PUT` | `ADMIN`, `GUDANG` | Tambah dan perbarui nama kategori produk |
+| `/api/categories/:id` | `DELETE` | `ADMIN` | Hapus kategori produk |
+| `/api/orders` | `GET` | Publik | List riwayat transaksi penjualan kasir |
+| `/api/orders` | `POST` | `ADMIN`, `KASIR` | Checkout transaksi POS & potong stok kasir otomatis |
+| `/api/suppliers` | `GET` | Publik | List informasi distributor/supplier mitra toko |
+| `/api/suppliers` | `POST`, `PUT` | `ADMIN`, `GUDANG` | Tambah dan update data distributor supplier |
+| `/api/suppliers/:id` | `DELETE` | `ADMIN` | Hapus data supplier |
+| `/api/chat/messages` | `GET` | Publik | Ambil riwayat percakapan internal kasir & gudang |
+| `/api/chat/messages` | `POST` | Bearer Token | Kirim pesan restok/komunikasi internal antar staff |
+| `/api/chat/messages` | `DELETE` | `ADMIN` | Bersihkan riwayat percakapan toko |
+| `/api/dashboard/stats` | `GET` | Publik | Agregasi analitik KPI, tren omset 7 hari, & low stock alert |
 
 ---
 
