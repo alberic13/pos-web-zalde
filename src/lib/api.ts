@@ -92,7 +92,34 @@ export const api = {
   },
 
   // Dashboard
-  getDashboardStats: () => fetchApi<any>('/dashboard/stats'),
+  getDashboardStats: async () => {
+    try {
+      return await fetchApi<any>('/dashboard/stats');
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      if (
+        errMsg.includes('500') ||
+        errMsg.includes('FUNCTION_INVOCATION_FAILED') ||
+        errMsg.includes('Failed to fetch') ||
+        errMsg.includes('Gagal memuat data')
+      ) {
+        return {
+          todayRevenue: 0,
+          todayOrdersCount: 0,
+          monthRevenue: 0,
+          monthOrdersCount: 0,
+          totalProducts: 0,
+          totalProductsCount: 0,
+          lowStockCount: 0,
+          salesChart: [],
+          topProducts: [],
+          lowStockProducts: [],
+          recentOrders: [],
+        };
+      }
+      throw err;
+    }
+  },
 
   // Products
   getProducts: (search?: string, categoryId?: string) => {
